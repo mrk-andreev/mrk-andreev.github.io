@@ -1,0 +1,158 @@
+{
+  "name" : "Mark Andreev",
+  "profession" : "Machine Learning Engineer",
+  "social_networks" : [
+    {
+      "name" : "linkedin",
+      "link" : "https://linkedin.com/in/mark-andreev-75a753134",
+      "icon" : "assets/images/logo/linkedin-logo-big.png"
+    },
+    {
+      "name" : "facebook",
+      "link" : "https://www.facebook.com/mark.andreev",
+      "icon" : "assets/images/logo/facebook-logo-big.png"
+    },
+    {
+      "name" : "github",
+      "link" : "http://github.com/mrk-andreev",
+      "icon" : "assets/images/logo/github-logo-big.png"
+    },
+    {
+      "name" : "kaggle",
+      "link" : "https://www.kaggle.com/mandreev",
+      "icon" : "assets/images/logo/kaggle-logo-big.png"
+    },
+    {
+      "name" : "crowdanalytix",
+      "link" : "https://www.crowdanalytix.com/members/mrkandreev/detail.htm",
+      "icon" : "assets/images/logo/crowdanalytix-logo-big.png"
+    }
+  ],
+  "contacts" : [
+    {
+      "name" : "email",
+      "image" : "assets/images/photos/email.png"
+    }
+  ],
+  "educations" : [
+    "BigData, CS, MSU (in-process Master's degree)",
+    "Mathematical modeling, AVTI, MPEI (Bachelor's degree)"
+  ],
+  "skills" : [
+    "Software Engineering", "Machine Learning", "Deep Learning", "Statistics"
+  ],
+  "technologies" : [
+    {
+      "name" : "Python",
+      "icon" : "assets/images/logo/python-logo.png",
+      "sub_technologies" : [
+        "Pandas,", "Scikit-learn,", "Keras,", "Statsmodels"
+      ]
+    },
+    {
+      "name" : "Java",
+      "icon" : "assets/images/logo/java-logo.png",
+      "sub_technologies" : [
+        "Java1.8+","Spring", "Hibernate", "PostgreSQL","MongoDB","RabbitMQ"
+      ]
+    }
+  ],
+  "tools" : [
+    {
+      "name" : "Linux,",
+      "logo" : "assets/images/logo/linux-logo.png"
+    },
+    {
+      "name" : "Docker,",
+      "logo" : "assets/images/logo/docker-logo.png"
+    },
+    {
+      "name" : "Git",
+      "logo" : "assets/images/logo/git-logo.png"
+    }
+  ],
+  "os_projects" : [
+    {
+      "repo_link" : "#",
+      "proj_name" : "Data Science Dockerized Environment"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "PowerNotepad"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "JLoadTester"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "NetworkScanner"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "MatLib"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "PythonAlgorithmsChecker"
+    },
+    {
+      "repo_link" : "#",
+      "proj_name" : "HTML+CSS+JS minimization tools"
+    }
+  ],
+  "certificates" : [
+    {
+      "course_host" : "coursera",
+      "course_name" : "Introduction to machine learning from the University Higher School of Economics on Coursera",
+      "certificate_link" : "https://www.coursera.org/account/accomplishments/records/SWQJ8BXEZFGH"
+    },
+    {
+      "course_host" : "stepic",
+      "course_name" : "Security Analysis of Web Projects on Stepic",
+      "certificate_link" : "https://stepik.org/certificate/2e53298a16f08a932b90688a713c1a37660af179.pdf"
+    }
+  ],
+  "experiences" : [
+    "2016 - Finish kaggle competition \"Allstate Claims Severity\" at top 13%",
+    "2016 - Sberbank Data Science Contest, Top 2% on \"A\" task (global top 11%)",
+    "2016 - Entered Lomonosov Moscow State University",
+    "2016 - Create app for analysis list of enrollees",
+    "2016 - Become a Bachelor of Applied Mathematics and Informatics",
+    "2016 - Finished final project \"Face recoginzation\" (Computer vision)",
+    "2016 - Win kaggle inclass competition (for MSU students)",
+    "2016 - Finish kaggle competition \"BNP Paribas Cardif Claims Management\" at top 16%",
+    "2016 - Finish kaggle competition \"Homesite Quote Conversion\" at top 25%",
+    "2015 - Release PowerNotepad, java GUI app for edit any size text files",
+    "2014 - Release JLoadTester, java GUI app for load testing",
+    "2014 - Release NetworkScanner, java GUI app for scan local network",
+    "2013 - Release MatLib , c++ matrix library",
+    "2013 - Release PythonAlgorithmsChecker, java GUI app for check python written programs",
+    "2012 - Release HTML+CSS+JS minimization tools",
+    "2012 - Entered National Research University \"MPEI\" (AVTI, Mathematical modeling)",
+    "2009 - Create EduNow.su"
+  ],
+  "resume_static" : [
+    {
+      "format_name" : "in russian",
+      "links" : [
+        {
+          "name" : "pdf",
+          "link" : "resume_binary/resume_rus.pdf"
+        },
+        {
+          "name" : "rtf",
+          "link" : "resume_binary/resume_rus.rtf"
+        },
+        {
+          "name" : "docx",
+          "link" : "resume_binary/resume_rus.docx"
+        },
+        {
+          "name" : "odt",
+          "link" : "resume_binary/resume_rus.odt"
+        }
+      ]
+    }
+  ]
+}

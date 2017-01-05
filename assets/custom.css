@@ -1,0 +1,50 @@
+
+a {
+    color: #000066;
+}
+
+.page {
+    margin: 15px;
+}
+
+.page-header {
+    text-align: center;
+}
+
+.page-header-top h1 {
+    margin: 0;
+    padding: 0;
+}
+
+.page-header-top h2 {
+    margin: 0;
+    padding: 0 0 25px 0;
+}
+
+.page-body-social img {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+
+.page-body-social a:hover img {
+    -webkit-filter: grayscale(0%);
+    filter: grayscale(0%);
+}
+
+.page-body {}
+
+.opensource_projects_list li {
+    list-style: none url("images/logo/github-logo.png");
+}
+
+.certificates-list li {
+    list-style: none;
+}
+
+.certificates-list li.coursera-hosted {
+    list-style-image: url("images/logo/coursera-logo.png");
+}
+
+.certificates-list li.stepic-hosted {
+    list-style-image: url("images/logo/stepic-logo.png");
+}
