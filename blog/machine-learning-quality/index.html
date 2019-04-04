@@ -61,7 +61,8 @@
         <span class="badge badge-secondary">Technical</span>
 
         <span>$${MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}$$</span>
-        <p>The MSE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are better.</p>
+        <p>The MSE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are
+            better.</p>
         <!-- RMSE. END -->
 
         <!-- MAE. BEGIN -->
@@ -70,7 +71,8 @@
         <span class="badge badge-secondary">Technical</span>
 
         <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}$$</span>
-        <p>The MAE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are better.</p>
+        <p>The MAE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are
+            better.</p>
         <!-- MAE. END -->
 
         <!-- MAE. BEGIN -->
@@ -79,7 +81,8 @@
         <span class="badge badge-secondary">Technical</span>
 
         <span>$${MAE} =Median |y_{i}-x_{i}|$$</span>
-        <p>The MedianAE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are better.</p>
+        <p>The MedianAE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero
+            are better.</p>
         <!-- MAE. END -->
 
         <!-- RMSLE. BEGIN -->
@@ -89,7 +92,8 @@
         <span class="badge badge-secondary">Large values</span>
 
         <span>$$RMSLE = \sqrt{ \frac{1}{N} \sum_{i=1}^N (\log(x_i) - \log(y_i))^2 }$$</span>
-        <p>The RMSLE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are better.</p>
+        <p>The RMSLE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero
+            are better.</p>
         <!-- RMSLE. END -->
 
         <!-- R2. BEGIN -->
@@ -100,7 +104,8 @@
 
         <span>$${\bar {y}}={\frac {1}{n}}\sum _{i=1}^{n}y_{i}; SS_{\text{tot}}=\sum _{i}(y_{i}-{\bar {y}})^{2}; SS_{\text{res}}=\sum _{i}(y_{i}-f_{i})^{2}$$</span>
         <span>$$R^{2}\equiv 1-{SS_{\rm {res}} \over SS_{\rm {tot}}}$$</span>
-        <p>The R2 is a measure of the quality of an estimator — bounded range (-inf, 1]. 1 is best quality. 0 is mean target prediction. Higher is better.</p>
+        <p>The R2 is a measure of the quality of an estimator — bounded range (-inf, 1]. 1 is best quality. 0 is mean
+            target prediction. Higher is better.</p>
         <!-- R2. END -->
 
         <!-- MAPE. BEGIN -->
@@ -117,12 +122,17 @@
         <span class="badge badge-secondary">Business</span>
 
         <span>$${SMAPE}={\frac {100\%}{n}}\sum _{t=1}^{n}{\frac {\left|F_{t}-A_{t}\right|}{(|A_{t}|+|F_{t}|)/2}}$$</span>
+        <p>Measure error as percent. It is fail when we have non-positive values.</p>
         <!-- SMAPE. END -->
 
         <h3>Weighed *</h3>
-        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Sensitive+</span>
         <p>We always can add weight to each sample. If some samples is more important then one we can take this into
             account.</p>
+
+        <h3>Asymmetric *</h3>
+        <span class="badge badge-secondary">Sensitive+</span>
+        <p>You can add asymmetric weight or shape to positive/negative errors.</p>
     </div>
 
     <hr/>
@@ -152,18 +162,23 @@
                 </th>
                 <th>1</th>
                 <td class="text-center">True Positives [TP]</td>
-                <td class="text-center">False Positives [FP]</td>
+                <td class="text-center">False Positives [FP] <span class="badge badge-secondary">Type I error</span>
+                </td>
             </tr>
             <tr>
                 <th>0</th>
-                <td class="text-center">False Negatives [FN]</td>
+                <td class="text-center">False Negatives [FN]<span class="badge badge-secondary">Type II error</span>
+                </td>
                 <td class="text-center">True Negatives [TN]</td>
             </tr>
             </tbody>
         </table>
 
+        <div class="media">
+            <img src="images/clf_errors_types.jpg" alt="I, II type of errors"/>
+        </div>
+
         <h3>Based on probability</h3>
-        <p>-</p>
 
         <!-- ROC-AUC. BEGIN -->
         <h4>ROC-AUC</h4>
@@ -180,7 +195,7 @@
         <span class="badge badge-secondary">Sensitive</span>
         <span class="badge badge-secondary">Technical</span>
 
-        <span>$$AUC=(GINI+1)/2$$</span>
+        <span>$$GINI=2*AUC - 1$$</span>
         <!-- GINI. BEGIN -->
 
         <!-- LOGLOSS. BEGIN -->
@@ -192,7 +207,6 @@
         <!-- LOGLOSS. END -->
 
         <h3>Based on labels</h3>
-        <p>-</p>
 
         <!-- Accuracy. BEGIN -->
         <h4>Accuracy</h4>
@@ -231,8 +245,6 @@
         <h4>Cohen's kappa (quadratic weighted kappa)</h4>
         <span class="badge badge-secondary">Sensitive</span>
         <span class="badge badge-secondary">Technical</span>
-
-        <p>-</p>
         <!-- COHEN KAPPA. END -->
 
         <!-- Weighed. BEGIN -->
