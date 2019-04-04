@@ -22,7 +22,22 @@
 <div class="container">
     <div>
         <b>Problem definition.</b>
-        <p></p>
+        <p>Machine learning algorithms predicts or measure something. But if we want to compare algorithms with another
+            algorithms or with native benchmarks: random choice, last seen value or most common; we need to have quality
+            functions which will compare predicted values with real values. </p>
+        <p>Sometimes this terms splits into to metrics and losses.</p>
+        <ul>
+            <li><b>Metrics</b> is a function that is used to judge the performance of your model. It can not always be
+                optimized directly.
+            </li>
+            <li><b>Losses</b> (or objective function, or optimization score function) is target of model optimization.
+            </li>
+        </ul>
+        <p>Based on type and specificity of problem we can choose right quality metrics. One of the main problem is
+            sensitivity of quality metric: do we want to detect small changes in performance or we need a robust
+            measures. Another problem is difference between values in same sample: is standard deviation big or small.
+            At the last we need to choose quality metric type: technical (usually sensitive but hard to explain) or
+            business (robust and easy to explain and understand).</p>
     </div>
     <hr/>
     <div>
@@ -36,25 +51,65 @@
     <hr/>
     <div>
         <h2><a href="#regression" name="regression">#</a> Regression</h2>
-        <p>-</p>
+        <p>Regression problem called tasks that need to predict continues values of real numbers. "Age prediction"
+            problem is one of the regression problem. Notice, when we need to predict independent labels like men/women
+            in "Gender prediction" problem we are not solving regression problem.</p>
+
+        <!-- MSE. BEGIN -->
         <h3>MSE. Mean squared error</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Technical</span>
+
         <span>$${MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}$$</span>
         <p>-</p>
+        <!-- RMSE. END -->
+
+        <!-- MAE. BEGIN -->
         <h3>MAE. Mean absolute error</h3>
+        <span class="badge badge-secondary">Robust</span>
+        <span class="badge badge-secondary">Technical</span>
+
         <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}={\frac {\sum _{i=1}^{n}\left|e_{i}\right|}{n}}$$</span>
         <p>-</p>
+        <!-- MAE. BEGIN -->
+
+        <!-- RMSLE. BEGIN -->
         <h3>RMSLE. Root mean squared logarithmic error</h3>
-        <p>-</p>
+        <span class="badge badge-secondary">Robust</span>
+        <span class="badge badge-secondary">Technical</span>
+        <span class="badge badge-secondary">Large values</span>
+
+        <span>$$RMSLE = \sqrt{ \frac{1}{N} \sum_{i=1}^N (\log(x_i) - \log(y_i))^2 }$$</span>
+        <!-- RMSLE. END -->
+
+        <!-- R2. BEGIN -->
         <h3>R^2. Coefficient of determination</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Business</span>
+
         <span>$${\bar {y}}={\frac {1}{n}}\sum _{i=1}^{n}y_{i}; SS_{\text{tot}}=\sum _{i}(y_{i}-{\bar {y}})^{2}; SS_{\text{res}}=\sum _{i}(y_{i}-f_{i})^{2}$$</span>
         <span>$$R^{2}\equiv 1-{SS_{\rm {res}} \over SS_{\rm {tot}}}$$</span>
-        <p>-</p>
+        <!-- R2. END -->
+
+        <!-- MAPE. BEGIN -->
         <h3>MAPE. Mean absolute percentage error</h3>
-        <p>-</p>
+        <span class="badge badge-secondary">Robust</span>
+        <span class="badge badge-secondary">Business</span>
+
+        <span>$${MAPE}={\frac {100\%}{n}}\sum _{t=1}^{n}\left|{\frac {A_{t}-F_{t}}{A_{t}}}\right| $$</span>
+        <!-- MAPE. END -->
+
+        <!-- SMAPE. BEGIN -->
         <h3>SMAPE. Symmetric mean absolute percentage error</h3>
-        <p>-</p>
+        <span class="badge badge-secondary">Robust</span>
+        <span class="badge badge-secondary">Business</span>
+
+        <span>$${SMAPE}={\frac {100\%}{n}}\sum _{t=1}^{n}{\frac {\left|F_{t}-A_{t}\right|}{(|A_{t}|+|F_{t}|)/2}}$$</span>
+        <!-- SMAPE. END -->
+
         <h3>Weighed *</h3>
-        <p></p>
+        <span class="badge badge-secondary">Robust</span>
+        <p>We always can add weight to each sample. If some samples is more important then one we can take this into account.</p>
     </div>
     <div>
         <hr/>
