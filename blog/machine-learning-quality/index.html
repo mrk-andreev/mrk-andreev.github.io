@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quality metrics | Machine learning</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Quality metrics</h1>
+        <h4>Types / Optimizations / Best practices</h4>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <b>Problem definition.</b>
+        <p></p>
+    </div>
+    <hr/>
+    <div>
+        <ul>
+            <li><a href="#regression">Regression</a></li>
+            <li><a href="#classification">Classification</a></li>
+            <li><a href="#unsupervised">Unsupervised</a></li>
+            <li><a href="#ranking">Ranking</a></li>
+        </ul>
+    </div>
+    <hr/>
+    <div>
+        <h2><a href="#regression" name="regression">#</a> Regression</h2>
+        <p>-</p>
+        <h3>MSE. Mean squared error</h3>
+        <span>$${MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}$$</span>
+        <p>-</p>
+        <h3>MAE. Mean absolute error</h3>
+        <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}={\frac {\sum _{i=1}^{n}\left|e_{i}\right|}{n}}$$</span>
+        <p>-</p>
+        <h3>RMSLE. Root mean squared logarithmic error</h3>
+        <p>-</p>
+        <h3>R^2. Coefficient of determination</h3>
+        <span>$${\bar {y}}={\frac {1}{n}}\sum _{i=1}^{n}y_{i}; SS_{\text{tot}}=\sum _{i}(y_{i}-{\bar {y}})^{2}; SS_{\text{res}}=\sum _{i}(y_{i}-f_{i})^{2}$$</span>
+        <span>$$R^{2}\equiv 1-{SS_{\rm {res}} \over SS_{\rm {tot}}}$$</span>
+        <p>-</p>
+        <h3>MAPE. Mean absolute percentage error</h3>
+        <p>-</p>
+        <h3>SMAPE. Symmetric mean absolute percentage error</h3>
+        <p>-</p>
+        <h3>Weighed *</h3>
+        <p></p>
+    </div>
+    <div>
+        <hr/>
+        <h2><a href="#classification" name="classification">#</a> Classification</h2>
+        <p>-</p>
+        <h3>Based on probability</h3>
+        <p>-</p>
+        <h4>ROC-AUC</h4>
+        <p>-</p>
+        <h4>Gini</h4>
+        <p>-</p>
+        <h4>LogLoss</h4>
+        <p>-</p>
+        <h3>Based on labels</h3>
+        <p>-</p>
+        <p>{confusion matrix}</p>
+        <h4>Accuracy</h4>
+        <p>-</p>
+        <h4>Precision / Recall</h4>
+        <p>-</p>
+        <h4>F1 score</h4>
+        <p>-</p>
+        <h4>F-beta score</h4>
+        <p>-</p>
+        <h4>Cohen's kappa</h4>
+        <p>-</p>
+        <h4>Weighed *</h4>
+        <p>-</p>
+    </div>
+    <hr/>
+    <div>
+        <h2><a href="#classification" name="unsupervised">#</a> Unsupervised</h2>
+        <p>-</p>
+        <h3>Mutual Information</h3>
+        <p>-</p>
+        <h3>Homogeneity</h3>
+        <p>-</p>
+        <h3>Silhouette Coefficient</h3>
+        <p>-</p>
+    </div>
+    <hr/>
+    <div>
+        <h2><a href="#ranking" name="ranking">#</a> Ranking</h2>
+        <p>-</p>
+        <h3>MAP. Mean average precision</h3>
+        <p>-</p>
+        <h3>DCG. Discounted cumulative gain</h3>
+        <p>-</p>
+        <h3>NDCG. Normalized DCG.</h3>
+        <p>-</p>
+        <h3>@K (Precision@K, NDCG@K)</h3>
+        <p>-</p>
+        <h3>Mean reciprocal rank.</h3>
+        <p>-</p>
+        <h3>Kendall's tau</h3>
+        <p>-</p>
+        <h3>Spearman's rho</h3>
+        <p>-</p>
+        <h3>ERR. Expected reciprocal rank</h3>
+        <p>-</p>
+        <h3>pFound by Yandex</h3>
+
+    </div>
+
+    <hr/>
+    <div>
+        <b>Conclusion.</b>
+        <p></p>
+    </div>
+
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li>
+                <a href="https://medium.com/usf-msds/choosing-the-right-metric-for-machine-learning-models-part-1-a99d7d7414e4">Choosing
+                    the Right Metric for Evaluating Machine Learning Models — Part 1</a>
+            </li>
+            <li>
+                <a href="https://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics">API Reference.
+                    Sklearn metrics</a>
+            </li>
+            <li>
+                <a href="https://alexanderdyakonov.files.wordpress.com/2018/10/book_08_metrics_12_blog1.pdf">Quality
+                    metrics by Dyakonov [RU]</a>
+            </li>
+            <li>
+                <a href="http://www.machinelearning.ru/wiki/images/f/fd/PZAD2017_03_errors.pdf">Error / quality
+                    functions by Dyakonov [RU]</a>
+            </li>
+            <li>
+                <a href="http://romip.ru/romip2009/15_yandex.pdf">Yandex pFound [RU]</a>
+            </li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">@mrkandreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css"
+      integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js"
+        integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij"
+        crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js"
+        integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI"
+        crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\[", right: "\\]", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false}
+            ]
+        });
+    });
+</script>
+</body>
+</html>
