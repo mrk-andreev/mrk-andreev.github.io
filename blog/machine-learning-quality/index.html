@@ -283,31 +283,40 @@
         <span>$$s = \frac{b - a}{max(a, b)}$$</span>
         <p>Generally higher for convex clusters than other concepts of clusters, such as density based clusters like
             those obtained through DBSCAN</p>
-
         <!-- Silhouette Coefficient. END -->
     </div>
     <hr/>
     <div>
         <h2><a href="#ranking" name="ranking">#</a> Ranking</h2>
-        <p>-</p>
-        <h3>MAP. Mean average precision</h3>
-        <p>-</p>
-        <h3>DCG. Discounted cumulative gain</h3>
-        <p>-</p>
-        <h3>NDCG. Normalized DCG.</h3>
-        <p>-</p>
-        <h3>@K (Precision@K, NDCG@K)</h3>
-        <p>-</p>
-        <h3>Mean reciprocal rank.</h3>
-        <p>-</p>
-        <h3>Kendall's tau</h3>
-        <p>-</p>
-        <h3>Spearman's rho</h3>
-        <p>-</p>
-        <h3>ERR. Expected reciprocal rank</h3>
-        <p>-</p>
-        <h3>pFound by Yandex</h3>
 
+        <!-- MAP. BEGIN -->
+        <h3>MAP. Mean average precision</h3>
+
+        <span>$${MAP} = \frac{\sum_{q=1}^Q \operatorname{AveP(q)}}{Q}$$</span>
+        <p>Mean average precision for a set of queries is the mean of the average precision scores for each query.</p>
+        <!-- MAP. END -->
+
+        <!-- DCG. BEGIN -->
+        <h3>DCG. Discounted cumulative gain</h3>
+
+        <p>The DCG accumulated at a particular rank position p is defined as:</p>
+        <span>$$\mathrm {DCG_{p}} =\sum _{i=1}^{p}{\frac {rel_{i}}{\log _{2}(i+1)}}$$</span>
+
+        <!-- NDCG. BEGIN -->
+        <h3>NDCG. Normalized DCG.</h3>
+
+        <span>$$\mathrm{nDCG_{p}} = \frac{DCG_{p}}{IDCG{p}}.$$</span>
+        <!-- NDCG. END -->
+
+        <!-- @K. BEGIN -->
+        <h3>@K (Precision@K, NDCG@K)</h3>
+        <p>Evaluate quality on K samples with highest probability.</p>
+        <!-- @K. END -->
+
+        <h3>Mean reciprocal rank.</h3>
+
+        <span>$$MRR={\frac{1}{|Q|}}\sum_{{i=1}}^{{|Q|}}{\frac  {1}{\text{rank}}_{i}}$$</span>
+        <span>${\text{rank}}_{i}$ refers to the rank position of the first relevant document for the i-th query.</span>
     </div>
 
     <hr/>
