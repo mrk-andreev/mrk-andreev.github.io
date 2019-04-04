@@ -69,9 +69,18 @@
         <span class="badge badge-secondary">Robust</span>
         <span class="badge badge-secondary">Technical</span>
 
-        <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}={\frac {\sum _{i=1}^{n}\left|e_{i}\right|}{n}}$$</span>
+        <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}$$</span>
         <p>-</p>
+        <!-- MAE. END -->
+
         <!-- MAE. BEGIN -->
+        <h3>MedianAE. Median absolute error</h3>
+        <span class="badge badge-secondary">Robust</span>
+        <span class="badge badge-secondary">Technical</span>
+
+        <span>$${MAE} =Median |y_{i}-x_{i}|$$</span>
+        <p>-</p>
+        <!-- MAE. END -->
 
         <!-- RMSLE. BEGIN -->
         <h3>RMSLE. Root mean squared logarithmic error</h3>
@@ -86,6 +95,7 @@
         <h3>R^2. Coefficient of determination</h3>
         <span class="badge badge-secondary">Sensitive</span>
         <span class="badge badge-secondary">Business</span>
+        <span class="badge badge-secondary">Bounded range (-inf, 1]</span>
 
         <span>$${\bar {y}}={\frac {1}{n}}\sum _{i=1}^{n}y_{i}; SS_{\text{tot}}=\sum _{i}(y_{i}-{\bar {y}})^{2}; SS_{\text{res}}=\sum _{i}(y_{i}-f_{i})^{2}$$</span>
         <span>$$R^{2}\equiv 1-{SS_{\rm {res}} \over SS_{\rm {tot}}}$$</span>
@@ -234,13 +244,47 @@
     <hr/>
     <div>
         <h2><a href="#classification" name="unsupervised">#</a> Unsupervised</h2>
-        <p>-</p>
-        <h3>Mutual Information</h3>
-        <p>-</p>
-        <h3>Homogeneity</h3>
-        <p>-</p>
+        <p>In this case we train our model without knowledge about target values. When we evaluate performance we need
+            to measure detected hidden patterns in data.</p>
+
+        <!-- ARI. BEGIN -->
+        <h3>ARI. Adjusted Rand Index</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Technical</span>
+        <span class="badge badge-secondary">Bounded range [-1, 1]</span>
+        <span class="badge badge-secondary">Random (uniform) label assignments have a ARI score close to 0.0</span>
+        <span class="badge badge-secondary">No assumption is made on the cluster structure</span>
+
+        <span>If C is a ground truth class assignment and K the clustering, let us define  and  as:</span>
+        <ul>
+            <li>a, the number of pairs of elements that are in the same set in C and in the same set in K</li>
+            <li>b, the number of pairs of elements that are in different sets in C and in different sets in K</li>
+        </ul>
+        <span>$$\text{RI} = \frac{a + b}{C_2^{n_{samples}}}$$</span>
+        <span>$$ARI = \frac{RI - E_{RI}}{max(RI) - E_{RI}}$$</span>
+        <p>Given the knowledge of the ground truth class assignments labels_true and our clustering algorithm
+            assignments of the same samples labels_pred, the adjusted Rand index is a function that measures the
+            similarity of the two assignments, ignoring permutations and with chance normalization.</p>
+        <p>The adjusted Rand index is thus ensured to have a value close to 0.0 for random labeling independently of the
+            number of clusters and samples and exactly 1.0 when the clusterings are identical (up to a permutation).</p>
+        <!-- ARI. END -->
+
+        <!-- Silhouette Coefficient. BEGIN -->
         <h3>Silhouette Coefficient</h3>
-        <p>-</p>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Business</span>
+        <span class="badge badge-secondary">bounded between -1 for incorrect clustering and +1 for highly dense clustering</span>
+        <span class="badge badge-secondary">score is higher when clusters are dense and well separated</span>
+
+        <ul>
+            <li>a: The mean distance between a sample and all other points in the same class.</li>
+            <li>b: The mean distance between a sample and all other points in the next nearest cluster.</li>
+        </ul>
+        <span>$$s = \frac{b - a}{max(a, b)}$$</span>
+        <p>Generally higher for convex clusters than other concepts of clusters, such as density based clusters like
+            those obtained through DBSCAN</p>
+
+        <!-- Silhouette Coefficient. END -->
     </div>
     <hr/>
     <div>
