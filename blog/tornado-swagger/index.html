@@ -37,24 +37,161 @@
 <hr/>
 <div class="container">
     <div>
-        <b>Problem definition.</b> -
+        <b>Problem definition.</b>
+        <p>When we create service with REST interface we need to publish protocol description. Which method will be used,
+        which parameters will be used. If we do not want to share this responsibility from programmers to technical
+            writers, we need to use simple tool for this problem.</p>
     </div>
     <div>
-        <b>Swagger solution.</b> -
-        <pre><code class="yaml">parameters:
-  - in: query
-    name: status
-    schema:
-      type: string
-      enum: [approved, pending, closed, new]
-      example: approved     # Example of a parameter value
+        <b>Solution.</b>
+        <p>One of the best thing that you can do is describe your API in fixed typed format of API documentation. Most common format of documentation is <a href="https://swagger.io/">Swagger</a>. Write your documentation in yaml/json format and export to nice looking  ui. Example project Petstore demonstrate this concept: [<a href="http://petstore.swagger.io/">ui</a>] [<a href="https://petstore.swagger.io/v2/swagger.json">json</a>].</p>
+        <p>In swagger we can define different levels of api:</p>
+        <ul>
+            <li><b>Service description</b> - project title, base url, api version.</li>
+            <li><b>Schemes</b> - https/http</li>
+            <li><b>Auth</b> - declare auth methods</li>
+            <li><b>Endpoints</b> - declare method, parameters and expected responses.</li>
+        </ul>
+        <p>Lets look at endpoint declaration. Take attention to tags: each group of endpoint is marked with same tag. Another interesting thing is schema $ref: we can link to object definition. </p>
+        <pre><code class="yaml">/pet:
+    post:
+      tags:
+      - pet
+      summary: Add a new pet to the store
+      operationId: addPet
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Pet object that needs to be added to the store
+        required: true
+        schema:
+          $ref: '#/definitions/Pet'
+      responses:
+        405:
+          description: Invalid input
+      security:
+      - petstore_auth:
+        - write:pets
+        - read:pets</code></pre>
+        <p>Pet object definition describe pet object fields including fields and fields types. As in paths we can link to another schemas using $ref:</p>
+        <pre><code class="yaml">Pet:
+    type: object
+    required:
+    - name
+    - photoUrls
+    properties:
+      id:
+        type: integer
+        format: int64
+      category:
+        $ref: '#/definitions/Category'
+      name:
+        type: string
+        example: doggie
+      photoUrls:
+        type: array
+        xml:
+          name: photoUrl
+          wrapped: true
+        items:
+          type: string
+      tags:
+        type: array
+        xml:
+          name: tag
+          wrapped: true
+        items:
+          $ref: '#/definitions/Tag'
+      status:
+        type: string
+        description: pet status in the store
+        enum:
+        - available
+        - pending
+        - sold</code></pre>
+    </div>
+
+    <div>
+        <b>Why we need TornadoSwagger.</b>
+        <p>If we do not want to write swagger definition and source code separately we need to use support tool. TornadoSwagger allow you to write swagger in docstring and serve swagger-ui in special endpoint.</p>
+        <pre><code class="python">class PostsDetailsHandler(tornado.web.RequestHandler):
+    def get(self, posts_id):
+        """
+        ---
+        tags:
+        - Posts
+        summary: Get posts details
+        description: posts full version
+        produces:
+        - application/json
+        parameters:
+        -   name: posts_id
+            in: path
+            description: ID of post to return
+            required: true
+            type: string
+        responses:
+            200:
+              description: list of posts
+              schema:
+                $ref: '#/definitions/PostModel'
+        """</code></pre>
+        <pre><code class="python">@register_swagger_model
+class PostModel:
+    """
+    ---
+    type: object
+    description: Post model representation
+    properties:
+        id:
+            type: integer
+            format: int64
+        title:
+            type: string
+        text:
+            type: string
+        is_visible:
+            type: boolean
+            default: true
+    """
 </code></pre>
+        <p>Tornado-swagger can be simple installed. Just add setup_swagger into your Application __init__:</p>
+        <pre><code class="python">class Application(tornado.web.Application):
+    _routes = [
+        tornado.web.url(r'/api/posts', PostsHandler),
+        tornado.web.url(r'/api/posts/(\w+)', PostsDetailsHandler),
+    ]
+
+    def __init__(self):
+        settings = {
+            'debug': True
+        }
+
+        setup_swagger(self._routes,
+                      swagger_url='/doc',
+                      api_base_url='/',
+                      description='',
+                      api_version='1.0.0',
+                      title='Journal API',
+                      contact='name@domain',
+                      schemes=['https'],
+                      security_definitions={
+                          'ApiKeyAuth': {
+                              'type': 'apiKey',
+                              'in': 'header',
+                              'name': 'X-API-Key'
+                          }
+                      })
+        super(Application, self).__init__(self._routes, **settings)</code></pre>
+        <pre><code class="bash">pip install tornado-swagger</code></pre>
     </div>
     <div>
-        <b>Why we need TornadoSwagger.</b> -
-    </div>
-    <div>
-        <b>Conclusion.</b> -
+        <b>Conclusion.</b>
+        <p>API must be described and published in common format. It can improve cross team developing speed and simplify service integration into your large system. Most common tool is Swagger. Tornado-Swagger allow you to integrate swagger-ui and swagger-format into your project.</p>
     </div>
     <div>
         <hr/>
@@ -63,6 +200,8 @@
             <li><a href="https://swagger.io/resources/articles/best-practices-in-api-design/">Best Practices in API
                 Design
             </a></li>
+            <li><a href="https://stackoverflow.com/questions/36634281/list-of-swagger-ui-alternatives">List of swagger
+                UI alternatives</a></li>
         </ul>
     </div>
     <div class="text-right">
