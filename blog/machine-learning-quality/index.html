@@ -291,6 +291,8 @@
 
         <!-- MAP. BEGIN -->
         <h3>MAP. Mean average precision</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Business</span>
 
         <span>$${MAP} = \frac{\sum_{q=1}^Q \operatorname{AveP(q)}}{Q}$$</span>
         <p>Mean average precision for a set of queries is the mean of the average precision scores for each query.</p>
@@ -298,22 +300,31 @@
 
         <!-- DCG. BEGIN -->
         <h3>DCG. Discounted cumulative gain</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Technical</span>
 
         <p>The DCG accumulated at a particular rank position p is defined as:</p>
         <span>$$\mathrm {DCG_{p}} =\sum _{i=1}^{p}{\frac {rel_{i}}{\log _{2}(i+1)}}$$</span>
 
         <!-- NDCG. BEGIN -->
         <h3>NDCG. Normalized DCG.</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Technical</span>
 
         <span>$$\mathrm{nDCG_{p}} = \frac{DCG_{p}}{IDCG{p}}.$$</span>
         <!-- NDCG. END -->
 
         <!-- @K. BEGIN -->
         <h3>@K (Precision@K, NDCG@K)</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Business</span>
+
         <p>Evaluate quality on K samples with highest probability.</p>
         <!-- @K. END -->
 
         <h3>Mean reciprocal rank.</h3>
+        <span class="badge badge-secondary">Sensitive</span>
+        <span class="badge badge-secondary">Technical</span>
 
         <span>$$MRR={\frac{1}{|Q|}}\sum_{{i=1}}^{{|Q|}}{\frac  {1}{\text{rank}}_{i}}$$</span>
         <span>${\text{rank}}_{i}$ refers to the rank position of the first relevant document for the i-th query.</span>
