@@ -62,8 +62,7 @@
         <span class="badge badge-secondary">Lower better</span>
 
         <span>$${MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}$$</span>
-        <p>The MSE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are
-            better.</p>
+        <p>This metrics measure difference using square that means small errors is making smaller (&lt; 1), big errors (&gt;1) making bigger. For this reason, this metric is very sensitive.</p>
         <!-- RMSE. END -->
 
         <!-- MAE. BEGIN -->
@@ -72,7 +71,7 @@
         <span class="badge badge-secondary">Technical</span>
         <span class="badge badge-secondary">Lower better</span>
 
-        <span>$${MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}$$</span>
+        <span>$${MAE} = \frac{1}{n} {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}$$</span>
         <p>The MAE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero are
             better.</p>
         <!-- MAE. END -->
@@ -95,7 +94,7 @@
         <span class="badge badge-secondary">Large values</span>
         <span class="badge badge-secondary">Lower better</span>
 
-        <span>$$RMSLE = \sqrt{ \frac{1}{N} \sum_{i=1}^N (\log(x_i) - \log(y_i))^2 }$$</span>
+        <span>$$RMSLE = \sqrt{ \frac{1}{n} \sum_{i=1}^n (\log(x_i) - \log(y_i))^2 }$$</span>
         <p>The RMSLE is a measure of the quality of an estimator—it is always non-negative, and values closer to zero
             are better.</p>
         <!-- RMSLE. END -->
