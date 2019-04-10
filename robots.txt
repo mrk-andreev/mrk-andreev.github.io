@@ -1,2 +1,3 @@
+Sitemap: https://mrkandreev.name/sitemap.xml
 User-agent: *
 Allow: /
