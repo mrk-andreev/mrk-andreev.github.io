@@ -11,14 +11,78 @@
     <link rel="stylesheet"
           href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script src="//code.highcharts.com/stock/highstock.js"></script>
+    <script src="//code.highcharts.com/highcharts-more.js"></script>
+    <script src="//code.highcharts.com/modules/data.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="py-5 text-center">
         <h1>Performance testing</h1>
-        <div class="media">
-            <img src="images/tests_profiles.png" alt="test profiles"/>
+        <div class="row">
+            <div class="col-4">
+                <div id="highcharts-1-load-test-curve"></div>
+            </div>
+            <div class="col-4">
+                <div id="highcharts-2-stress-test-curve"></div>
+            </div>
+            <div class="col-4">
+                <div id="highcharts-3-peak-test-curve"></div>
+            </div>
         </div>
+        <script>
+            (function () {
+                new Highcharts.Chart("highcharts-1-load-test-curve", {
+                    "title": {"text": "Load Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;1\n2;2\n3;3\n4;3\n5;3\n6;2\n7;1\n8;0",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+                new Highcharts.Chart("highcharts-2-stress-test-curve", {
+                    "title": {"text": "Stress Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;1\n2;1\n3;2\n4;2\n5;3\n6;3\n7;4\n8;4",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+                new Highcharts.Chart("highcharts-3-peak-test-curve", {
+                    "title": {"text": "Peak Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;5\n2;2\n3;1\n4;3\n5;1\n6;10\n7;1\n8;1",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+            })();
+        </script>
+        <hr/>
     </div>
 </div>
 <hr/>
@@ -29,8 +93,9 @@
     <div>
         <b>Related articles</b>:
         <ul>
-            <li><a href="https://www.guru99.com/performance-testing.html">Performance Testing Tutorial: What is, Types, Metrics & Example
-</a></li>
+            <li><a href="https://www.guru99.com/performance-testing.html">Performance Testing Tutorial: What is, Types,
+                Metrics & Example
+            </a></li>
         </ul>
     </div>
     <div class="text-right">
