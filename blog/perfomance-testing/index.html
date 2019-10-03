@@ -16,9 +16,35 @@
     <script src="//code.highcharts.com/modules/data.js"></script>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container">
     <div class="py-5 text-center">
         <h1>Performance testing</h1>
+        <p class="text-left">[What is it? What we can test? When we shall it do?]</p>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="py-5">
+        <h2>What metrics we shall measure?</h2>
+        <ul>
+            <li>Capacity (max throughput): RPS, VU</li>
+            <li>Response time: Average response time (percentiles)</li>
+            <li>Stability: Average uptime (before reboot), startup time</li>
+            <li>Availability: Average uptime (percent of time alive), 5** errors count</li>
+            <li>Scalability: scale factor (increase performance per new instance)</li>
+            <li>Critical resource (cpu/io)</li>
+        </ul>
+        <h2>What kind of load exists?</h2>
+        <p>In this part we need to answer on a simple question: how users will react on performance degradation?</p>
+        <ul>
+            <li>Open (multiple users) - new user will sent new requests.</li>
+            <li>Close (few users) - user will wait server response until new request will be sent.</li>
+        </ul>
+        <h2>Stateless or Stateful</h2>
+        <ul>
+            <li>Stateless - does not contain session inside service. Example: http, dns</li>
+            <li>Stateful - contain session inside service. Example: ftp, imap, pop3</li>
+        </ul>
+        <h2>What kind of load profiles exists?</h2>
         <div class="row">
             <div class="col-4">
                 <div id="highcharts-1-load-test-curve"></div>
@@ -82,7 +108,9 @@
                 });
             })();
         </script>
-        <hr/>
+        <h2>What kind of target components exists?</h2>
+        <h3>Virtual devices</h3>
+        <h3>Software architecture components</h3>
     </div>
 </div>
 <hr/>
