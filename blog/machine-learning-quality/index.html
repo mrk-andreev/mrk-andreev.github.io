@@ -96,7 +96,7 @@
 
         <span>$$RMSLE = \sqrt{ \frac{1}{n} \sum_{i=1}^n (\log(x_i) - \log(y_i))^2 }$$</span>
         <p>The RMSLE is a measure of the quality with log scale. In practice log transformation change function
-            increasing speed. </p>
+            increasing speed. This metric is best case for data with large range of values. For example house pricing.</p>
         <!-- RMSLE. END -->
 
         <!-- R2. BEGIN -->
@@ -120,7 +120,7 @@
 
         <span>$${MAPE}={\frac {100\%}{n}}\sum _{t=1}^{n}\left|{\frac {A_{t}-F_{t}}{A_{t}}}\right| $$</span>
         <p>Percentage allow to compare objects with different size. Easy explainable nature make this metric business
-            oriented. </p>
+            oriented. This one of the base metric for understanding real model quality because you need to analyse only percents of error. </p>
         <!-- MAPE. END -->
 
         <!-- SMAPE. BEGIN -->
