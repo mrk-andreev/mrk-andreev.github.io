@@ -19,19 +19,35 @@
 <div class="container">
     <div class="py-5 text-center">
         <h1>Performance testing</h1>
-        <p class="text-left">[What is it? What we can test? When we shall it do?]</p>
+        <p class="text-left">In this article we will talk about performance of backend application. That means that we will not cover problem of user interface performance. You can find in this article: explain of  performance problem in different levels (application / hardware), tips for performance improvements, guide for performance measurements tools (jmeter, blazemeter, yandex tank). </p>
+        <p class="text-left">If have any improvements, you can take a mail to <a href="mailto:mark.andreev@gmail.com">mark.andreev@gmail.com</a>. </p>
     </div>
 </div>
+<hr/>
 <div class="container-fluid">
     <div class="py-5">
         <h2>What metrics we shall measure?</h2>
+        <p>We can decompose this topic to *** levels:</p>
         <ul>
-            <li>Capacity (max throughput): RPS, VU</li>
-            <li>Response time: Average response time (percentiles)</li>
-            <li>Stability: Average uptime (before reboot), startup time</li>
-            <li>Availability: Average uptime (percent of time alive), 5** errors count</li>
-            <li>Scalability: scale factor (increase performance per new instance)</li>
-            <li>Critical resource (cpu/io)</li>
+            <li><strong>High level</strong>. Here we need answer to a question about response of hole application. We want to have a quick response (low latency) to each user and successfully complete requests from all users (high throughput). And we want to understand how quickly application will reboot after fail and how often application will be fails. In the last we want to understand scalability of application.<br/> So we have:
+                <ul>
+                    <li>Capacity (max throughput): RPS, VU</li>
+                    <li>Response time: Average response time (percentiles [?])</li>
+                    <li>Stability: Average uptime (before reboot), startup time</li>
+                    <li>Availability: Average uptime (percent of time alive), 5** errors count (any server fails)</li>
+                    <li>Scalability: scale factor (increase performance per new instance)</li>
+                </ul>
+                <div class="info">
+                    <strong>CPU vs IO bound applications</strong>. If we want to increase performance of application, we must detect type of our application: CPU (computation) or IO (write/read to disk/network) bound we have. If we found an IO boundary we can use asynchronous framework witch will use single thread for multiple requests: when other resource will be in wait status (database / remove service) we can switch content and answer to other clients [examples: <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html">reactive spring</a>, <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a>].
+                </div>
+            </li>
+            <li><strong>Low level</strong>. In this case we shall discuss about performance metrics of hardware.
+                <ul>
+                    <li>-</li>
+                    <li>-</li>
+                    <li>-</li>
+                </ul>
+            </li>
         </ul>
         <h2>What kind of load exists?</h2>
         <p>In this part we need to answer on a simple question: how users will react on performance degradation?</p>
@@ -196,5 +212,11 @@
 <noscript>
     <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript> <!-- /Yandex.Metrika counter -->
+<style>
+    .info {
+        border-left: solid 5px rgb(0, 123, 255);
+        padding: 15px;
+    }
+</style>
 </body>
 </html>
