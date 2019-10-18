@@ -31,29 +31,30 @@
         <ul>
             <li><strong>High level</strong>. Here we need answer to a question about response of hole application. We want to have a quick response (low latency) to each user and successfully complete requests from all users (high throughput). And we want to understand how quickly application will reboot after fail and how often application will be fails. In the last we want to understand scalability of application.<br/> So we have:
                 <ul>
-                    <li>Capacity (max throughput): RPS, VU</li>
-                    <li>Response time: Average response time (percentiles [?])</li>
+                    <li>Capacity (max throughput): <span class="help-text" title="Request Per Seconds">RPS</span>, VU</li>
+                    <li>Response time: Average response time (or <a href="https://en.wikipedia.org/wiki/Percentile">percentiles</a>)</li>
                     <li>Stability: Average uptime (before reboot), startup time</li>
                     <li>Availability: Average uptime (percent of time alive), 5** errors count (any server fails)</li>
-                    <li>Scalability: scale factor (increase performance per new instance)</li>
+                    <li>Scalability: Scale factor (increase performance per new instance)</li>
                 </ul>
                 <div class="info">
                     <strong>CPU vs IO bound applications</strong>. If we want to increase performance of application, we must detect type of our application: CPU (computation) or IO (write/read to disk/network) bound we have. If we found an IO boundary we can use asynchronous framework witch will use single thread for multiple requests: when other resource will be in wait status (database / remove service) we can switch content and answer to other clients [examples: <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html">reactive spring</a>, <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a>].
                 </div>
             </li>
-            <li><strong>Low level</strong>. In this case we shall discuss about performance metrics of hardware.
+            <li><strong>Low level</strong>. In this case we shall discuss about performance metrics of hardware. This metrics may help us to underspend application's bottlenecks. If we will compare expected and actual values, we can found points of optimizations.
                 <ul>
-                    <li>-</li>
-                    <li>-</li>
-                    <li>-</li>
+                    <li>CPU usage: % usage / user time / system time</li>
+                    <li>Disk usage: usage statistics</li>
+                    <li>Network usage: usage statistics</li>
+                    <li>Virtual Machine*: usage statistics (like jvm, python vm)</li>
                 </ul>
             </li>
         </ul>
         <h2>What kind of load exists?</h2>
-        <p>In this part we need to answer on a simple question: how users will react on performance degradation?</p>
+        <p>In this part we need to answer on a simple question: what user will be do if performance will going down?</p>
         <ul>
-            <li>Open (multiple users) - new user will sent new requests.</li>
-            <li>Close (few users) - user will wait server response until new request will be sent.</li>
+            <li>Open load type (multiple users) - new user will sent new requests. In case of news website we will got a new requests from new users.</li>
+            <li>Close load type (few users) - user will wait server response until new request will be sent. Example of this case is administrator panel in website. </li>
         </ul>
         <h2>Stateless or Stateful</h2>
         <ul>
@@ -216,6 +217,10 @@
     .info {
         border-left: solid 5px rgb(0, 123, 255);
         padding: 15px;
+    }
+    .help-text {
+        border-bottom: dotted 1px gray;
+        cursor: help;
     }
 </style>
 </body>
