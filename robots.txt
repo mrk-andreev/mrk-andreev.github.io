@@ -1,2 +1,4 @@
+Sitemap: https://mrkandreev.name/sitemap.xml
 User-agent: *
 Allow: /
+Host: mrkandreev.name

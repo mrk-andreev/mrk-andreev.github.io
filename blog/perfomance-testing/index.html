@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Performance testing</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script src="//code.highcharts.com/stock/highstock.js"></script>
+    <script src="//code.highcharts.com/highcharts-more.js"></script>
+    <script src="//code.highcharts.com/modules/data.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Performance testing</h1>
+        <p class="text-left">In this article we will talk about performance of backend application. That means that we will not cover problem of user interface performance. You can find in this article: explain of  performance problem in different levels (application / hardware), tips for performance improvements, guide for performance measurements tools (jmeter, blazemeter, yandex tank). </p>
+        <p class="text-left">If have any improvements, you can take a mail to <a href="mailto:mark.andreev@gmail.com">mark.andreev@gmail.com</a>. </p>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <ul>
+        <li>
+            <a href="#">Theory</a>
+            <ul>
+                <li>
+                    <a href="#">What metrics we shall measure?</a>
+                </li>
+                <li>
+                    <a href="#">What kind of load exists?</a>
+                </li>
+                <li>
+                    <a href="#">What kind of load profiles exists?</a>
+                </li>
+                <li>
+                    <a href="#">Stateless vs Stateful</a>
+                </li>
+                <li>
+                    <a href="#">What about SLA?</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Tools</a>
+            <ul>
+                <li>
+                    <a href="#">Laboratory</a>
+                    <ul>
+                        <li>
+                            <a href="#">JMeter</a>
+                        </li>
+                        <li>
+                            <a href="#">Blazemeter</a>
+                        </li>
+                        <li>
+                            <a href="#">Yandex Tank</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">Production</a>
+                    <ul>
+                        <li>
+                            <a href="#">Jaeger tracing</a>
+                        </li>
+                        <li>
+                            <a href="#">Zipkin</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">Performance optimization tips</a>
+            <ul>
+                <li>
+                    <a href="#">Pyramid of optimization</a>
+                </li>
+                <li>
+                    <a href="#">Virtual machine tuning</a>
+                </li>
+                <li>
+                    <a href="#">Scalability</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<hr/>
+<div class="container-fluid">
+    <h1># Theory</h1>
+    <p>In this block you can find description of metrics, load type and ...</p>
+    <div class="py-5">
+        <h2>What metrics we shall measure?</h2>
+        <p>We can decompose this topic to *** levels:</p>
+        <ul>
+            <li><strong>High level</strong>. Here we need answer to a question about response of hole application. We want to have a quick response (low latency) to each user and successfully complete requests from all users (high throughput). And we want to understand how quickly application will reboot after fail and how often application will be fails. In the last we want to understand scalability of application.<br/> So we have:
+                <ul>
+                    <li>Capacity (max throughput): <span class="help-text" title="Request Per Seconds">RPS</span>, VU</li>
+                    <li>Response time: Average response time (or <a href="https://en.wikipedia.org/wiki/Percentile">percentiles</a>)</li>
+                    <li>Stability: Average uptime (before reboot), startup time</li>
+                    <li>Availability: Average uptime (percent of time alive), 5** errors count (any server fails)</li>
+                    <li>Scalability: Scale factor (increase performance per new instance)</li>
+                </ul>
+                <div class="info">
+                    <strong>CPU vs IO bound applications</strong>. If we want to increase performance of application, we must detect type of our application: CPU (computation) or IO (write/read to disk/network) bound we have. If we found an IO boundary we can use asynchronous framework witch will use single thread for multiple requests: when other resource will be in wait status (database / remove service) we can switch content and answer to other clients [examples: <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html">reactive spring</a>, <a href="https://docs.python.org/3/library/asyncio.html">asyncio</a>].
+                </div>
+            </li>
+            <li><strong>Low level</strong>. In this case we shall discuss about performance metrics of hardware. This metrics may help us to underspend application's bottlenecks. If we will compare expected and actual values, we can found points of optimizations.
+                <ul>
+                    <li>CPU usage: % usage / user time / system time</li>
+                    <li>Disk usage: usage statistics</li>
+                    <li>Network usage: usage statistics</li>
+                    <li>Virtual Machine*: usage statistics (like jvm, python vm)</li>
+                </ul>
+            </li>
+        </ul>
+        <h2>What kind of load exists?</h2>
+        <p>In this part we need to answer on a simple question: what user will be do if performance will going down?</p>
+        <ul>
+            <li>Open load type (multiple users) - new user will sent new requests. In case of news website we will got a new requests from new users.</li>
+            <li>Close load type (few users) - user will wait server response until new request will be sent. Example of this case is administrator panel in website. </li>
+        </ul>
+        <h2>Stateless or Stateful</h2>
+        <ul>
+            <li>Stateless - does not contain session inside service. Example: http, dns</li>
+            <li>Stateful - contain session inside service. Example: ftp, imap, pop3</li>
+        </ul>
+        <h2>Expected SLA</h2>
+        <ul>
+            <li>Expected load: average / peak / reliability factor</li>
+            <li>Expected response time</li>
+            <li>Expected reboot time</li>
+        </ul>
+        <h2>Tools</h2>
+        <h3>Load generator</h3>
+        <ul>
+            <li>JMeter</li>
+            <li>Phantom</li>
+            <li>Ab</li>
+            <li>Yandex Tank</li>
+        </ul>
+        <h3>Monitoring</h3>
+        <ul>
+            <li>Prometheus</li>
+            <li>ELK</li>
+        </ul>
+        <h2>What kind of load profiles exists?</h2>
+        <div class="row">
+            <div class="col-4">
+                <div id="highcharts-1-load-test-curve"></div>
+            </div>
+            <div class="col-4">
+                <div id="highcharts-2-stress-test-curve"></div>
+            </div>
+            <div class="col-4">
+                <div id="highcharts-3-peak-test-curve"></div>
+            </div>
+        </div>
+        <script>
+            (function () {
+                new Highcharts.Chart("highcharts-1-load-test-curve", {
+                    "title": {"text": "Load Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;1\n2;2\n3;3\n4;3\n5;3\n6;2\n7;1\n8;0",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+                new Highcharts.Chart("highcharts-2-stress-test-curve", {
+                    "title": {"text": "Stress Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;1\n2;1\n3;2\n4;2\n5;3\n6;3\n7;4\n8;4",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+                new Highcharts.Chart("highcharts-3-peak-test-curve", {
+                    "title": {"text": "Peak Test Curve"},
+                    "subtitle": {"text": "Example of abstract curve"},
+                    "exporting": {},
+                    "yAxis": [{"title": {"text": "Activity"}, "labels": {}}],
+                    "chart": {},
+                    "series": [{"name": "Abstract Load"}],
+                    "plotOptions": {"series": {"animation": false}},
+                    "data": {
+                        "csv": "\"Time\";\"Abstract Load\"\n0;0\n1;5\n2;2\n3;1\n4;3\n5;1\n6;10\n7;1\n8;1",
+                        "googleSpreadsheetKey": false,
+                        "googleSpreadsheetWorksheet": false
+                    },
+                    "xAxis": [{"title": {}, "labels": {}}],
+                    "credits": {}
+                });
+            })();
+        </script>
+        <h2>What kind of target components exists?</h2>
+        <h3>Virtual devices</h3>
+        <h3>Software architecture components</h3>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p></p>
+</div>
+<div class="container">
+    <div>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://www.guru99.com/performance-testing.html">Performance Testing Tutorial: What is, Types,
+                Metrics & Example
+            </a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">@mrkandreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<style>
+    .info {
+        border-left: solid 5px rgb(0, 123, 255);
+        padding: 15px;
+    }
+    .help-text {
+        border-bottom: dotted 1px gray;
+        cursor: help;
+    }
+</style>
+</body>
+</html>
