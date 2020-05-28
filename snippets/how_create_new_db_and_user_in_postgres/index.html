@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Snippets</title>
+    <title>How to create new db & user in PostgreSQL</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
@@ -15,20 +15,53 @@
 <body>
 <div class="container">
     <div class="py-5 text-center">
-        <h1>Snippets</h1>
+        <h1>How to create new db & user in PostgreSQL</h1>
     </div>
 </div>
 <hr/>
 <div class="container">
-    <div>
-        <ul>
-            <li><a href="/snippets/hibernate_fetching_strategies">Hibernate fetching strategies</a></li>
-            <li><a href="/snippets/how_to_move_docker_data_to_another_location">How to move docker data to another location</a></li>
-            <li><a href="/snippets/azure_data_drive">How to mount Azure data drive</a></li>
-            <li><a href="/snippets/how_create_new_db_and_user_in_postgres">How to create new db & user in PostgreSQL</a></li>
-        </ul>
+    <h3>0. Login as root</h3>
+    <pre><code class="bash">user@host$ sudo su</code></pre>
+
+    <h3>1. Switch to postrgres account</h3>
+    <pre><code class="bash">root@host# su - postgres</code></pre>
+
+    <h3>2. Creating a New Role</h3>
+    <p>If you are logged in as the postgres account, you can create a new user by typing (for example <b>db-user-1</b>):</p>
+    <pre><code class="bash">postgres@host$ createuser --interactive</code></pre>
+
+    <h3>3. Create a New Database</h3>
+    <p>This means that, if the user you created in the last section is called <b>db-user-1</b>, that role will attempt to connect
+        to a database which is also called <b>db-user-1</b> by default. You can create the appropriate database with the createdb
+        command.</p>
+    <pre><code class="bash">postgres@host$ createdb <b>db-user-1</b></code></pre>
+
+    <h3>4. Allow password authentication</h3>
+    <pre><code class="bash">postgres@host$ psql</code></pre>
+    <pre><code class="bash">postgres=# ALTER USER "<b>db-user-1</b>" PASSWORD '<b>mypassword</b>';</code></pre>
+
+    <h3>5. Test</h3>
+    <pre><code class="bash">user@host$ psql -h localhost -p 5432 -U <b>db-user-1</b></code></pre>
+
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
     </div>
+
+    <hr/>
+    <b>Related articles</b>:
+    <ul>
+        <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04">
+            How To Install and Use PostgreSQL on Ubuntu 18.04
+        </a></li>
+        <li><a href="https://askubuntu.com/questions/413585/postgres-password-authentication-fails">
+            Postgres password authentication fails
+        </a></li>
+    </ul>
+
 </div>
+
 <script>hljs.initHighlightingOnLoad();</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript"> (function (d, w, c) {
