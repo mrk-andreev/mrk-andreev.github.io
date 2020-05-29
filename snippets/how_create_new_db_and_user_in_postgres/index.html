@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>How to create new db & user in PostgreSQL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
@@ -50,6 +51,15 @@ Shall the new role be a superuser? (<b>y</b>/n)</code></pre>
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
         <div class="addthis_inline_share_toolbox"></div>
     </div>
+    <hr/>
+    <h3>Attention!</h3>
+    <p>Your user <b>db-user-1</b> is superuser. If you want to limit access to tables enter this commands:</p>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOSUPERUSER;</code></pre>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOCREATEROLE;</code></pre>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOCREATEDB;</code></pre>
+    <p>And now you can grant permissions:</p>
+    <pre><code class="sql">GRANT CONNECT ON DATABASE <b>db-user-1</b> TO "<b>db-user-1</b>";</code></pre>
+    <pre><code class="sql">GRANT ALL PRIVILEGES ON DATABASE <b>db-user-1</b> TO  <b>db-user-1</b>;</code></pre>
 
     <hr/>
     <b>Related articles</b>:
