@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Postgres Indexes, Deep dive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
@@ -13,20 +14,84 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="article-header">
     <div class="py-5 text-center">
         <h1>Postgresql for analytics</h1>
-        <p>-</p>
     </div>
+    <hr/>
+</div>
+<div class="container">
+    <b>Topics</b>
+    <ul>
+        <li>
+            <a href="#with">WITH expression</a>
+        </li>
+        <li>
+            <a href="#">Filtering</a>
+        </li>
+        <li>
+            <a href="#">Joining</a>
+        </li>
+        <li>
+            <a href="#">Grouping</a>
+        </li>
+        <li>
+            <a href="#">Window function</a>
+        </li>
+        <li>
+            <a href="#">JSON</a>
+        </li>
+        <li>
+            <a href="#">Performance issues</a>
+        </li>
+        <li>
+            <a href="#">Views</a>
+        </li>
+        <li>
+            <a href="#">ROW_NUMBER(), RANK(),  DENSE_RANK() </a>
+        </li>
+        <li>
+            <a href="#">FIRST_VALUE / LAST_VALUE</a>
+        </li>
+        <li>
+            <a href="#">LAG / LEAD</a>
+        </li>
+        <li>
+            <a href="#">GROUPING</a>
+        </li>
+        <li>
+            <a href="#">ROLLUP</a>
+        </li>
+        <li>
+            <a href="#">Cube</a>
+        </li>
+    </ul>
 </div>
 <hr/>
 <div class="container">
+    <h3>Prepare your environment</h3>
     <div>
-        <p></p>
+        <p>You can start using postgresql with docker. It's can best choice for development but for production needs
+            better to use standalone installation.</p>
     </div>
     <pre><code class="bash">docker run -p 5432:5432 -d postgres:12</code></pre>
 </div>
 <hr/>
+<div class="container">
+    <h3>
+        <a href="#" name="with">#</a> With expression
+    </h3>
+    <p>Also known as CTE (Common table expression), CTE allows you to write queries more clear using chain techies.
+    Lets look an example above:</p>
+    <pre><code class="sql">SELECT * FROM tablename</code></pre>
+    <pre><code class="sql">SELECT * FROM tablename</code></pre>
+    <p>And with CTE we can write recursive expressions:</p>
+    <pre><code class="sql">SELECT * FROM tablename</code></pre>
+    <p>You can find details in <a href="https://www.postgresql.org/docs/12/queries-with.html">documentation</a>.</p>
+</div>
+<hr/>
+<!-- https://www.postgresqltutorial.com/ -->
+
 <div class="container">
     <div class="row">
         <div class="col-2"><img class="d-block mx-auto mb-4 rounded"
