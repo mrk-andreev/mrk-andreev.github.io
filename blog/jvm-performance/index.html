@@ -22,13 +22,54 @@
 <hr/>
 <div class="container">
     <div>
-        <p></p>
+        <ul>
+            <li>Main steps (better algorithms, less code, database is always the bottleneck, common case)</li>
+            <li>Optimization curve</li>
+            <li>Performance testing (micro / macro / meso)</li>
+            <li>Throughput / Batching / Response time</li>
+            <li>JVM Performance toolbox</li>
+            <li>JIT Compiler</li>
+            <li>GC</li>
+            <li>Native memory</li>
+            <li>Threading & Synchronization</li>
+            <li>Databases</li>
+        </ul>
     </div>
+</div>
+<div class="container">
+    <div>
+        <div>
+            <img src="data/opt-curve.png" alt="" class="img-fluid" />
+        </div>
+        <ul>
+            <li><b>Green zone</b> - use profiler and rewrite ugly code (easy to find problems, measurement accuracy is secondary).</li>
+            <li><b>Yellow zone</b> - use profiler and write benchmarks.</li>
+            <li><b>Red zone</b> - hack jvm.</li>
+        </ul>
+        <div>
+            <img src="data/linux-perf.png" alt="" class="img-fluid" />
+        </div>
+        <ul>
+            <li><b>sys%</b> - threading</li>
+            <li><b>irq%</b> - offload interruptions</li>
+            <li><b>idle%</b> - find were we wait</li>
+            <li><b>iowait%</b> - io optimizations</li>
+            <li><b>usr%</b> - use profiler...</li>
+        </ul>
+    </div>
+</div>
+<div class="container">
+    <b>Related articles:</b>
+    <ul>
+        <li>
+            <a href="https://shipilev.net/talks/j1-April2011-performanceBoF.pdf">Java Platform Performance BoF</a>
+        </li>
+    </ul>
 </div>
 <hr/>
 <div class="container">
     <div class="row">
-        <div class="col-2"><img class="d-block mx-auto mb-4 rounded"
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
                                 src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
                                 width="100"
                                 height="100"></div>
