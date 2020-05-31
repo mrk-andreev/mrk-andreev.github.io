@@ -33,34 +33,10 @@
             <a href="#filtering">Filtering</a>
         </li>
         <li>
-            <a href="#">Joining</a>
+            <a href="#joining">Joining</a>
         </li>
         <li>
-            <a href="#">Grouping</a>
-        </li>
-        <li>
-            <a href="#">Window function</a>
-        </li>
-        <li>
-            <a href="#">JSON</a>
-        </li>
-        <li>
-            <a href="#">Performance issues</a>
-        </li>
-        <li>
-            <a href="#">Views</a>
-        </li>
-        <li>
-            <a href="#">ROW_NUMBER(), RANK(),  DENSE_RANK() </a>
-        </li>
-        <li>
-            <a href="#">FIRST_VALUE / LAST_VALUE</a>
-        </li>
-        <li>
-            <a href="#">LAG / LEAD</a>
-        </li>
-        <li>
-            <a href="#">GROUPING</a>
+            <a href="#windows">Windows</a>
         </li>
         <li>
             <a href="#">ROLLUP</a>
@@ -83,7 +59,7 @@
 <hr/>
 <div class="container">
     <h3>
-        <a href="#" name="with">#</a> CTE (Common table expression)
+        <a href="#with" name="with">#</a> CTE (Common table expression)
     </h3>
     <p>CTE (with expression) allow you to write your queries in chain style rather that classic sql statements where your write "deep queries".
     Step by step you can extend your query using previous results. Lets look in example above:</p>
@@ -117,7 +93,7 @@ FROM t;</code></pre>
 </div>
 <div class="container">
     <h3>
-        <a href="#" name="filtering">#</a> Filtering
+        <a href="#filtering" name="filtering">#</a> Filtering
     </h3>
     <p>If we want to filter data in sql query than we typically user <code>WHERE</code> statement with combination of
         conditions like query above, but postgres allows to use <code>filter</code> inside select for <code>groupby</code>.
@@ -136,6 +112,27 @@ FROM (
 GROUP BY countrycode;</code></pre>
     <p>Note that in first query results can contains <code>null</code> in case when countrycode has no cities with
         <code>population > 10000</code>.</p>
+</div>
+<div class="container">
+    <h3>
+        <a href="#joining" name="joining">#</a> Joining
+    </h3>
+    <img src="data/joins.png" alt="" class="img-fluid" />
+    <pre><code class="sql">-- left join
+SELECT city.name, c.continent
+FROM city
+         LEFT JOIN country c ON city.countrycode = c.code;
+
+-- cross join
+SELECT city.name as from_city, c.continent as to_continent
+FROM city
+         CROSS JOIN country c;
+
+-- cross join with self
+SELECT city.name as from_city, c.name as to_city
+FROM city
+         CROSS JOIN city c
+WHERE city.id != c.id;</code></pre>
 </div>
 <hr/>
 <!-- https://www.postgresqltutorial.com/ -->
