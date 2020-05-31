@@ -152,26 +152,14 @@ FROM population;</code></pre>
     rank(500) WITHIN GROUP ( ORDER BY gnp DESC NULLS LAST)
 FROM country
 GROUP BY ROLLUP (region);</code></pre>
-    <h4>Window</h4>
-    <p>Window function allows to evaluate aggregates over something. So we can compare <code>gnp</code> per country
-    with average <code>gnp</code>. Note that <code>OVER</code> keyword after <code>avg</code> is required.</p>
-    <pre><code class="sql">SELECT name,
-       gnp,
-       avg(gnp) OVER ()
-FROM country;
-
-                     name                     |    gnp     |         avg
-----------------------------------------------+------------+---------------------
- Afghanistan                                  |    5976.00 | 122823.882426778243
- Netherlands                                  |  371362.00 | 122823.882426778243
- Netherlands Antilles                         |    1941.00 | 122823.882426778243
- Albania                                      |    3205.00 | 122823.882426778243
- Algeria                                      |   49982.00 | 122823.882426778243</code></pre>
-    <h4>Sliding window</h4>
-    <p>If we want to measure average population by 3 years in country with code ABW, we can use aggrate with over and partition by.</p>
-    <pre><code class="sql">SELECT code,
+    <h4>Windows</h4>
+    <p><img src="data/window-types.png" alt="" class="img-fluid" /></p>
+    <p>We can use <code>ROWS BETWEEN</code> for prev and next values in aggregate function.</p>
+    <pre><code class="sql">
+SELECT code,
        year,
-       avg(population.population) over (PARTITION BY code ORDER BY year ROWS BETWEEN 0 PRECEDING AND 3 FOLLOWING)
+       avg(population.population) over
+        (PARTITION BY code ORDER BY year ROWS BETWEEN 0 PRECEDING AND 3 FOLLOWING)
 FROM population
 WHERE code = 'ABW';</code></pre>
 </div>
