@@ -239,6 +239,26 @@ REFRESH MATERIALIZED VIEW continent_region_gnp;
 
 -- drop materialized view
 DROP MATERIALIZED VIEW continent_region_gnp;</code></pre>
+    <p>Near <code>CUBE</code> you can find <code>ROLLUP</code> lets explain:</p>
+    <pre><code>ROLLUP(e1, e2, e3, ...)
+
+(e1, e2, e3, ...)
+...
+(e1, e2),
+(e1),
+(e1)</code></pre>
+    <pre><code>CUBE(e1, e2, e3)
+
+(e1, e2, e3)
+(e1, e2, *)
+(e1, , e3)
+(e1, *, *)
+(*, e2, e3)
+(*, e2, e3)
+(*, e2, *)
+(*, *, e3)
+(*, *, e3)
+</code></pre>
 </div>
 <hr/>
 <!-- https://www.postgresqltutorial.com/ -->
