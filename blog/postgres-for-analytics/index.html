@@ -39,10 +39,7 @@
             <a href="#windows">Windows</a>
         </li>
         <li>
-            <a href="#">ROLLUP</a>
-        </li>
-        <li>
-            <a href="#">Cube</a>
+            <a href="#">Cubes</a>
         </li>
     </ul>
 </div>
@@ -133,6 +130,50 @@ SELECT city.name as from_city, c.name as to_city
 FROM city
          CROSS JOIN city c
 WHERE city.id != c.id;</code></pre>
+</div>
+<div class="container">
+    <h3>
+        <a href="#windows" name="windows">#</a> Windows
+    </h3>
+    <p>This part of postgresql is useful when you have to analyse time series data. So we will extend our schema
+        with population dataset [<a href="data/db-world-ext-population.zip">csv</a>] (extracted from worldbank).
+        New table population contains three columns: code, year, population.
+    </p>
+    <h4>Percentiles</h4>
+    <p>When we want to measure percentile [<a href="https://en.wikipedia.org/wiki/Percentile">?</a>] we shall use
+    ordered sets. In example above we <code>percentile_disc</code> and <code>within group</code> for measure median.</p>
+    <pre><code class="sql">SELECT percentile_disc(0.5) within group ( order by population ) as median_population
+FROM population;</code></pre>
+    <h4>Rank</h4>
+    <p>Rank is probability aggregate that answer to question: what position in rating will be placed if value will be equal this.
+    For example: if <code>gnp</code> [Gross National Product] will be equal 500 than what position will be in each region.</p>
+    <pre><code class="sql">SELECT
+    region,
+    rank(500) WITHIN GROUP ( ORDER BY gnp DESC NULLS LAST)
+FROM country
+GROUP BY ROLLUP (region);</code></pre>
+    <h4>Window</h4>
+    <p>Window function allows to evaluate aggregates over something. So we can compare <code>gnp</code> per country
+    with average <code>gnp</code>. Note that <code>OVER</code> keyword after <code>avg</code> is required.</p>
+    <pre><code class="sql">SELECT name,
+       gnp,
+       avg(gnp) OVER ()
+FROM country;
+
+                     name                     |    gnp     |         avg
+----------------------------------------------+------------+---------------------
+ Afghanistan                                  |    5976.00 | 122823.882426778243
+ Netherlands                                  |  371362.00 | 122823.882426778243
+ Netherlands Antilles                         |    1941.00 | 122823.882426778243
+ Albania                                      |    3205.00 | 122823.882426778243
+ Algeria                                      |   49982.00 | 122823.882426778243</code></pre>
+    <h4>Sliding window</h4>
+    <p>If we want to measure average population by 3 years in country with code ABW, we can use aggrate with over and partition by.</p>
+    <pre><code class="sql">SELECT code,
+       year,
+       avg(population.population) over (PARTITION BY code ORDER BY year ROWS BETWEEN 0 PRECEDING AND 3 FOLLOWING)
+FROM population
+WHERE code = 'ABW';</code></pre>
 </div>
 <hr/>
 <!-- https://www.postgresqltutorial.com/ -->
