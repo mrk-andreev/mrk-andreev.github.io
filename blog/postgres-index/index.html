@@ -24,11 +24,72 @@
 <hr/>
 <div class="container">
     <div>
-        <p>What is indexes? How they are helps? How I can measure it?</p>
+        <p>Index is addition data structure that allow to support uniqueness or fast access to data.
+            All the time when we create new index we <u>can</u> improve read speed but <u>always</u> we decrease write
+            speed (update index) and increase disk consumption (store index). Index can use multiple columns (or
+            expression) but not
+            all indexes supports this. Someone supports customization parameters.</p>
+        <p><b>Memory usage</b>. We can measure memory usage using <code>pg_relation_size</code>. All the time when we
+            want to use yet another new index we shall remember about index size. When table is large index can be large
+            too. </p>
+        <pre><code class="sql"># SELECT pg_size_pretty(pg_relation_size('index_name'));
+ pg_size_pretty
+----------------
+ 118 MB
+(1 row)
+
+# SELECT pg_size_pretty(pg_relation_size('table_name'));
+ pg_size_pretty
+----------------
+ 274 MB
+(1 row)</code></pre>
+        <p><b>Read speed</b>. When new index created we have to verify that target our queries use this index. Remember
+            that sometimes optimizer can ignore index. For this needs use <code>EXPLAIN (ANALYSE, BUFFERS)</code>
+            commands. </p>
+        <pre><code class="sql">EXPLAIN (ANALYSE, BUFFERS)
+SELECT *
+FROM dataset
+WHERE s_id = 3
+ORDER BY ts DESC
+LIMIT 5;</code></pre>
+        <pre><code class="sql">                                                                 QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=13746.95..13746.97 rows=5 width=20) (actual time=9.917..9.917 rows=5 loops=1)
+   Buffers: shared hit=5333
+   ->  Sort  (cost=13746.95..13759.38 rows=4971 width=20) (actual time=9.915..9.915 rows=5 loops=1)
+         Sort Key: ts DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=5333
+         ->  Bitmap Heap Scan on dataset  (cost=94.96..13664.39 rows=4971 width=20) (actual time=3.885..9.413 rows=5745 loops=1)
+               Recheck Cond: (s_id = 3)
+               Heap Blocks: exact=5312
+               Buffers: shared hit=5330
+               ->  Bitmap Index Scan on <b>dataset_sid_index</b>  (cost=0.00..93.72 rows=4971 width=0) (actual time=3.300..3.300 rows=5745 loops=1)
+                     Index Cond: (s_id = 3)
+                     Buffers: shared hit=18
+ Planning Time: 0.519 ms
+ Execution Time: 9.998 ms
+(15 rows)</code></pre>
+        <div><img src="data/db-index.png" class="img-fluid" alt=""/></div>
+        <br/>
+        <p><b>Partial indexes</b>. We found that index size can be large. What we can do with this problem? Use index
+            for part of table. For example we can say that index will be used only for records where <code>year >=
+                2020</code>. In this case access to <code>year < 2020</code> will be slow but it might be ok.</p>
+        <pre><code class="sql">CREATE INDEX dataset_sid_index_v2 ON dataset (s_id) where ts > 10000;</code></pre>
+        <p><b>Indexes on expressions</b>. We can use expression for indexes. It might be useful when you are using
+            navigation over JSONB field. So you can use any expression without <code>CURRENT TIME</code> calls for
+            indexes.</p>
+        <pre><code class="sql">CREATE INDEX documents_inner_id_index ON documents ( ((data->'inner_id')::int) );</code></pre>
+        <p><b>Cluster table</b>. We can use <code>CLUSTER</code> command for table rewriting in specific order. We can
+            expect that table's rows will be use order from index that we used for this command. But before start this
+            command remember that table will be block when operation is running.</p>
+        <pre><code class="sql">CLUSTER dataset USING dataset_sid_index;</code></pre>
     </div>
+    <hr/>
     <div>
-        <pre><code class="sql"># SELECT * FROM pg_am;
-amname |  amhandler  | amtype
+        <p>We can find available indexes in <code>pg_am</code> table:</p>
+        <pre><code class="sql">SELECT * FROM pg_am;</code></pre>
+        <pre><code class="sql">amname |  amhandler  | amtype
 --------+-------------+--------
  btree  | bthandler   | i
  hash   | hashhandler | i
@@ -39,26 +100,54 @@ amname |  amhandler  | amtype
 (6 rows)</code></pre>
     </div>
     <hr/>
-    <div>
-        <p>What is explain analyse? How I can visualize plan?</p>
-    </div>
     <h1>Indexes</h1>
     <h2>BTree</h2>
-    <div>
-        <p>Short explain.</p>
-        <p>Explain visualize</p>
-    </div>
-    <h1>Cluster tables</h1>
-    <p></p>
-    <h1>Extension</h1>
-    <div></div>
+    <div><img src="data/pg-btree.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/443284/">Indexes in PostgreSQL — 9 (BRIN)</a>
+    </p>
+    <h2>Hash index</h2>
+    <div><img src="data/pg-hash.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/442776/">Indexes in PostgreSQL — 9 (Hash index)</a>
+    </p>
+    <h2>GiST index</h2>
+    <div><img src="data/pg-gist.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/444742/">Indexes in PostgreSQL — 9 (GiST)</a>
+    </p>
+    <h2>GIN index</h2>
+    <div><img src="data/pg-gin.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/448746/">Indexes in PostgreSQL — 9 (GIN)</a>
+    </p>
+    <h2>SP-GiST index</h2>
+    <div><img src="data/pg-sp-gist-index.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/446624/">Indexes in PostgreSQL — 9 (SP-GiST)</a>
+    </p>
+    <h2>BRIN index</h2>
+    <div><img src="data/pg-brin.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/452900/">Indexes in PostgreSQL — 9 (BRIN)</a>
+    </p>
+    <h2>RUM index</h2>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/452116/">Indexes in PostgreSQL — 9 (RUM)</a>
+    </p>
     <div>
         <hr/>
         <b>Related articles</b>:
         <ul>
             <li><a href="https://www.postgresql.org/docs/12/indexes.html">PostgreSQL Documentation</a></li>
-            <li><a href="https://www.amazon.com/Mastering-PostgreSQL-techniques-administer-applications-ebook/dp/B0822GCCDT">Mastering PostgreSQL 12 (Book)</a></li>
-            <li><a href="https://www.amazon.com/PostgreSQL-Running-Practical-Advanced-Database-ebook/dp/B076C4WLBP">PostgreSQL: Up and Running: A Practical Guide to the Advanced Open Source Database (Book)</a></li>
+            <li>
+                <a href="https://www.amazon.com/Mastering-PostgreSQL-techniques-administer-applications-ebook/dp/B0822GCCDT">Mastering
+                    PostgreSQL 12 (Book)</a></li>
+            <li><a href="https://www.amazon.com/PostgreSQL-Running-Practical-Advanced-Database-ebook/dp/B076C4WLBP">PostgreSQL:
+                Up and Running: A Practical Guide to the Advanced Open Source Database (Book)</a></li>
+            <li><a href="https://www.qwertee.io/blog/postgresql-b-tree-index-explained-part-1/">PostgreSQL B-Tree Index
+                Explained</a></li>
+            <li><a href="https://habr.com/ru/company/postgrespro/blog/452900/">Indexes in PostgreSQL — 9 (BRIN)</a></li>
         </ul>
     </div>
     <div class="text-right">
@@ -70,7 +159,7 @@ amname |  amhandler  | amtype
 <hr/>
 <div class="container">
     <div class="row">
-        <div class="col-2"><img class="d-block mx-auto mb-4 rounded"
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
                                 src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
                                 width="100"
                                 height="100"></div>
