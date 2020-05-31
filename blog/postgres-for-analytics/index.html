@@ -17,10 +17,13 @@
 <div class="article-header">
     <div class="py-5 text-center">
         <h1>Postgresql for analytics</h1>
+        <h3>brief overview</h3>
     </div>
     <hr/>
 </div>
 <div class="container">
+    <p>In this article we will discover main analytics features of postgresql. If you are familiar with
+    classic sql, you can find some postgres specific features witch will boost your analytic experience. </p>
     <b>Topics</b>
     <ul>
         <li>
@@ -69,24 +72,47 @@
 </div>
 <hr/>
 <div class="container">
-    <h3>Prepare your environment</h3>
-    <div>
-        <p>You can start using postgresql with docker. It's can best choice for development but for production needs
-            better to use standalone installation.</p>
-    </div>
-    <pre><code class="bash">docker run -p 5432:5432 -d postgres:12</code></pre>
+    <h3>Dataset</h3>
+    <p><b>Schema</b>:<br/><img src="data/db-schema.png" alt="" class="img-fluid" /></p>
+    <p><b>City table:</b><br/><img src="data/db-table-city.png" alt="" class="img-fluid" /></p>
+    <p><b>Country table:</b><br/><img src="data/db-table-country.png" alt="" class="img-fluid" /></p>
+    <p><b>Countrylanguage table:</b><br/><img src="data/db-table-countrylanguage.png" alt="" class="img-fluid" /></p>
+
+    <p>[<a href="data/db-world.zip">db-world.zip</a>]</p>
 </div>
 <hr/>
 <div class="container">
     <h3>
-        <a href="#" name="with">#</a> With expression
+        <a href="#" name="with">#</a> CTE (Common table expression)
     </h3>
-    <p>Also known as CTE (Common table expression), CTE allows you to write queries more clear using chain techies.
-    Lets look an example above:</p>
-    <pre><code class="sql">SELECT * FROM tablename</code></pre>
-    <pre><code class="sql">SELECT * FROM tablename</code></pre>
-    <p>And with CTE we can write recursive expressions:</p>
-    <pre><code class="sql">SELECT * FROM tablename</code></pre>
+    <p>CTE (with expression) allow you to write your queries in chain style rather that classic sql statements where your write "deep queries".
+    Step by step you can extend your query using previous results. Lets look in example above:</p>
+    <pre><code class="sql">SELECT countrycode, langcount
+FROM (
+         SELECT countrycode, COUNT(*) as langcount
+         FROM countrylanguage
+         GROUP BY countrycode
+     ) country_lang_count
+WHERE langcount > 1
+ORDER BY langcount DESC;</code></pre>
+    <pre><code class="sql">WITH country_lang_count AS (SELECT countrycode, COUNT(*) as langcount
+                            FROM countrylanguage
+                            GROUP BY countrycode)
+SELECT countrycode, langcount
+FROM country_lang_count
+WHERE langcount > 1
+ORDER BY langcount DESC;</code></pre>
+    <p>As you can see CTE simplify understanding of your queries. But real power of WITH expression is RECURSIVE ability.
+    Lets implement query that evaluate sum of first N numbers (sum[1..N]) with RECURSIVE WITH:</p>
+    <pre><code class="sql">WITH RECURSIVE t(n) AS (
+    VALUES (1)
+    UNION ALL
+    SELECT n + 1
+    FROM t
+    WHERE n < 100
+)
+SELECT SUM(n)
+FROM t;</code></pre>
     <p>You can find details in <a href="https://www.postgresql.org/docs/12/queries-with.html">documentation</a>.</p>
 </div>
 <hr/>
