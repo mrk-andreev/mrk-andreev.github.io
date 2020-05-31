@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Postgres Indexes, Deep dive</title>
+    <title>Postgresql for analytics, Brief overview</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
@@ -30,7 +30,7 @@
             <a href="#with">WITH expression</a>
         </li>
         <li>
-            <a href="#">Filtering</a>
+            <a href="#filtering">Filtering</a>
         </li>
         <li>
             <a href="#">Joining</a>
@@ -103,7 +103,7 @@ FROM country_lang_count
 WHERE langcount > 1
 ORDER BY langcount DESC;</code></pre>
     <p>As you can see CTE simplify understanding of your queries. But real power of WITH expression is RECURSIVE ability.
-    Lets implement query that evaluate sum of first N numbers (sum[1..N]) with RECURSIVE WITH:</p>
+    Lets implement query that evaluate sum of first N numbers (sum[1..N]) with <code>RECURSIVE WITH</code>:</p>
     <pre><code class="sql">WITH RECURSIVE t(n) AS (
     VALUES (1)
     UNION ALL
@@ -114,6 +114,28 @@ ORDER BY langcount DESC;</code></pre>
 SELECT SUM(n)
 FROM t;</code></pre>
     <p>You can find details in <a href="https://www.postgresql.org/docs/12/queries-with.html">documentation</a>.</p>
+</div>
+<div class="container">
+    <h3>
+        <a href="#" name="filtering">#</a> Filtering
+    </h3>
+    <p>If we want to filter data in sql query than we typically user <code>WHERE</code> statement with combination of
+        conditions like query above, but postgres allows to use <code>filter</code> inside select for <code>groupby</code>.
+    </p>
+    <pre><code class="sql">SELECT countrycode,
+       avg(population) FILTER ( WHERE population > 10000 ) AS avg_population
+FROM city
+GROUP BY countrycode;</code></pre>
+    <pre><code class="sql">SELECT countrycode,
+       avg(population) AS avg_population
+FROM (
+         SELECT countrycode, population
+         FROM city
+         WHERE population > 10000
+     ) city_population
+GROUP BY countrycode;</code></pre>
+    <p>Note that in first query results can contains <code>null</code> in case when countrycode has no cities with
+        <code>population > 10000</code>.</p>
 </div>
 <hr/>
 <!-- https://www.postgresqltutorial.com/ -->
