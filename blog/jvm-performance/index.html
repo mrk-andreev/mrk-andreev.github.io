@@ -198,7 +198,34 @@ B_GROUP: [t1, ..., tn]</code></pre>
 <div class="container">
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-red"></span> Garbage collection</h2>
-        <p>-</p>
+        <p>JVM manage heap memory itself (compared by C++ where it is user managed). So main task objective of GC is
+            find unused objects in memory and remove it with hole filling. There are four main GC algorithms:
+            serial collector, throughput collector, concurrent collector and G1 collector. We have tradeoff between
+            memory and cpu consumption in limitation of cpu core count. </p>
+        <h3>Algorithms</h3>
+        <h4>Serial GC</h4>
+        <p>This collector is default for single-processor machines. We stop all application threads (GC pause) during
+            full GC.</p>
+        <h4>Throughput collector</h4>
+        <p>This collector is default for mutli-CPU machines with 64-bit JVM. We use multiple threads to collect the
+            young generation. The throughput collector stops all application threads during minor and full GC.</p>
+        <h4>CMS collector</h4>
+        <p>This collector eliminate the long pauses in full GC cycles. We stop all application threads during a minor
+            GC, it also performs with multiple threads. </p>
+        <h4>G1 collector</h4>
+        <p>This collector designed to process large heaps (4GB plus) with minimal pauses. It divides the heap into a
+            regions. G1 clean up objects from th old generation by copying from one region into another.</p>
+        <p><span class="badge badge-info">Tip</span> You can call full GC manually using <code>System.gc()</code> when
+            you known that is right time to wait.</p>
+        <h3>Tuning</h3>
+        <p><b>Heap size</b>. We can control heap size using <code>-Xms{N}</code> (initial) and <code>-Xmx{N}</code>
+            (max).</p>
+        <p><b>Generation sizes</b>. We can control ratio of young to old generation by <code>-XX:NewRatio=N</code>,
+            young generation size by <code>-XX:NewSize=N</code> (initial) and <code>-XX:MaxNewSize=N</code> (max).</p>
+        <p><b>Metaspace</b>. JVM loads classes and saves their meta data into metaspace (Java 8) in separate heap space.
+            This information contains only JVM specific meta data (not classes). We can prevent expensive resize of
+            metaspace using large initial metaspace size.
+        </p>
     </div>
 </div>
 <div class="container">
