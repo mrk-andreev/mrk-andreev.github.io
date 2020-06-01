@@ -139,7 +139,8 @@
             jobs. So we have to use A/B tests methodology: compare multiple runs with changes and without.
         <pre><code>A_GROUP: [T1,..., Tn]
 B_GROUP: [t1, ..., tn]</code></pre>
-            We can use AB Test calculator [<a href="https://abtestguide.com/calc/">?</a>] for this needs: set visitors as samples count and conversions as evaluation time.
+        We can use AB Test calculator [<a href="https://abtestguide.com/calc/">?</a>] for this needs: set visitors as
+        samples count and conversions as evaluation time.
         </p>
         <div class="blockquote-ref"><span class="badge badge-info">Performance Tip</span> <b>CPU Utilization</b>.<br/>
             <ul>
@@ -170,13 +171,6 @@ B_GROUP: [t1, ..., tn]</code></pre>
 </div>
 <div class="container">
     <div>
-        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Threading & Synchronization</h2>
-        <div><img src="data/jvm-thread-lifecycle.png" class="img-fluid" alt=""/></div>
-        <p>-</p>
-    </div>
-</div>
-<div class="container">
-    <div>
         <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Use right Databases</h2>
         <p><b>Compare your needs and target load</b>.</p>
         <p><b>Optimize your service layers</b>. JDBC / JPA</p>
@@ -191,7 +185,18 @@ B_GROUP: [t1, ..., tn]</code></pre>
 <div class="container">
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-red"></span> JIT Compiler</h2>
-        <p>-</p>
+        <p>Java distribute programs in java byte code compared C++ that distribute in binary distribute for specific
+            platform, compared to Python or PHP that distribute there sources as is. But Hotpot (Oracle JVM
+            Distribution) can dynamically compile byte code to native code when there methods is frequently used. In
+            same time JVM can use optimization in flight.</p>
+        <p><b>Java Client/Server compiler</b>. We can use <code>java -client -XX:+TieredCompilation</code> for specify
+            server evaluation. This option effects startup time so when you have GUI application or short-running
+            application it is matter.</p>
+        <p>Trick of compiling java byte code to native called as "<b>Code Cache</b>". So you can tune this option by <code>-XX:ReservedCodeCacheSize=</code>
+            (max size of code cache). You can detect compilation process when you turn on
+            <code>-XX:+PrintCompilation</code> flag. Another trick is "inlining" controlling by <code>-XX:-Inline</code>
+            (enabled by default), <code>-XX:MaxInlineSize=</code>, <code>-XX: +PrintInlining</code>.
+        </p>
     </div>
 </div>
 <div class="container">
