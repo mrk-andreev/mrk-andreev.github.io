@@ -46,6 +46,10 @@
 </div>
 <hr/>
 <div class="container">
+    <p>Use green/yellow/red strategy for application performance optimization. When you stay at start most useful is use "green" techniques. You can easily improve you metrics without hard work. </p>
+    <p><b>Metrics</b>. We will discuss about performance advanced approaches in "Performance measurement" part but lets start with simple understanding measurable values. First one is throughput (=operations per time). Throughput is connected with response time (=time per each operation from start to begging) but not directly. We can use batching for evaluate multiple samples per time but response time of each one will be different. Here we have "low latency" vs "high throughput" problem: we can use batches for reach "high throughput" (like kafka) or process each sample independently (like rabbitmq). So in each case we shall select target metric: operation per second, response time, evaluation time, etc.</p>
+    <p>After that we have to verify metric correctness. Is this metrics reflects real production performance? And is this metric is reproducible? What difference between indecent starts without any code changes.</p>
+    <p><b>Application load</b>. When we want to optimize perforce we shall use load like in production. The are two main approaches: simulate using load testing tools (like JMeter) or mirror trafic from production to test instance. The second one is more complicate but measures will be more correct.</p>
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-green"></span> First steps</h2>
         <p><b>Better algorithms.</b></p>
@@ -57,9 +61,44 @@
 <div class="container">
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Performance measurement</h2>
-        <p><b>Throughput / Batching / Response time</b></p>
         <p><b>Benchmarks (micro / macro / meso).</b></p>
         <p><b>JVM Performance toolbox.</b></p>
+        <div class="blockquote-ref">
+            <b>Main limitations of performance:</b>
+            <ul>
+                <li>CPU</li>
+                <li>OS Kernel</li>
+                <li>IO (Network / Disk)</li>
+            </ul>
+        </div>
+        <div>
+            <img src="data/latency-numbers.png" alt="" class="img-fluid" />
+        </div>
+        <div class="blockquote-ref"><b>CPU Utilization</b>.<br/>
+            <ul>
+                <li>Low utilization
+                    <ul>
+                        <li>Look to disk / network (may have high utilization)</li>
+                        <li>Look to locks</li>
+                        <li>Look to OS resources</li>
+                    </ul>
+                </li>
+                <li>High utilization (some cores)
+                    <ul>
+                        <li>Look to locks</li>
+                        <li>Look to kernel calls</li>
+                    </ul>
+                </li>
+                <li>High utilization (all cores)
+                    <ul>
+                        <li>Look to architecture</li>
+                        <li>Look to API usage</li>
+                        <li>Look to frequently usage methods</li>
+                        <li>Look to GC configuration</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <div class="container">
@@ -154,6 +193,10 @@
     }
     .tl-point-red {
         background: red;
+    }
+    .blockquote-ref {
+        border-left: 5px gray solid;
+        padding-left: 5px;
     }
 </style>
 <script>hljs.initHighlightingOnLoad();</script>
