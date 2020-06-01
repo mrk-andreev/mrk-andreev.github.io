@@ -172,8 +172,27 @@ B_GROUP: [t1, ..., tn]</code></pre>
 <div class="container">
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Use right Databases</h2>
-        <p><b>Compare your needs and target load</b>.</p>
-        <p><b>Optimize your service layers</b>. JDBC / JPA</p>
+        <p><b>Compare your needs and target load</b>. Be careful when you try nosql solution. Scalability and
+            flexibility is expensive. Most common problem is manage entities connections. All the time you should
+            remember about denormalization technique.</p>
+        <p>Main aspect of any storage system is:
+        <ul>
+            <li><b>Read pattern:</b> index at the file level, index at the record level, secondary index, reverse
+                indexing,
+                batch operation, random access.
+            </li>
+            <li><b>Write pattern:</b> single record write, batch write, mutation (?)</li>
+            <li><b>Partitioning:</b> centralized, range, hash</li>
+            <li><b>Mutation:</b> append only, file versus records, record size, mutation latency.</li>
+            <li><b>Availability vs consistency</b></li>
+            <li><b>Use case:</b> large scans, random access to data, cubing, time series, high mutability.</li>
+        </ul>
+        </p>
+        <p><b>Optimize your service layers</b>. In JPA you can use second level cache or prevent it using Spring Cache.
+        </p>
+        <p><b>Denormalization</b>. You can store your aggregate without every time evaluation. For example you can save
+            total articles count instead use <code>COUNT(*)</code> all the time. Or you can prevent multiple joins using
+            data duplication.</p>
     </div>
 </div>
 <div class="container">
@@ -192,7 +211,8 @@ B_GROUP: [t1, ..., tn]</code></pre>
         <p><b>Java Client/Server compiler</b>. We can use <code>java -client -XX:+TieredCompilation</code> for specify
             server evaluation. This option effects startup time so when you have GUI application or short-running
             application it is matter.</p>
-        <p>Trick of compiling java byte code to native called as "<b>Code Cache</b>". So you can tune this option by <code>-XX:ReservedCodeCacheSize=</code>
+        <p>Trick of compiling java byte code to native called as "<b>Code Cache</b>". So you can tune this option by
+            <code>-XX:ReservedCodeCacheSize=</code>
             (max size of code cache). You can detect compilation process when you turn on
             <code>-XX:+PrintCompilation</code> flag. Another trick is "inlining" controlling by <code>-XX:-Inline</code>
             (enabled by default), <code>-XX:MaxInlineSize=</code>, <code>-XX: +PrintInlining</code>.
