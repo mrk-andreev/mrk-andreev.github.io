@@ -24,55 +24,111 @@
     <div>
         <h2>Philosophy of traffic light</h2>
         <div>
-            <img src="data/opt-curve.png" alt="" class="img-fluid" />
+            <img src="data/opt-curve.png" alt="" class="img-fluid"/>
         </div>
         <p>We can refer to traffic light when we talk about optimizations. </p>
         <ul class="no-points">
-            <li><span class="tl-point tl-point-sm tl-point-green"></span> <b>Green zone</b> - use profiler and rewrite ugly code (easy to find problems, measurement accuracy is secondary).</li>
-            <li><span class="tl-point tl-point-sm tl-point-yellow"></span> <b>Yellow zone</b> - use profiler and write benchmarks (harder to find problems, measurement accuracy is first).</li>
+            <li><span class="tl-point tl-point-sm tl-point-green"></span> <b>Green zone</b> - use profiler and rewrite
+                ugly code (easy to find problems, measurement accuracy is secondary).
+            </li>
+            <li><span class="tl-point tl-point-sm tl-point-yellow"></span> <b>Yellow zone</b> - use profiler and write
+                benchmarks (harder to find problems, measurement accuracy is first).
+            </li>
             <li><span class="tl-point tl-point-sm tl-point-red"></span> <b>Red zone</b> - hack jvm.</li>
         </ul>
-<!--        <div>-->
-<!--            <img src="data/linux-perf.png" alt="" class="img-fluid" />-->
-<!--        </div>-->
-<!--        <ul>-->
-<!--            <li><b>sys%</b> - threading</li>-->
-<!--            <li><b>irq%</b> - offload interruptions</li>-->
-<!--            <li><b>idle%</b> - find were we wait</li>-->
-<!--            <li><b>iowait%</b> - io optimizations</li>-->
-<!--            <li><b>usr%</b> - use profiler...</li>-->
-<!--        </ul>-->
+        <!--        <div>-->
+        <!--            <img src="data/linux-perf.png" alt="" class="img-fluid" />-->
+        <!--        </div>-->
+        <!--        <ul>-->
+        <!--            <li><b>sys%</b> - threading</li>-->
+        <!--            <li><b>irq%</b> - offload interruptions</li>-->
+        <!--            <li><b>idle%</b> - find were we wait</li>-->
+        <!--            <li><b>iowait%</b> - io optimizations</li>-->
+        <!--            <li><b>usr%</b> - use profiler...</li>-->
+        <!--        </ul>-->
     </div>
 </div>
 <hr/>
 <div class="container">
-    <p>Use green/yellow/red strategy for application performance optimization. When you stay at start most useful is use "green" techniques. You can easily improve you metrics without hard work. </p>
-    <p><b>Metrics</b>. We will discuss about performance advanced approaches in "Performance measurement" part but lets start with simple understanding measurable values. First one is throughput (=operations per time). Throughput is connected with response time (=time per each operation from start to begging) but not directly. We can use batching for evaluate multiple samples per time but response time of each one will be different. Here we have "low latency" vs "high throughput" problem: we can use batches for reach "high throughput" (like kafka) or process each sample independently (like rabbitmq). So in each case we shall select target metric: operation per second, response time, evaluation time, etc.</p>
-    <p>After that we have to verify metric correctness. Is this metrics reflects real production performance? And is this metric is reproducible? What difference between indecent starts without any code changes.</p>
-    <p><b>Application load</b>. When we want to optimize perforce we shall use load like in production. The are two main approaches: simulate using load testing tools (like JMeter) or mirror trafic from production to test instance. The second one is more complicate but measures will be more correct.</p>
+    <p>Use green/yellow/red strategy for application performance optimization. When you stay at start most useful is use
+        "green" techniques. You can easily improve you metrics without hard work. </p>
+    <p><b>Metrics</b>. We will discuss about performance advanced approaches in "Performance measurement" part but lets
+        start with simple understanding measurable values. First one is throughput (=operations per time). Throughput is
+        connected with response time (=time per each operation from start to begging) but not directly. We can use
+        batching for evaluate multiple samples per time but response time of each one will be different. Here we have
+        "low latency" vs "high throughput" problem: we can use batches for reach "high throughput" (like kafka) or
+        process each sample independently (like rabbitmq). So in each case we shall select target metric: operation per
+        second, response time, evaluation time, etc.</p>
+    <p>After that we have to verify metric correctness. Is this metrics reflects real production performance? And is
+        this metric is reproducible? What difference between indecent starts without any code changes.</p>
+    <p><b>Application load</b>. When we want to optimize perforce we shall use load like in production. The are two main
+        approaches: simulate using load testing tools (like JMeter) or mirror trafic from production to test instance.
+        The second one is more complicate but measures will be more correct.</p>
     <div>
-        <h2><span class="tl-point tl-point-lg tl-point-green"></span> First steps</h2>
-        <p><b>Better algorithms.</b></p>
-        <p><b>Less code.</b></p>
-        <p><b>Look to Database.</b></p>
-        <p><b>Common cases.</b></p>
+        <h2><span class="tl-point tl-point-lg tl-point-green"></span> First step</h2>
+        <p><b>Better algorithms.</b> You can cleanup your code with label "Technical dept". After that you can remember
+            about algorithms complexity and (for example) replace your <code>O(n)</code> algorithm to <code>O(log
+                n)</code>. You can remove excess customization from your code: do you really need to setup this after
+            startup time?</p>
+        <p><b>Use code analysers</b>. You can use <a
+                href="https://www.jetbrains.com/help/idea/running-inspections.html">Intellij idea</a> code analyser or
+            use <a href="https://spotbugs.github.io/">spotbugs</a> for detect low quality piece of code. May be this is
+            easy to find something like loop with string joins without StringBuilder.</p>
     </div>
+    <p><b>Look to Database.</b> When we use Hibernate not all queries look good. You can analyse this in both sides: in
+        application (show sql queries & plans analysis) or in database (detect long running queries & go deep with plans
+        analysis). You can try to use cache when it is possible (local or remote).</p>
 </div>
 <div class="container">
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Performance measurement</h2>
-        <p><b>Benchmarks (micro / macro / meso).</b></p>
-        <p><b>JVM Performance toolbox.</b></p>
-        <div class="blockquote-ref">
-            <b>Main limitations of performance:</b>
+        <div>
+            <img src="data/jvm-exec-model.png" alt="" class="img-fluid"/>
+        </div>
+        <p>
+            <b>Performance model</b>. We can discuss about performance in terms of "Startup time" + "Running time". In
+            first step application prepares to start: start Java VM, load classes, construct service objects (like
+            beans), in second one - executing. You no need to optimize first step for long running applications. In
+            runtime you have to minimize time for gc / io wait / kernel wait / thread locks.
+        </p>
+        <p>
+            <b>Remember about WarmUp</b>. JVM use JIT for compile hot methods to native code (and sometimes cleanup
+            this). So you have to load application and wait before measure performance.
+        </p>
+        <div><b>Benchmarks (micro / macro / meso).</b>
             <ul>
-                <li>CPU</li>
-                <li>OS Kernel</li>
-                <li>IO (Network / Disk)</li>
+                <li><b>Micro benchmark</b> - we try to optimize small piece of code. For this needs we recommend to use
+                    <a
+                            href="http://openjdk.java.net/projects/code-tools/jmh/">JMH</a>.
+                </li>
+                <li><b>Macro benchmark</b> - we try to optimize user scenario. For this needs we recommend to use <a
+                        href="https://jmeter.apache.org/">JMeter</a>.
+                </li>
+                <li><b>Meso benchmark</b> - we try to optimize multiple large scenarios. For this needs we recommend to
+                    use
+                    distributed tracing utils like <a href="https://zipkin.io/">Zipkin</a>.
+                </li>
             </ul>
         </div>
         <div>
-            <img src="data/latency-numbers.png" alt="" class="img-fluid" />
+            <p><b>Profiling</b>.
+            <ul>
+                <li><b>Sampling profiler</b>. Watch memory every N seconds and detect what is going on in this time.
+                </li>
+                <li><b>Instrumented profiler</b>. Inject instructions into byte code and detect all actions. This one
+                    can decrease performance to x5 times or more.
+                </li>
+            </ul>
+            </p>
+        </div>
+        <div>
+            <b>Latency</b>. We can use data locality principle: share less data between layers. All the time when we
+            fetch data from db we waste our time to external logic (parse / fetch / resolve concurrency problems) and
+            network. Or in the global level we can use Data center located with your user (for US users in US, for EU in
+            EU, for Asia in Asia, etc), not only CDN can use this policy, you place your servers in target region.
+        </div>
+        <div>
+            <img src="data/latency-numbers.png" alt="" class="img-fluid"/>
         </div>
         <div class="blockquote-ref"><b>CPU Utilization</b>.<br/>
             <ul>
@@ -110,9 +166,9 @@
 </div>
 <div class="container">
     <div>
-        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Databases</h2>
-        <p><b>JDBC</b></p>
-        <p><b>JPA</b></p>
+        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Use right Databases</h2>
+        <p><b>Compare your needs and target load</b>.</p>
+        <p><b>Optimize your service layers</b>. JDBC / JPA</p>
     </div>
 </div>
 <div class="container">
@@ -136,7 +192,9 @@
 <hr/>
 <div class="container">
     <div>
-        This article was inspired by <a href="https://shipilev.net/">Aleksey Shipilëv's</a> talks and book "<a href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance: The Definitive Guide</a>".
+        This article was inspired by <a href="https://shipilev.net/">Aleksey Shipilëv's</a> talks and book "<a
+            href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance: The
+        Definitive Guide</a>".
     </div>
 </div>
 <hr/>
@@ -147,10 +205,18 @@
             <a href="https://shipilev.net/talks/j1-April2011-performanceBoF.pdf">Java Platform Performance BoF</a>
         </li>
         <li>
-            <a href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance: The Definitive Guide</a>
+            <a href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance:
+                The Definitive Guide</a>
         </li>
         <li>
-            <a href="https://www.amazon.com/Optimizing-Java-Techniques-Application-Performance/dp/1492025798">Optimizing Java: Practical Techniques for Improving JVM Application Performance</a>
+            <a href="https://www.amazon.com/Optimizing-Java-Techniques-Application-Performance/dp/1492025798">Optimizing
+                Java: Practical Techniques for Improving JVM Application Performance</a>
+        </li>
+        <li>
+            <a href="https://shipilev.net/talks/devoxx-Nov2012-perfMethodology-mindmap.pdf">Java Perf mind map</a>
+        </li>
+        <li>
+            <a href="https://shipilev.net/talks/devoxx-Nov2012-perfMethodology.pdf">Java Perf Devoxx</a>
         </li>
     </ul>
 </div>
@@ -171,29 +237,36 @@
     .no-points {
         list-style: none;
     }
+
     .tl-point {
         display: inline-block;
-        border: solid 1px rgba(14,0,7,0.96);
+        border: solid 1px rgba(14, 0, 7, 0.96);
     }
+
     .tl-point-sm {
         height: 10px;
         width: 10px;
         border-radius: 10px;
     }
+
     .tl-point-lg {
         height: 20px;
         width: 20px;
         border-radius: 20px;
     }
+
     .tl-point-green {
         background: green;
     }
+
     .tl-point-yellow {
         background: #ede44c;
     }
+
     .tl-point-red {
         background: red;
     }
+
     .blockquote-ref {
         border-left: 5px gray solid;
         padding-left: 5px;
