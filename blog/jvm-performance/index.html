@@ -29,7 +29,8 @@
         <p>We can refer to traffic light when we talk about optimizations. </p>
         <ul class="no-points">
             <li><span class="tl-point tl-point-sm tl-point-green"></span> <b>Green zone</b> - use profiler and rewrite
-                ugly code (easy to find problems, measurement accuracy is secondary).
+                ugly code (easy to find problems, measurement accuracy is secondary, performance improvements can be
+                easily detected).
             </li>
             <li><span class="tl-point tl-point-sm tl-point-yellow"></span> <b>Yellow zone</b> - use profiler and write
                 benchmarks (harder to find problems, measurement accuracy is first).
@@ -130,7 +131,17 @@
         <div>
             <img src="data/latency-numbers.png" alt="" class="img-fluid"/>
         </div>
-        <div class="blockquote-ref"><b>CPU Utilization</b>.<br/>
+        <br/>
+        <p>
+            <b>Performance measurement pitfalls</b>. When we try to increase performance 5 times it is easy for detect
+            improvements. But when we got 5-10% improvements (or less) we found benchmark sensitivity. In perfect world
+            we limited only by clock accuracy. But in real world we got multiple side effects like GC or OS background
+            jobs. So we have to use A/B tests methodology: compare multiple runs with changes and without.
+        <pre><code>A_GROUP: [T1,..., Tn]
+B_GROUP: [t1, ..., tn]</code></pre>
+            We can use AB Test calculator [<a href="https://abtestguide.com/calc/">?</a>] for this needs: set visitors as samples count and conversions as evaluation time.
+        </p>
+        <div class="blockquote-ref"><span class="badge badge-info">Performance Tip</span> <b>CPU Utilization</b>.<br/>
             <ul>
                 <li>Low utilization
                     <ul>
