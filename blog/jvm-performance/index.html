@@ -22,47 +22,96 @@
 <hr/>
 <div class="container">
     <div>
-        <ul>
-            <li>Main steps (better algorithms, less code, database is always the bottleneck, common case)</li>
-            <li>Optimization curve</li>
-            <li>Performance testing (micro / macro / meso)</li>
-            <li>Throughput / Batching / Response time</li>
-            <li>JVM Performance toolbox</li>
-            <li>JIT Compiler</li>
-            <li>GC</li>
-            <li>Native memory</li>
-            <li>Threading & Synchronization</li>
-            <li>Databases</li>
+        <h2>Philosophy of traffic light</h2>
+        <div>
+            <img src="data/opt-curve.png" alt="" class="img-fluid" />
+        </div>
+        <p>We can refer to traffic light when we talk about optimizations. </p>
+        <ul class="no-points">
+            <li><span class="tl-point tl-point-sm tl-point-green"></span> <b>Green zone</b> - use profiler and rewrite ugly code (easy to find problems, measurement accuracy is secondary).</li>
+            <li><span class="tl-point tl-point-sm tl-point-yellow"></span> <b>Yellow zone</b> - use profiler and write benchmarks (harder to find problems, measurement accuracy is first).</li>
+            <li><span class="tl-point tl-point-sm tl-point-red"></span> <b>Red zone</b> - hack jvm.</li>
         </ul>
+<!--        <div>-->
+<!--            <img src="data/linux-perf.png" alt="" class="img-fluid" />-->
+<!--        </div>-->
+<!--        <ul>-->
+<!--            <li><b>sys%</b> - threading</li>-->
+<!--            <li><b>irq%</b> - offload interruptions</li>-->
+<!--            <li><b>idle%</b> - find were we wait</li>-->
+<!--            <li><b>iowait%</b> - io optimizations</li>-->
+<!--            <li><b>usr%</b> - use profiler...</li>-->
+<!--        </ul>-->
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-green"></span> First steps</h2>
+        <p><b>Better algorithms.</b></p>
+        <p><b>Less code.</b></p>
+        <p><b>Look to Database.</b></p>
+        <p><b>Common cases.</b></p>
     </div>
 </div>
 <div class="container">
     <div>
-        <div>
-            <img src="data/opt-curve.png" alt="" class="img-fluid" />
-        </div>
-        <ul>
-            <li><b>Green zone</b> - use profiler and rewrite ugly code (easy to find problems, measurement accuracy is secondary).</li>
-            <li><b>Yellow zone</b> - use profiler and write benchmarks.</li>
-            <li><b>Red zone</b> - hack jvm.</li>
-        </ul>
-        <div>
-            <img src="data/linux-perf.png" alt="" class="img-fluid" />
-        </div>
-        <ul>
-            <li><b>sys%</b> - threading</li>
-            <li><b>irq%</b> - offload interruptions</li>
-            <li><b>idle%</b> - find were we wait</li>
-            <li><b>iowait%</b> - io optimizations</li>
-            <li><b>usr%</b> - use profiler...</li>
-        </ul>
+        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Performance measurement</h2>
+        <p><b>Throughput / Batching / Response time</b></p>
+        <p><b>Benchmarks (micro / macro / meso).</b></p>
+        <p><b>JVM Performance toolbox.</b></p>
     </div>
 </div>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Threading & Synchronization</h2>
+        <div><img src="data/jvm-thread-lifecycle.png" class="img-fluid" alt=""/></div>
+        <p>-</p>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-yellow"></span> Databases</h2>
+        <p><b>JDBC</b></p>
+        <p><b>JPA</b></p>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-red"></span> Garbage collection</h2>
+        <p>-</p>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-red"></span> JIT Compiler</h2>
+        <p>-</p>
+    </div>
+</div>
+<div class="container">
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-red"></span> Native memory</h2>
+        <p>-</p>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        This article was inspired by <a href="https://shipilev.net/">Aleksey Shipilëv's</a> talks and book "<a href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance: The Definitive Guide</a>".
+    </div>
+</div>
+<hr/>
 <div class="container">
     <b>Related articles:</b>
     <ul>
         <li>
             <a href="https://shipilev.net/talks/j1-April2011-performanceBoF.pdf">Java Platform Performance BoF</a>
+        </li>
+        <li>
+            <a href="https://www.amazon.com/Java-Performance-Definitive-Guide-Getting/dp/1449358454">Java Performance: The Definitive Guide</a>
+        </li>
+        <li>
+            <a href="https://www.amazon.com/Optimizing-Java-Techniques-Application-Performance/dp/1492025798">Optimizing Java: Practical Techniques for Improving JVM Application Performance</a>
         </li>
     </ul>
 </div>
@@ -79,6 +128,34 @@
         </div>
     </div>
 </div>
+<style>
+    .no-points {
+        list-style: none;
+    }
+    .tl-point {
+        display: inline-block;
+        border: solid 1px rgba(14,0,7,0.96);
+    }
+    .tl-point-sm {
+        height: 10px;
+        width: 10px;
+        border-radius: 10px;
+    }
+    .tl-point-lg {
+        height: 20px;
+        width: 20px;
+        border-radius: 20px;
+    }
+    .tl-point-green {
+        background: green;
+    }
+    .tl-point-yellow {
+        background: #ede44c;
+    }
+    .tl-point-red {
+        background: red;
+    }
+</style>
 <script>hljs.initHighlightingOnLoad();</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript"> (function (d, w, c) {
