@@ -253,7 +253,11 @@ B_GROUP: [t1, ..., tn]</code></pre>
     <div>
         <h2><span class="tl-point tl-point-lg tl-point-red"></span> Native memory</h2>
         <div><img src="data/jvm-memory-footpint.png" alt="" class="img-fluid"/></div>
-        <p>-</p>
+        <p>We can allocate native memory via JNI calls or by NIO byte buffers (<code>allocateDirect()</code>). Most
+            common case is buffers for filesystem and socket operation where write to nio buffer and sending data to the
+            channel requires no copying between JVM and C libraries for transform data. Also you can allocate memory
+            outside GC management. It is useful for large (16GB+) allocations where GC is not your best friend. Software
+            for big data evaluation like Spark or Ignite like this trick. </p>
     </div>
 </div>
 <hr/>
@@ -284,6 +288,10 @@ B_GROUP: [t1, ..., tn]</code></pre>
         </li>
         <li>
             <a href="https://shipilev.net/talks/devoxx-Nov2012-perfMethodology.pdf">Java Perf Devoxx</a>
+        </li>
+        <li>
+            <a href="https://www.slideshare.net/leonjchen/java-optimization-twjug?">Java GC Tuning and Java Java Mission
+                Control</a>
         </li>
     </ul>
 </div>
