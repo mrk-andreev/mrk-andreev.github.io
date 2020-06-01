@@ -203,6 +203,7 @@ B_GROUP: [t1, ..., tn]</code></pre>
             serial collector, throughput collector, concurrent collector and G1 collector. We have tradeoff between
             memory and cpu consumption in limitation of cpu core count. </p>
         <h3>Algorithms</h3>
+        <div><img src="data/gc-young-old-permanent.png" alt="" class="img-fluid"/></div>
         <h4>Serial GC</h4>
         <p>This collector is default for single-processor machines. We stop all application threads (GC pause) during
             full GC.</p>
@@ -222,7 +223,8 @@ B_GROUP: [t1, ..., tn]</code></pre>
             (max).</p>
         <p><b>Generation sizes</b>. We can control ratio of young to old generation by <code>-XX:NewRatio=N</code>,
             young generation size by <code>-XX:NewSize=N</code> (initial) and <code>-XX:MaxNewSize=N</code> (max).</p>
-        <p><b>Metaspace</b>. JVM loads classes and saves their meta data into metaspace (Java 8) in separate heap space.
+        <p><b>Metaspace</b>. JVM loads classes and saves their meta data into metaspace (Java 8, in Java 7 - permanent
+            generation) in separate heap space.
             This information contains only JVM specific meta data (not classes). We can prevent expensive resize of
             metaspace using large initial metaspace size.
         </p>
