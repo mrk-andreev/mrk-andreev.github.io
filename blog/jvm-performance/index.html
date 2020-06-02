@@ -206,15 +206,19 @@ B_GROUP: [t1, ..., tn]</code></pre>
         <h3>Algorithms</h3>
         <div><img src="data/gc-young-old-permanent.png" alt="" class="img-fluid"/></div>
         <h4>Serial GC</h4>
+        <div><img src="data/gc--serial.png" alt="" class="img-fluid"/></div>
         <p>This collector is default for single-processor machines. We stop all application threads (GC pause) during
             full GC.</p>
         <h4>Throughput collector</h4>
+        <div><img src="data/gc--throutput.png" alt="" class="img-fluid"/></div>
         <p>This collector is default for mutli-CPU machines with 64-bit JVM. We use multiple threads to collect the
             young generation. The throughput collector stops all application threads during minor and full GC.</p>
         <h4>CMS collector</h4>
+        <div><img src="data/gc--cms.png" alt="" class="img-fluid"/></div>
         <p>This collector eliminate the long pauses in full GC cycles. We stop all application threads during a minor
             GC, it also performs with multiple threads. </p>
         <h4>G1 collector</h4>
+        <div><img src="data/gc--g1.png" alt="" class="img-fluid"/></div>
         <p>This collector designed to process large heaps (4GB plus) with minimal pauses. It divides the heap into a
             regions. G1 clean up objects from th old generation by copying from one region into another.</p>
         <p><span class="badge badge-info">Tip</span> You can call full GC manually using <code>System.gc()</code> when
