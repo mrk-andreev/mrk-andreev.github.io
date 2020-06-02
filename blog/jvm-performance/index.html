@@ -209,8 +209,23 @@ B_GROUP: [t1, ..., tn]</code></pre>
             serial collector, throughput collector, concurrent collector and G1 collector. We have tradeoff between
             memory and cpu consumption in limitation of cpu core count. </p>
         <div><img src="data/gc-target.png" alt="" class="img-fluid"/></div>
-        <h3>Algorithms</h3>
+        <p>GC removes objects from heap if no links from runtime stack. Main hypnosis of GC is weak hypnosis of
+            generations: most objects a short living and old objects rarely links to new one. So we can split memory
+            to generations: young & old generations. And we can collect objects in young separately of old. Trip from
+            young to old can be defined by some age.</p>
         <div><img src="data/gc-young-old-permanent.png" alt="" class="img-fluid"/></div>
+        <p>In the same time we can split young generation into some sub regions. Egen - new objects will be allocated
+            here. And two survivor spaces: s0 & s1. When the are not enough space in egen we start small collection:
+            copy all objects from eden to s0 and someone from s1 to old generation. So in s1 we can find objects who
+            survived after at least once gc.</p>
+        <b>GC Performance metrics</b>
+        <ul>
+            <li>Throughput</li>
+            <li>Predictable (latency)</li>
+            <li>Footprint (memory usage)</li>
+        </ul>
+        <div><img src="data/gc-tradeoff.png" alt="" class="img-fluid"/></div>
+        <h3>Algorithms</h3>
         <h4>Serial GC</h4>
         <div><img src="data/gc--serial.png" alt="" class="img-fluid"/></div>
         <p>This collector is default for single-processor machines. We stop all application threads (GC pause) during
