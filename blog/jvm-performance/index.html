@@ -37,16 +37,6 @@
             </li>
             <li><span class="tl-point tl-point-sm tl-point-red"></span> <b>Red zone</b> - hack jvm.</li>
         </ul>
-        <!--        <div>-->
-        <!--            <img src="data/linux-perf.png" alt="" class="img-fluid" />-->
-        <!--        </div>-->
-        <!--        <ul>-->
-        <!--            <li><b>sys%</b> - threading</li>-->
-        <!--            <li><b>irq%</b> - offload interruptions</li>-->
-        <!--            <li><b>idle%</b> - find were we wait</li>-->
-        <!--            <li><b>iowait%</b> - io optimizations</li>-->
-        <!--            <li><b>usr%</b> - use profiler...</li>-->
-        <!--        </ul>-->
     </div>
 </div>
 <hr/>
@@ -75,10 +65,26 @@
                 href="https://www.jetbrains.com/help/idea/running-inspections.html">Intellij idea</a> code analyser or
             use <a href="https://spotbugs.github.io/">spotbugs</a> for detect low quality piece of code. May be this is
             easy to find something like loop with string joins without StringBuilder.</p>
+        <p><b>Look to Database.</b> When we use Hibernate not all queries look good. You can analyse this in both sides:
+            in
+            application (show sql queries & plans analysis) or in database (detect long running queries & go deep with
+            plans
+            analysis). You can try to use cache when it is possible (local or remote).</p>
     </div>
-    <p><b>Look to Database.</b> When we use Hibernate not all queries look good. You can analyse this in both sides: in
-        application (show sql queries & plans analysis) or in database (detect long running queries & go deep with plans
-        analysis). You can try to use cache when it is possible (local or remote).</p>
+    <div>
+        <h2><span class="tl-point tl-point-lg tl-point-green"></span> Find bottleneck</h2>
+        <div>
+            <img src="data/linux-perf.png" alt="" class="img-fluid"/>
+        </div>
+        <ul>
+            <li><b>sys%</b> - threading</li>
+            <li><b>irq%</b> - offload interruptions</li>
+            <li><b>idle%</b> - find were we wait</li>
+            <li><b>iowait%</b> - io optimizations</li>
+            <li><b>usr%</b> - use profiler...</li>
+        </ul>
+    </div>
+
 </div>
 <div class="container">
     <div>
