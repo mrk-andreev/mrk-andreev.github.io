@@ -27,6 +27,11 @@
             margin-bottom: 3em;
         }
 
+        .header-title {
+            display: flex;
+            justify-content: center;
+        }
+
         .title {
             font-size: 3rem;
             margin-top: 0;
@@ -77,11 +82,15 @@
 <div class="page">
     <div class="header">
         <div>
-            <img class="d-block mx-auto mb-4 rounded" src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
-                 width="100"
-                 height="100"/>
-            <h1 class="title">Mark Andreev</h1>
-            <h2 class="subtitle">#[Machine Learning Engineer]</h2>
+            <div class="header-title">
+                <div>
+                    <img class="d-block mx-auto mb-4 rounded" src="upload/img/avatar-100x100.png" alt=""
+                         width="100"
+                         height="100"/>
+                </div>
+                <div><h1 class="title">Mark Andreev</h1>
+                    <h2 class="subtitle">#[Machine Learning Engineer]</h2></div>
+            </div>
         </div>
     </div>
     <div class="body">
