@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to create new db & user in PostgreSQL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to create new db & user in PostgreSQL</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h3>0. Login as root</h3>
+    <pre><code class="bash">user@host$ sudo su</code></pre>
+
+    <h3>1. Switch to postrgres account</h3>
+    <pre><code class="bash">root@host# su - postgres</code></pre>
+
+    <h3>2. Creating a New Role</h3>
+    <p>If you are logged in as the postgres account, you can create a new user by typing (for example <b>db-user-1</b>):</p>
+    <pre><code class="bash">postgres@host$ createuser --interactive
+
+Shall the new role be a superuser? (<b>y</b>/n)</code></pre>
+
+    <h3>3. Create a New Database</h3>
+    <p>This means that, if the user you created in the last section is called <b>db-user-1</b>, that role will attempt to connect
+        to a database which is also called <b>db-user-1</b> by default. You can create the appropriate database with the createdb
+        command.</p>
+    <pre><code class="bash">postgres@host$ createdb <b>db-user-1</b></code></pre>
+
+    <h3>4. Allow password authentication</h3>
+    <pre><code class="bash">postgres@host$ psql</code></pre>
+    <pre><code class="bash">postgres=# ALTER USER "<b>db-user-1</b>" PASSWORD '<b>mypassword</b>';</code></pre>
+
+    <h3>5. Test</h3>
+    <pre><code class="bash">user@host$ psql -h localhost -p 5432 -U <b>db-user-1</b></code></pre>
+
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+    <hr/>
+    <h3>Attention!</h3>
+    <p>Your user <b>db-user-1</b> is superuser. If you want to limit access to tables enter this commands:</p>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOSUPERUSER;</code></pre>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOCREATEROLE;</code></pre>
+    <pre><code class="sql">ALTER USER "<b>db-user-1</b>" WITH NOCREATEDB;</code></pre>
+    <p>And now you can grant permissions:</p>
+    <pre><code class="sql">GRANT CONNECT ON DATABASE <b>db-user-1</b> TO "<b>db-user-1</b>";</code></pre>
+    <pre><code class="sql">GRANT ALL PRIVILEGES ON DATABASE <b>db-user-1</b> TO  <b>db-user-1</b>;</code></pre>
+
+    <hr/>
+    <b>Related articles</b>:
+    <ul>
+        <li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04">
+            How To Install and Use PostgreSQL on Ubuntu 18.04
+        </a></li>
+        <li><a href="https://askubuntu.com/questions/413585/postgres-password-authentication-fails">
+            Postgres password authentication fails
+        </a></li>
+    </ul>
+
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

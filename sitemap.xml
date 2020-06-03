@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://mrkandreev.name/</loc>
@@ -8,9 +7,15 @@
         <loc>https://mrkandreev.name/blog/tornado-swagger</loc>
     </url>
     <url>
-        <loc>https://mrkandreev.name/blog/machine-learning-quality</loc>
+        <loc>https://mrkandreev.name/blog/jvm-performance</loc>
     </url>
     <url>
-        <loc>https://mrkandreev.name/blog/perfomance-testing</loc>
+        <loc>https://mrkandreev.name/blog/postgres-index</loc>
+    </url>
+    <url>
+        <loc>https://mrkandreev.name/blog/postgres-for-analytics</loc>
+    </url>
+    <url>
+        <loc>https://mrkandreev.name/blog/hibernate-array-support</loc>
     </url>
 </urlset>

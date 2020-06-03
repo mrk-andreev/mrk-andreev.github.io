@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to mount Azure data drive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to mount Azure data drive</h1>
+        <h4>main steps from documentation</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p>The standard Azure VM's volume is named as OS Volume and by default it is around 30GB.
+        So you need to attach data volume and save this mount after restart.</p>
+    <h3>0. Attach data volume in Azure Portal</h3>
+    <p>
+        Open VM disks settings:
+    </p>
+    <p>
+        <img src="img/vm-disk-1.png" alt="" class="img-fluid" />
+    </p>
+    <p>
+        Add new data disk from exists or create new one:
+    </p>
+    <p>
+        <img src="img/vm-disk-2.png" alt="" class="img-fluid" />
+    </p>
+    <p>
+        Save this state:
+    </p>
+    <p>
+        <img src="img/vm-disk-3.png" alt="" class="img-fluid" />
+    </p>
+
+    <h3>1. Found new disks</h3>
+    <p>Your new disk will be sd*: sdc, sdd, ...; In this case new data disk is sdc</p>
+    <pre><code class="bash"># dmesg | grep SCSI
+
+[    0.294784] SCSI subsystem initialized
+[    0.573458] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 252)
+[    7.110271] sd 2:0:0:0: [sda] Attached SCSI disk
+[    8.079653] sd 3:0:1:0: [sdb] Attached SCSI disk
+[ 1828.162306] sd 5:0:0:0: [sdc] Attached SCSI disk</code></pre>
+    <h3>2. Partition a new disk</h3>
+    <pre><code class="bash"># fdisk /dev/sdc</code></pre>
+    <p>Enter <code>n</code> then <code>p</code>:</p>
+    <pre><code class="bash">Device contains neither a valid DOS partition table, nor Sun, SGI or OSF disklabel
+Building a new DOS disklabel with disk identifier 0x2a59b123.
+Changes will remain in memory only, until you decide to write them.
+After that, of course, the previous content won't be recoverable.
+
+Warning: invalid flag 0x0000 of partition table 4 will be corrected by w(rite)
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-10485759, default 2048):
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-10485759, default 10485759):
+Using default value 10485759</code></pre>
+    <p>Enter <code>p</code> then <code>w</code></p>
+    <pre><code class="bash">Command (m for help): p
+
+Disk /dev/sdc: 5368 MB, 5368709120 bytes
+255 heads, 63 sectors/track, 652 cylinders, total 10485760 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x2a59b123
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdc1            2048    10485759     5241856   83  Linux
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.</code></pre>
+    <p>Now, write a file system to the partition with the mkfs command. Specify your filesystem type and the device name.
+        The following example creates an ext4 filesystem on the /dev/sdc1 partition that was created in the preceding steps:</p>
+    <pre><code class="bash"># mkfs -t ext4 /dev/sdc1</code></pre>
+    <h3>3. Mount the disk</h3>
+    <pre><code class="bash"># mkdir /datadrive</code></pre>
+    <pre><code class="bash"># mount /dev/sdc1 /datadrive</code></pre>
+    <h3>4. Save mount after restart</h3>
+    <p>Copy your UUID for data drive (in this case <code>/dev/sdc1</code> = <code>33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e</code>)</p>
+    <pre><code class="bash"># blkid
+
+/dev/sda1: UUID="11111111-1b1b-1c1c-1d1d-1e1e1e1e1e1e" TYPE="ext4"
+/dev/sdb1: UUID="22222222-2b2b-2c2c-2d2d-2e2e2e2e2e2e" TYPE="ext4"
+/dev/sdc1: UUID="33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e" TYPE="ext4"
+</code></pre>
+    <p>Add new record in <code>/etc/fstab</code> file:</p>
+    <pre><code class="bash"># vi /etc/fstab</code></pre>
+    <p>Add new line with <b>device UUID</b> and <b>mount point</b>:</p>
+    <pre><code class="bash">UUID=<b>33333333-3b3b-3c3c-3d3d-3e3e3e3e3e3e</b>   <b>/datadrive</b>   ext4   defaults,nofail   1   2</code></pre>
+    <p>When done, save the /etc/fstab file and reboot the system.</p>
+    <h3>5. Verify</h3>
+    <p>Found your mounted disk:</p>
+    <pre><code class="bash"># df -lh</code></pre>
+    <hr/>
+    <h2>Relative articles:</h2>
+    <ul>
+        <li>
+            <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/attach-disk-portal">Original article</a>
+        </li>
+    </ul>
+
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

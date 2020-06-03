@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Postgres Indexes, Deep dive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Postgres Indexes</h1>
+        <h2>Deep dive</h2>
+        <p>In this guide we will talk about types of indexes, performance boosting and price of improvements.</p>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <p>Index is addition data structure that allow to support uniqueness or fast access to data.
+            All the time when we create new index we <u>can</u> improve read speed but <u>always</u> we decrease write
+            speed (update index) and increase disk consumption (store index). Index can use multiple columns (or
+            expression) but not
+            all indexes supports this. Someone supports customization parameters.</p>
+        <p><b>Memory usage</b>. We can measure memory usage using <code>pg_relation_size</code>. All the time when we
+            want to use yet another new index we shall remember about index size. When table is large index can be large
+            too. </p>
+        <pre><code class="sql"># SELECT pg_size_pretty(pg_relation_size('index_name'));
+ pg_size_pretty
+----------------
+ 118 MB
+(1 row)
+
+# SELECT pg_size_pretty(pg_relation_size('table_name'));
+ pg_size_pretty
+----------------
+ 274 MB
+(1 row)</code></pre>
+        <p><b>Read speed</b>. When new index created we have to verify that target our queries use this index. Remember
+            that sometimes optimizer can ignore index. For this needs use <code>EXPLAIN (ANALYSE, BUFFERS)</code>
+            commands. </p>
+        <pre><code class="sql">EXPLAIN (ANALYSE, BUFFERS)
+SELECT *
+FROM dataset
+WHERE s_id = 3
+ORDER BY ts DESC
+LIMIT 5;</code></pre>
+        <pre><code class="sql">                                                                 QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=13746.95..13746.97 rows=5 width=20) (actual time=9.917..9.917 rows=5 loops=1)
+   Buffers: shared hit=5333
+   ->  Sort  (cost=13746.95..13759.38 rows=4971 width=20) (actual time=9.915..9.915 rows=5 loops=1)
+         Sort Key: ts DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         Buffers: shared hit=5333
+         ->  Bitmap Heap Scan on dataset  (cost=94.96..13664.39 rows=4971 width=20) (actual time=3.885..9.413 rows=5745 loops=1)
+               Recheck Cond: (s_id = 3)
+               Heap Blocks: exact=5312
+               Buffers: shared hit=5330
+               ->  Bitmap Index Scan on <b>dataset_sid_index</b>  (cost=0.00..93.72 rows=4971 width=0) (actual time=3.300..3.300 rows=5745 loops=1)
+                     Index Cond: (s_id = 3)
+                     Buffers: shared hit=18
+ Planning Time: 0.519 ms
+ Execution Time: 9.998 ms
+(15 rows)</code></pre>
+        <div><img src="data/db-index.png" class="img-fluid" alt=""/></div>
+        <br/>
+        <p><b>Partial indexes</b>. We found that index size can be large. What we can do with this problem? Use index
+            for part of table. For example we can say that index will be used only for records where <code>year >=
+                2020</code>. In this case access to <code>year < 2020</code> will be slow but it might be ok.</p>
+        <pre><code class="sql">CREATE INDEX dataset_sid_index_v2 ON dataset (s_id) where ts > 10000;</code></pre>
+        <p><b>Indexes on expressions</b>. We can use expression for indexes. It might be useful when you are using
+            navigation over JSONB field. So you can use any expression without <code>CURRENT TIME</code> calls for
+            indexes.</p>
+        <pre><code class="sql">CREATE INDEX documents_inner_id_index ON documents ( ((data->'inner_id')::int) );</code></pre>
+        <p><b>Cluster table</b>. We can use <code>CLUSTER</code> command for table rewriting in specific order. We can
+            expect that table's rows will be use order from index that we used for this command. But before start this
+            command remember that table will be block when operation is running.</p>
+        <pre><code class="sql">CLUSTER dataset USING dataset_sid_index;</code></pre>
+    </div>
+    <hr/>
+    <div>
+        <p>We can find available indexes in <code>pg_am</code> table:</p>
+        <pre><code class="sql">SELECT * FROM pg_am;</code></pre>
+        <pre><code class="sql">amname |  amhandler  | amtype
+--------+-------------+--------
+ btree  | bthandler   | i
+ hash   | hashhandler | i
+ gist   | gisthandler | i
+ gin    | ginhandler  | i
+ spgist | spghandler  | i
+ brin   | brinhandler | i
+(6 rows)</code></pre>
+    </div>
+    <hr/>
+    <h1>Indexes</h1>
+    <h2>BTree</h2>
+    <div><img src="data/pg-btree.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/443284/">Indexes in PostgreSQL — 9 (BRIN)</a>
+    </p>
+    <h2>Hash index</h2>
+    <div><img src="data/pg-hash.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/442776/">Indexes in PostgreSQL — 9 (Hash index)</a>
+    </p>
+    <h2>GiST index</h2>
+    <div><img src="data/pg-gist.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/444742/">Indexes in PostgreSQL — 9 (GiST)</a>
+    </p>
+    <h2>GIN index</h2>
+    <div><img src="data/pg-gin.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/448746/">Indexes in PostgreSQL — 9 (GIN)</a>
+    </p>
+    <h2>SP-GiST index</h2>
+    <div><img src="data/pg-sp-gist-index.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/446624/">Indexes in PostgreSQL — 9 (SP-GiST)</a>
+    </p>
+    <h2>BRIN index</h2>
+    <div><img src="data/pg-brin.png" class="img-fluid" alt=""/></div>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/452900/">Indexes in PostgreSQL — 9 (BRIN)</a>
+    </p>
+    <h2>RUM index</h2>
+    <p>
+        <a href="https://habr.com/ru/company/postgrespro/blog/452116/">Indexes in PostgreSQL — 9 (RUM)</a>
+    </p>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://www.postgresql.org/docs/12/indexes.html">PostgreSQL Documentation</a></li>
+            <li>
+                <a href="https://www.amazon.com/Mastering-PostgreSQL-techniques-administer-applications-ebook/dp/B0822GCCDT">Mastering
+                    PostgreSQL 12 (Book)</a></li>
+            <li><a href="https://www.amazon.com/PostgreSQL-Running-Practical-Advanced-Database-ebook/dp/B076C4WLBP">PostgreSQL:
+                Up and Running: A Practical Guide to the Advanced Open Source Database (Book)</a></li>
+            <li><a href="https://www.qwertee.io/blog/postgresql-b-tree-index-explained-part-1/">PostgreSQL B-Tree Index
+                Explained</a></li>
+            <li><a href="https://habr.com/ru/company/postgrespro/blog/452900/">Indexes in PostgreSQL — 9 (BRIN)</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">@mrkandreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

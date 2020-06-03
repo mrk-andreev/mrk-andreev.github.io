@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Postgresql for analytics, Brief overview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="article-header">
+    <div class="py-5 text-center">
+        <h1>Postgresql for analytics</h1>
+        <h3>brief overview</h3>
+    </div>
+    <hr/>
+</div>
+<div class="container">
+    <p>In this article we will discover main analytics features of postgresql. If you are familiar with
+    classic sql, you can find some postgres specific features witch will boost your analytic experience. </p>
+    <b>Topics</b>
+    <ul>
+        <li>
+            <a href="#with">WITH expression</a>
+        </li>
+        <li>
+            <a href="#filtering">Filtering</a>
+        </li>
+        <li>
+            <a href="#joining">Joining</a>
+        </li>
+        <li>
+            <a href="#windows">Windows</a>
+        </li>
+        <li>
+            <a href="#cubes">Cubes</a>
+        </li>
+    </ul>
+</div>
+<hr/>
+<div class="container">
+    <h3>Dataset</h3>
+    <p><b>Schema</b>:<br/><img src="data/db-schema.png" alt="" class="img-fluid" /></p>
+    <p><b>City table:</b><br/><img src="data/db-table-city.png" alt="" class="img-fluid" /></p>
+    <p><b>Country table:</b><br/><img src="data/db-table-country.png" alt="" class="img-fluid" /></p>
+    <p><b>Countrylanguage table:</b><br/><img src="data/db-table-countrylanguage.png" alt="" class="img-fluid" /></p>
+
+    <p>[<a href="data/db-world.zip">db-world.zip</a>]</p>
+</div>
+<hr/>
+<div class="container">
+    <h3>
+        <a href="#with" name="with">#</a> CTE (Common table expression)
+    </h3>
+    <p>CTE (with expression) allow you to write your queries in chain style rather that classic sql statements where your write "deep queries".
+    Step by step you can extend your query using previous results. Lets look in example above:</p>
+    <pre><code class="sql">SELECT countrycode, langcount
+FROM (
+         SELECT countrycode, COUNT(*) as langcount
+         FROM countrylanguage
+         GROUP BY countrycode
+     ) country_lang_count
+WHERE langcount > 1
+ORDER BY langcount DESC;</code></pre>
+    <pre><code class="sql">WITH country_lang_count AS (SELECT countrycode, COUNT(*) as langcount
+                            FROM countrylanguage
+                            GROUP BY countrycode)
+SELECT countrycode, langcount
+FROM country_lang_count
+WHERE langcount > 1
+ORDER BY langcount DESC;</code></pre>
+    <p>As you can see CTE simplify understanding of your queries. But real power of WITH expression is RECURSIVE ability.
+    Lets implement query that evaluate sum of first N numbers (sum[1..N]) with <code>RECURSIVE WITH</code>:</p>
+    <pre><code class="sql">WITH RECURSIVE t(n) AS (
+    VALUES (1)
+    UNION ALL
+    SELECT n + 1
+    FROM t
+    WHERE n < 100
+)
+SELECT SUM(n)
+FROM t;</code></pre>
+    <p>You can find details in <a href="https://www.postgresql.org/docs/12/queries-with.html">documentation</a>.</p>
+</div>
+<div class="container">
+    <h3>
+        <a href="#filtering" name="filtering">#</a> Filtering
+    </h3>
+    <p>If we want to filter data in sql query than we typically user <code>WHERE</code> statement with combination of
+        conditions like query above, but postgres allows to use <code>filter</code> inside select for <code>groupby</code>.
+    </p>
+    <pre><code class="sql">SELECT countrycode,
+       avg(population) FILTER ( WHERE population > 10000 ) AS avg_population
+FROM city
+GROUP BY countrycode;</code></pre>
+    <pre><code class="sql">SELECT countrycode,
+       avg(population) AS avg_population
+FROM (
+         SELECT countrycode, population
+         FROM city
+         WHERE population > 10000
+     ) city_population
+GROUP BY countrycode;</code></pre>
+    <p>Note that in first query results can contains <code>null</code> in case when countrycode has no cities with
+        <code>population > 10000</code>.</p>
+</div>
+<div class="container">
+    <h3>
+        <a href="#joining" name="joining">#</a> Joining
+    </h3>
+    <img src="data/joins.png" alt="" class="img-fluid" />
+    <pre><code class="sql">-- left join
+SELECT city.name, c.continent
+FROM city
+         LEFT JOIN country c ON city.countrycode = c.code;
+
+-- cross join
+SELECT city.name as from_city, c.continent as to_continent
+FROM city
+         CROSS JOIN country c;
+
+-- cross join with self
+SELECT city.name as from_city, c.name as to_city
+FROM city
+         CROSS JOIN city c
+WHERE city.id != c.id;</code></pre>
+</div>
+<div class="container">
+    <h3>
+        <a href="#windows" name="windows">#</a> Windows
+    </h3>
+    <p>This part of postgresql is useful when you have to analyse time series data. So we will extend our schema
+        with population dataset [<a href="data/db-world-ext-population.zip">csv</a>] (extracted from worldbank).
+        New table population contains three columns: code, year, population.
+    </p>
+    <h4>Percentiles</h4>
+    <p>When we want to measure percentile [<a href="https://en.wikipedia.org/wiki/Percentile">?</a>] we shall use
+    ordered sets. In example above we <code>percentile_disc</code> and <code>within group</code> for measure median.</p>
+    <pre><code class="sql">SELECT percentile_disc(0.5) within group ( order by population ) as median_population
+FROM population;</code></pre>
+    <h4>Rank</h4>
+    <p>Rank is probability aggregate that answer to question: what position in rating will be placed if value will be equal this.
+    For example: if <code>gnp</code> [Gross National Product] will be equal 500 than what position will be in each region.</p>
+    <pre><code class="sql">SELECT
+    region,
+    rank(500) WITHIN GROUP ( ORDER BY gnp DESC NULLS LAST)
+FROM country
+GROUP BY ROLLUP (region);</code></pre>
+    <h4>Windows</h4>
+    <p><img src="data/window-types.png" alt="" class="img-fluid" /></p>
+    <p>We can use <code>ROWS BETWEEN</code> for prev and next values in aggregate function.</p>
+    <pre><code class="sql">
+SELECT code,
+       year,
+       avg(population.population) over
+        (PARTITION BY code ORDER BY year ROWS BETWEEN 0 PRECEDING AND 3 FOLLOWING)
+FROM population
+WHERE code = 'ABW';</code></pre>
+</div>
+<div class="container">
+    <h3>
+        <a href="#cubes" name="cubes">#</a> Cubes
+    </h3>
+    <p>We can use OLAP Cubes with postgres cube extension. The main idea of cubes is cache aggregates.
+        It is look like groupby with multiple arguments. Lets look to example above:</p>
+    <pre><code class="sql">SELECT
+    continent, region, sum(gnp)
+FROM country
+GROUP BY continent, CUBE (region)
+ORDER BY continent, region;
+
+   continent   |          region           |    sum
+---------------+---------------------------+------------
+ Africa        | Central Africa            |   32938.00
+ Africa        | Eastern Africa            |   69925.00
+ Africa        | Northern Africa           |  243870.00
+ Africa        | Southern Africa           |  126931.00
+ Africa        | Western Africa            |  106711.00
+ Africa        |                           |  580375.00
+ Antarctica    | Antarctica                |       0.00
+ Antarctica    |                           |       0.00
+ Asia          | Eastern Asia              | 5524885.00
+ Asia          | Middle East               |  677260.00
+ Asia          | Southeast Asia            |  642643.00
+ Asia          | Southern and Central Asia |  810604.00
+ Asia          |                           | 7655392.00
+ Europe        | Baltic Countries          |   22418.00
+ Europe        | British Islands           | 1454251.00
+ Europe        | Eastern Europe            |  659980.00
+ Europe        | Nordic Countries          |  676655.00
+ Europe        | Southern Europe           | 2012289.00
+ Europe        | Western Europe            | 4673272.00
+ Europe        |                           | 9498865.00
+ North America | Caribbean                 |  103586.20
+ North America | Central America           |  473151.00
+ North America | North America             | 9111890.00
+ North America |                           | 9688627.20
+ Oceania       | Australia and New Zealand |  405851.00
+ Oceania       | Melanesia                 |   10530.00
+ Oceania       | Micronesia                |    1848.70
+ Oceania       | Micronesia/Caribbean      |       0.00
+ Oceania       | Polynesia                 |    1545.00
+ Oceania       |                           |  419774.70
+ South America | South America             | 1511874.00
+ South America |                           | 1511874.00
+(32 rows)</code></pre>
+    <p>Result contains two types of group by: (continent, *), (continent, region). So we can see gnp in whole
+        continent and in region.</p>
+    <p>If we want to save this cube we can use <code>MATERIALIZED VIEW</code>. In opposite to <code>VIEW</code> this
+         view is not fetched every time, so we need to refresh this manually.</p>
+    <pre><code class="sql">CREATE MATERIALIZED VIEW continent_region_gnp AS
+SELECT continent,
+       region,
+       sum(gnp)
+FROM country
+GROUP BY continent, CUBE (region)
+ORDER BY continent, region;
+
+-- refresh
+REFRESH MATERIALIZED VIEW continent_region_gnp;
+
+-- drop materialized view
+DROP MATERIALIZED VIEW continent_region_gnp;</code></pre>
+    <p>Near <code>CUBE</code> you can find <code>ROLLUP</code> lets explain:</p>
+    <pre><code>ROLLUP(e1, e2, e3, ...)
+
+(e1, e2, e3, ...)
+...
+(e1, e2),
+(e1),
+(e1)</code></pre>
+    <pre><code>CUBE(e1, e2, e3)
+
+(e1, e2, e3)
+(e1, e2, *)
+(e1, , e3)
+(e1, *, *)
+(*, e2, e3)
+(*, e2, e3)
+(*, e2, *)
+(*, *, e3)
+(*, *, e3)
+</code></pre>
+</div>
+<hr/>
+<!-- https://www.postgresqltutorial.com/ -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">@mrkandreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

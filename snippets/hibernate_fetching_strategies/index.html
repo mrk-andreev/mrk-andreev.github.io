@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hibernate fetching strategies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Hibernate fetching strategies</h1>
+        <h4>WHEN (fetch timing) and HOW (fetch style)</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <p>We wanna talk about fetching strategies. All the time we will decide <b>when</b> data will fetch and
+            <b>how</b> it will be fetched.
+        </p>
+    </div>
+    <h3>When</h3>
+    <p><b>EAGER</b>. In this case data will be delivered immediately. So we no need extra fetch for get this data but
+        payload can be significantly large. </p>
+    <pre><code class="java">@OneToOne(fetch = FetchType.EAGER)
+private MyEntity entity;</code></pre>
+    <p><b>LAZY</b>. In this case data will be delivered when it is necessary. So we need extra fetch for get this data.
+        Collection is lazy by default because list can we large. </p>
+    <pre><code class="java">@OneToMany(fetch = FetchType.LAZY)
+private List&lt;MyEntity&gt; entities;</code></pre>
+    <h3>How</h3>
+    <p><b>JOIN</b>. Join fetch (left/outer join). This is great for to one associations. </p>
+    <pre><code class="sql">select e from MyEntity e
+join fetch e.subEntities p
+where p.id = 42</code></pre>
+    <p><b>SELECT</b>. Follow-up selects. This is default style for collections. </p>
+    <pre><code class="java">select e from MyEntity e where e.id = 42</code></pre>
+    <p><b>BATCH</b>. Fetches multiples entries when one is accessed. </p>
+    <pre><code class="java">@OneToMany
+@BatchSize(size = 5)
+List&lt;MyEntity&gt; entities;</code></pre>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://www.slideshare.net/brmeyer/hibernate-orm-performance-31550150">
+                Hibernate ORM: Tips, Tricks, and Performance Techniques</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<hr/>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

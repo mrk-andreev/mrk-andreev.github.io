@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to allow external connections to PostgreSQL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to allow external connections to PostgreSQL</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h3>0. Allow <code>CONNECT</code></h3>
+    <p>Grant privilege <code>CONNECT</code></p>
+    <pre><code class="bash"># GRANT CONNECT ON DATABASE <b>dbname</b> TO <b>username</b>;</code></pre>
+    <p>And add privilege on the schema (in this example <b>public</b>):</p>
+    <pre><code class="bash"># GRANT USAGE ON SCHEMA <b>public</b> TO <b>username</b>;</code></pre>
+    <h3>1. Edit your postgresql.conf</h3>
+    <p>You can find this file in <code>/etc/postgresql/<b>12</b>/main/postgresql.conf</code> (for postgres version 12).
+        After that edit <code>listen_addresses</code></p>
+    <pre><code class="bash">listen_addresses = 'localhost'</code></pre>
+    <pre><code class="bash">listen_addresses = '*'</code></pre>
+    <h3>2. Edit your pg_hba.conf</h3>
+    <p>You can find this file in <code>/etc/postgresql/<b>12</b>/main/pg_hba.conf</code> (for postgres version 12).
+        After that add this lines:</p>
+    <pre><code class="bash">host    all             all              0.0.0.0/0                       md5
+host    all             all              ::/0                            md5</code></pre>
+    <h3>3. Restart your server</h3>
+    <p>If you are started postgres as a cluster:</p>
+    <pre><code class="bash">pg_ctlcluster 12 main restart</code></pre>
+
+    <hr/>
+    <b>Related articles</b>:
+    <ul>
+        <li><a href="https://www.postgresql.org/docs/12/sql-grant.html">
+            GRANT
+        </a></li>
+        <li><a href="https://www.postgresql.org/docs/12/runtime-config-connection.html">
+            19.3. Connections and Authentication
+        </a></li>
+        <li><a href="https://www.postgresql.org/docs/9.1/auth-pg-hba-conf.html">
+            19.1. The pg_hba.conf File
+        </a></li>
+    </ul>
+
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>

@@ -15,7 +15,7 @@
         .page {
             font-family: monospace;
             margin-left: 3em;
-            margin-top: 3em;
+            margin-top: 0.5em;
             margin-right: 3em;
             font-size: 1.2em;
         }
@@ -25,6 +25,10 @@
             justify-content: center;
             text-align: center;
             margin-bottom: 3em;
+        }
+
+        .header-title {
+            justify-content: center;
         }
 
         .title {
@@ -77,18 +81,22 @@
 <div class="page">
     <div class="header">
         <div>
-            <img class="d-block mx-auto mb-4 rounded" src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
-                 width="100"
-                 height="100"/>
-            <h1 class="title">Mark Andreev</h1>
-            <h2 class="subtitle">#[Machine Learning Engineer]</h2>
+            <div class="header-title">
+                <div>
+                    <img class="d-block mx-auto mb-4 rounded" src="upload/img/avatar-100x100.png" alt=""
+                         width="100"
+                         height="100"/>
+                </div>
+                <div><h1 class="title">Mark Andreev</h1>
+                    <h2 class="subtitle">#[Machine Learning Engineer]</h2></div>
+            </div>
         </div>
     </div>
     <div class="body">
         <div class="body-col">
             <div class="block">
                 <span class="block-title">// Contacts</span>
-                <span class="block-item"><strong>mark.andreev@gmail.com</strong></span>
+                <span class="block-item"><strong><a href="mailto:mark.andreev@gmail.com">mark.andreev@gmail.com</a></strong></span>
                 <span class="block-item">
                     <a href="https://www.facebook.com/mark.andreev">Facebook</a>
                     <a href="https://linkedin.com/in/mark-andreev-75a753134">Linkedin</a>
@@ -97,6 +105,15 @@
             </div>
             <div class="block">
                 <span class="block-title">// Blog</span>
+                <span class="block-item">
+                    <a href="/blog/jvm-performance">JVM Performance</a>
+                </span>
+                <span class="block-item">
+                    <a href="/blog/postgres-index">Postgres Indexes, Deep dive</a>
+                </span>
+                <span class="block-item">
+                    <a href="/blog/postgres-for-analytics">PostgreSQL for Analytics</a>
+                </span>
                 <span class="block-item">
                     <a href="/blog/tornado-swagger">Tornado-Swagger | Tornado Extension</a>
                 </span>
@@ -138,29 +155,26 @@
         <div class="body-col">
             <div class="block">
                 <span class="block-title">// Job</span>
-                <span class="block-item"><strong>Conundrum.ai</strong>, 2018-now</span>
+                <span class="block-item"><strong>Conundrum.ai</strong>, 2017-now</span>
                 <span class="block-item">#[Machine Learning Engineer]</span>
-                <span class="block-item block-item-sm">Develop & Deploy data processing & machine learning services</span>
-                <span class="block-item"><strong>Conundrum.ai</strong>, 2017-2018</span>
-                <span class="block-item">#[Data scientist]</span>
-                <span class="block-item block-item-sm">Predictive & Descriptive analysis on Tabular & Text & Geo</span>
+                <span class="block-item block-item-sm">Develop & Deploy data processing & machine learning services for time series data</span>
             </div>
             <div class="block">
                 <span class="block-title">// Development Stack</span>
                 <span class="block-item">
-                    <strong>Java</strong>. Spring, Spring Data, Spring AMQP Spring Security
+                    <strong>Java</strong>. Spring: MVC, Data, AMQP, Kafka, Integration, Batch, Security
                 </span>
                 <span class="block-item">
-                    <strong>Python</strong>. NumPy, Pandas, Scikit-learn, Tornado
+                    <strong>Python</strong>. Pandas, Scikit-learn, Matplotlib, Tornado
                 </span>
                 <span class="block-item">
-                    <strong>Typescript</strong>. Angular Basics, Apollo, D3.js, SVG
+                    <strong>Typescript</strong>. Angular, Apollo
                 </span>
                 <span class="block-item">
-                    <strong>Third party</strong>. PostgreSQL, MongoDB, RabbitMQ, Kafka, KeyCloak, Docker, Linux
+                    <strong>Third party</strong>. PostgreSQL, MongoDB, RabbitMQ, Redis, Kafka, Keycloak, Docker, K8S, Linux
                 </span>
                 <span class="block-item">
-                    <strong>Cloud</strong>. AWS, EC2, S3, RDS, CloudFront, SQS, SNS, Lambda, IAM
+                    <strong>Cloud</strong>. AWS: EC2, S3, RDS, CloudFront, SQS, SNS, Lambda, IAM, Registry; Azure: VM, BLOB, Registry
                 </span>
             </div>
         </div>
