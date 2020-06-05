@@ -97,45 +97,61 @@
         <li>Singleton</li>
     </ul>
     <h4>Abstract factory</h4>
-    <p>Provide an interface for creating families of related or dependent objects without specifying their concrete classes.</p>
+    <p>Provide an interface for creating families of related or dependent objects without specifying their concrete
+        classes.</p>
     <div><img src="data/p-f.jpg" class="img-fluid" alt=""/></div>
     <hr/>
     <h4>Builder</h4>
-    <p>Separate the construction of a complex object from its representation, allowing the same construction process to create various representations.</p>
+    <p>Separate the construction of a complex object from its representation, allowing the same construction process to
+        create various representations.</p>
     <div><img src="data/p-builder.png" class="img-fluid" alt=""/></div>
     <hr/>
     <h4>Dependency Injection</h4>
-    <p>Separate the construction of a complex object from its representation, allowing the same construction process to create various representations.</p>
+    <p>Separate the construction of a complex object from its representation, allowing the same construction process to
+        create various representations.</p>
     <div><img src="data/p-di.jpg" class="img-fluid" alt=""/></div>
     <hr/>
     <h4>Factory method pattern</h4>
-    <p>In class-based programming, the factory method pattern is a creational pattern that uses factory methods to deal with the problem of creating objects without having to specify the exact class of the object that will be created. This is done by creating objects by calling a factory method—either specified in an interface and implemented by child classes, or implemented in a base class and optionally overridden by derived classes—rather than by calling a constructor.</p>
+    <p>In class-based programming, the factory method pattern is a creational pattern that uses factory methods to deal
+        with the problem of creating objects without having to specify the exact class of the object that will be
+        created. This is done by creating objects by calling a factory method—either specified in an interface and
+        implemented by child classes, or implemented in a base class and optionally overridden by derived classes—rather
+        than by calling a constructor.</p>
     <div><img src="data/p-fm.jpg" class="img-fluid" alt=""/></div>
     <hr/>
     <h4>Lazy initialization</h4>
-    <p>In computer programming, lazy initialization is the tactic of delaying the creation of an object, the calculation of a value, or some other expensive process until the first time it is needed. It is a kind of lazy evaluation that refers specifically to the instantiation of objects or other resources.</p>
+    <p>In computer programming, lazy initialization is the tactic of delaying the creation of an object, the calculation
+        of a value, or some other expensive process until the first time it is needed. It is a kind of lazy evaluation
+        that refers specifically to the instantiation of objects or other resources.</p>
     <hr/>
     <h4>Multiton pattern</h4>
-    <p>In software engineering, the multiton pattern is a design pattern which generalizes the singleton pattern. Whereas the singleton allows only one instance of a class to be created, the multiton pattern allows for the controlled creation of multiple instances, which it manages through the use of a map.</p>
+    <p>In software engineering, the multiton pattern is a design pattern which generalizes the singleton pattern.
+        Whereas the singleton allows only one instance of a class to be created, the multiton pattern allows for the
+        controlled creation of multiple instances, which it manages through the use of a map.</p>
     <hr/>
     <h4>Object pool pattern</h4>
-    <p>The object pool pattern is a software creational design pattern that uses a set of initialized objects kept ready to use – a "pool" – rather than allocating and destroying them on demand. A client of the pool will request an object from the pool and perform operations on the returned object. When the client has finished, it returns the object to the pool rather than destroying it; this can be done manually or automatically.</p>
+    <p>The object pool pattern is a software creational design pattern that uses a set of initialized objects kept ready
+        to use – a "pool" – rather than allocating and destroying them on demand. A client of the pool will request an
+        object from the pool and perform operations on the returned object. When the client has finished, it returns the
+        object to the pool rather than destroying it; this can be done manually or automatically.</p>
     <hr/>
     <h4>Prototype</h4>
-    <p>The prototype pattern is a creational design pattern in software development. It is used when the type of objects to create is determined by a prototypical instance, which is cloned to produce new objects.</p>
+    <p>The prototype pattern is a creational design pattern in software development. It is used when the type of objects
+        to create is determined by a prototypical instance, which is cloned to produce new objects.</p>
     <div><img src="data/f-proto.jpg" class="img-fluid" alt=""/></div>
     <hr/>
     <h4>Singleton</h4>
-    <p>In software engineering, the singleton pattern is a software design pattern that restricts the instantiation of a class to one "single" instance. This is useful when exactly one object is needed to coordinate actions across the system. The term comes from the mathematical concept of a singleton.</p>
+    <p>In software engineering, the singleton pattern is a software design pattern that restricts the instantiation of a
+        class to one "single" instance. This is useful when exactly one object is needed to coordinate actions across
+        the system. The term comes from the mathematical concept of a singleton.</p>
     <div><img src="data/p-singl.png" class="img-fluid" alt=""/></div>
     <hr/>
     <h3>Structural patterns</h3>
     <ul>
-        <li>Adapter, Wrapper, or Translator</li>
+        <li>Adapter (Wrapper, Translator)</li>
         <li>Bridge</li>
         <li>Composite</li>
         <li>Decorator</li>
-        <li>Extension object</li>
         <li>Facade</li>
         <li>Flyweight</li>
         <li>Front controller</li>
@@ -144,6 +160,48 @@
         <li>Proxy</li>
         <li>Twin</li>
     </ul>
+    <h4>Adapter</h4>
+    <p>Converts one interface to another so that it matches what the client is expecting</p>
+    <div><img src="data/p-adapter.jpg" class="img-fluid" alt=""/></div>
+    <h4>Bridge</h4>
+    <p>Decouple an abstraction from its implementation allowing the two to vary independently.</p>
+    <div><img src="data/p-bridge.jpg" class="img-fluid" alt=""/></div>
+    <h4>Composite</h4>
+    <p>Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual
+        objects and compositions of objects uniformly.</p>
+    <div><img src="data/p-compose.jpg" class="img-fluid" alt=""/></div>
+    <h4>Decorator</h4>
+    <p>Dynamically adds responsibility to the interface by wrapping the original code. Attach additional
+        responsibilities to an object dynamically keeping the same interface. Decorators provide a flexible alternative
+        to subclassing for extending functionality. </p>
+    <div><img src="data/p-decorator.jpg" class="img-fluid" alt=""/></div>
+    <h4>Facade</h4>
+    <p>Provide a unified interface to a set of interfaces in a subsystem. Facade defines a higher-level interface that
+        makes the subsystem easier to use.</p>
+    <div><img src="data/p-facade.jpg" class="img-fluid" alt=""/></div>
+    <h4>Flyweight</h4>
+    <p>Use sharing to support large numbers of similar objects efficiently. A classic example usage of the flyweight
+        pattern is the data structures for graphical representation of characters in a word processor. It might be
+        desirable to have, for each character in a document, a glyph object containing its font outline, font metrics,
+        and other formatting data, but this would amount to hundreds or thousands of bytes for each character. Instead,
+        for every character there might be a reference to a flyweight glyph object shared by every instance of the same
+        character in the document; only the position of each character (in the document and/or the page) would need to
+        be stored internally.</p>
+    <div><img src="data/f-flyweight.jpg" class="img-fluid" alt=""/></div>
+    <h4>Front controller</h4>
+    <p>The pattern relates to the design of Web applications. It provides a centralized entry point for handling requests.</p>
+    <div><img src="data/p-fc.png" class="img-fluid" alt=""/></div>
+    <h4>Marker</h4>
+    <p>Empty interface to associate metadata with a class. An example of the application of marker interfaces from the Java programming language is the Serializable interface. </p>
+    <h4>Module</h4>
+    <p>Group several related elements, such as classes, singletons, methods, globally used, into a single conceptual entity. [<a href="https://www.oracle.com/corporate/features/understanding-java-9-modules.html">Java Modules</a>] </p>
+    <h4>Proxy</h4>
+    <p>Provide a surrogate or placeholder for another object to control access to it.</p>
+    <div><img src="data/p-proxy.jpg" class="img-fluid" alt=""/></div>
+    <h4>Twin</h4>
+    <p>Twin allows modeling of multiple inheritance in programming languages that do not support this feature.</p>
+    <div><img src="data/p-twin.png" class="img-fluid" alt=""/></div>
+
     <hr/>
     <h3>Behavioral patterns</h3>
     <ul>
