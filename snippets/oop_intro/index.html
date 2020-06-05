@@ -31,14 +31,57 @@
 <div class="container">
     <p></p>
     <pre><code class="bash"></code></pre>
-    <h2>Primitives</h2>
-    <ul>
-        <li>Class</li>
-        <li>Interface</li>
-        <li>Object</li>
-    </ul>
-    <p>UML: Structure diagrams, Behavior diagrams, Interaction diagrams
-        (https://en.wikipedia.org/wiki/Unified_Modeling_Language)</p>
+    <h2>UML</h2>
+    <p>A UML diagram is a graphical representation of part of a model, typically showing a number of elements connected
+        by relationships. Diagrams are one of the most expressive and appealing views of the repository; the diagram has
+        a name and type and is typically constructed for a particular audience to convey an idea or to create a
+        narrative description of part of the model. Diagrams can also be used to generate useful system artifacts such
+        as XML schemas, database schemas, programming code and more. [<a
+                href="https://sparxsystems.com/enterprise_architect_user_guide/15.1/model_domains/umldiagrams.html">ref</a>]
+    </p>
+    <hr/>
+    <h3>Structural Models</h3>
+    <h3>Class diagram</h3>
+    <p>The Class diagram captures the logical structure of the system - the Classes - and things that make up the model.
+        It is a static model, describing what exists and what attributes and behavior it has, rather than how something
+        is done. On a Class diagram you can illustrate relationships between Classes and Interfaces using
+        Generalizations, Aggregations and Associations, which are valuable in reflecting inheritance, composition or
+        usage, and connections respectively.</p>
+    <div><img src="data/cls-diagram.png" class="img-fluid" alt=""/></div>
+    <h3>Composite Structure</h3>
+    <p>A Composite Structure diagram reflects the internal collaboration of Classes, Interfaces or Components (and their
+        properties) to describe a functionality. Composite Structure diagrams are similar to Class diagrams, but whilst
+        Class diagrams model a static view of Class structures, including their attributes and behaviors, Composite
+        Structure diagrams model a specific usage of the structure. You can use them to express run-time architectures,
+        usage patterns and the participating elements' relationships, which might not be reflected by static
+        diagrams.</p>
+    <div><img src="data/cm-struct.png" class="img-fluid" alt=""/></div>
+    <h3>Component</h3>
+    <p>A Component diagram has a higher level of abstraction than a Class diagram; usually a component is implemented by
+        one or more Classes (or Objects) at runtime. They are building blocks, built up so that eventually a component
+        can encompass a large portion of a system.</p>
+    <div><img src="data/cm.png" class="img-fluid" alt=""/></div>
+    <h3>Deployment</h3>
+    <p>A Deployment diagram shows how and where the system is to be deployed; that is, its execution architecture.</p>
+    <div><img src="data/deploy.png" class="img-fluid" alt=""/></div>
+    <hr/>
+    <h2>Behavioral</h2>
+    <h3>Use Case</h3>
+    <p>Use Case diagrams capture Use Cases and the relationships between Actors and the subject (system).</p>
+    <div><img src="data/usecase.png" class="img-fluid" alt=""/></div>
+    <h3>StateMachines</h3>
+    <p>StateMachines illustrate how an element (often a Class) can move between States, classifying its behavior
+        according to transition triggers and constraining guards.</p>
+    <div><img src="data/state.png" class="img-fluid" alt=""/></div>
+    <h3>Sequence</h3>
+    <p>A Sequence diagram is a structured representation of behavior as a series of sequential steps over time.</p>
+    <div><img src="data/sequence.png" class="img-fluid" alt=""/></div>
+    <h3>Communication</h3>
+    <p>A Communication diagram is a diagram that shows the interactions between elements at run-time in much the same
+        manner as a Sequence diagram. However, Communication diagrams are used to visualize inter-object relationships,
+        while Sequence diagrams are more effective at visualizing processing over time.</p>
+    <div><img src="data/communication.png" class="img-fluid" alt=""/></div>
+    <hr/>
     <h2>Patterns</h2>
     <p>Creational patterns</p>
     <p>Structural patterns</p>
@@ -47,6 +90,8 @@
     https://en.wikipedia.org/wiki/Software_design_pattern
     https://en.wikipedia.org/wiki/Architectural_pattern
     https://en.wikipedia.org/wiki/List_of_software_architecture_styles_and_patterns
+    <h3>Enterprise Integration Patterns</h3>
+    <p>https://camel.apache.org/components/latest/eips/enterprise-integration-patterns.html</p>
     <h2>SOLID and GRASP</h2>
     <p>
         <b>SOLID</b>
