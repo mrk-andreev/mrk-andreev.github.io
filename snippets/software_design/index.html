@@ -1352,6 +1352,24 @@ class Foo {
         and provide the client with a key or token that the data store can validate.</p>
     <div><img src="data/valet-key-pattern.png" class="img-fluid" alt=""/></div>
     <hr/>
+    <h3>Data Consistency</h3>
+    <ul>
+        <li><b>Strong Consistency</b>. In the strong consistency model, all changes are atomic. If a transaction updates
+            multiple data items, the transaction is not allowed to complete until either all of the changes have been
+            made successfully, or (in the event of a failure) they have all been undone. In the time between a
+            transaction starting and completing, other concurrent transactions may not be able access any of the data
+            that has been modified; they will be blocked. If data is being replicated, a transaction that implements
+            strong consistency may not be allowed to complete until every copy of each item that has changed has been
+            successfully updated.
+        </li>
+        <li><b>Eventual Consistency</b>. Eventual consistency is a rather more pragmatic approach to data consistency.
+            In many cases, strong consistency is not actually required as long all the work performed by a transaction
+            is completed or rolled back at some point, and no updates are lost. In the eventual consistency model, data
+            update operations that span multiple sites can ripple through the various data stores in their own time,
+            without blocking concurrent application instances that access the same data.
+        </li>
+    </ul>
+
     <h3>Enterprise Integration Patterns</h3>
     <p>https://camel.apache.org/components/latest/eips/enterprise-integration-patterns.html</p>
     <h2>Architectural pattern</h2>
