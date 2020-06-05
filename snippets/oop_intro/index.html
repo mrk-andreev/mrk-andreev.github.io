@@ -340,6 +340,9 @@
     <pre><code class="java">Function&lt;IntUnaryOperator, IntUnaryOperator&gt; twice = f -&gt; f.andThen(f);
 twice.apply(x -&gt; x + 3).applyAsInt(7); // 13</code></pre>
     <h4>Closure</h4>
+    <p>Closures are useful because they let you associate data (the lexical environment) with a function that operates
+        on that data. This has obvious parallels to object-oriented programming, where objects allow you to associate
+        data (the object's properties) with one or more methods.</p>
     <pre><code class="js">function makeSizer(size) {
   return function() {
     document.body.style.fontSize = size + 'px';
@@ -374,7 +377,8 @@ for (int f: fibonacci(10)) {
 }</code></pre>
     <hr/>
     <h3>Concurrency patterns</h3>
-    <p>https://en.wikipedia.org/wiki/Twin_pattern</p>
+    <p>https://en.wikipedia.org/wiki/Pattern-Oriented_Software_Architecture</p>
+    <p>https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html</p>
     <ul>
         <li>Active Object</li>
         <li>Balking</li>
@@ -403,6 +407,417 @@ for (int f: fibonacci(10)) {
         <li>Proactor</li>
         <li>STM (Software transactional memory)</li>
     </ul>
+    <h4>Active Object</h4>
+    <p>Decouples method execution from method invocation that reside in their own thread of control. The goal is to
+        introduce concurrency, by using asynchronous method invocation and a scheduler for handling requests.</p>
+    <div>
+        The pattern consists of six elements:
+
+        <ul>
+            <li>A proxy, which provides an interface towards clients with publicly accessible methods.</li>
+            <li>An interface which defines the method request on an active object.</li>
+            <li>A list of pending requests from clients.</li>
+            <li>A scheduler, which decides which request to execute next.</li>
+            <li>The implementation of the active object method.</li>
+            <li>A callback or variable for the client to receive the result.</li>
+        </ul>
+    </div>
+    <h4>Balking</h4>
+    <p>Only execute an action on an object when the object is in a particular state. For example, if an object reads ZIP
+        files and a calling method invokes a get method on the object when the ZIP file is not open, the object would
+        "balk" at the request. In the Java programming language, for example, an IllegalStateException might be thrown
+        under these circumstances.</p>
+    <pre><code class="java">public class Example {
+    private boolean jobInProgress = false;
+
+    public void job() {
+        synchronized(this) {
+            if (jobInProgress) {
+                return;
+            }
+            jobInProgress = true;
+        }
+        // Code to execute job goes here
+        // ...
+        jobCompleted();
+    }
+
+    void jobCompleted() {
+        synchronized(this) {
+            jobInProgress = false;
+        }
+    }
+}</code></pre>
+    <h4>Actor</h4>
+    <p>The actor model adopts the philosophy that everything is an actor. This is similar to the everything is an object
+        philosophy used by some object-oriented programming languages. An actor is a computational entity that, in
+        response to a message it receives, can concurrently:</p>
+    <ul>
+        <li>send a finite number of messages to other actors;</li>
+        <li>create a finite number of new actors;</li>
+        <li>designate the behavior to be used for the next message it receives.</li>
+        <li>There is no assumed sequence to the above actions and they could be carried out in parallel.</li>
+    </ul>
+    <h4>Binding properties</h4>
+    <p>Combining multiple observers to force properties in different objects to be synchronized or coordinated in some
+        way. As an alternative to the aspect-oriented implementation of mutual properties, property binding can be
+        proposed.</p>
+    <pre><code>bind_multiple_one_way(src_obj, src_prop, dst_objs[], dst_props[])
+{
+  for (i, j) in (dst_objs, dst_props)
+  {
+    bind_properties_one_way(src_obj, src_prop, i, j);
+  }
+}
+
+// In this pseudo-code are not taken into the account initial values assignments
+bind_two_way(prop1, prop2)
+{
+  bind(prop1, prop2);
+  bind(prop2, prop1);
+}
+
+
+on_property_change(src_prop, dst_prop)
+{
+  block_signal(src_obj, on_property_change);
+  dst_prop := src_prop;
+  unblock_signal(src_obj, on_property_change);
+}</code></pre>
+
+    <h4>Compute kernel</h4>
+    <p>In computing, a compute kernel is a routine compiled for high throughput accelerators (such as graphics
+        processing units (GPUs), digital signal processors (DSPs) or field-programmable gate arrays (FPGAs)), separate
+        from but used by a main program (typically running on a central processing unit). They are sometimes called
+        compute shaders, sharing execution units with vertex shaders and pixel shaders on GPUs, but are not limited to
+        execution on one class of device, or graphics APIs. Compute kernels roughly correspond to inner loops when
+        implementing algorithms in traditional languages (except there is no implied sequential operation), or to code
+        passed to internal iterators.</p>
+
+    <h4>Double-checked locking</h4>
+    <p>Reduce the overhead of acquiring a lock by first testing the locking criterion (the 'lock hint') in an unsafe
+        manner; only if that succeeds does the actual locking logic proceed. Can be unsafe when implemented in some
+        language/hardware combinations. It can therefore sometimes be considered an anti-pattern.</p>
+    <pre><code class="java">// Single-threaded version
+class Foo {
+    private Helper helper;
+    public Helper getHelper() {
+        if (helper == null) {
+            helper = new Helper();
+        }
+        return helper;
+    }
+
+    // other functions and members...
+}
+
+class Foo {
+    private volatile Helper helper;
+    public Helper getHelper() {
+        Helper localRef = helper;
+        if (localRef == null) {
+            synchronized (this) {
+                localRef = helper;
+                if (localRef == null) {
+                    helper = localRef = new Helper();
+                }
+            }
+        }
+        return localRef;
+    }
+
+    // other functions and members...
+}</code></pre>
+    <h4>Event-based asynchronous</h4>
+    <p>Addresses problems with the asynchronous pattern that occur in multithreaded programs. Asynchronous pattern is a
+        design pattern in which the call site is not blocked while waiting for the called code to finish. Instead, the
+        calling thread is notified when the reply arrives. Polling for a reply is an undesired option. FutureTask class
+        in Java use events to solve the same problem. This pattern is a variant of AMI whose implementation carries more
+        overhead, but it is useful for objects representing software components.</p>
+    <h4>Guarded suspension</h4>
+    <p>Manages operations that require both a lock to be acquired and a precondition to be satisfied before the
+        operation can be executed. The guarded suspension pattern is typically applied to method calls in
+        object-oriented programs, and involves suspending the method call, and the calling thread, until the
+        precondition (acting as a guard) is satisfied. Because it is blocking, the guarded suspension pattern is
+        generally only used when the developer knows that a method call will be suspended for a finite and reasonable
+        period of time. If a method call is suspended for too long, then the overall program will slow down or stop,
+        waiting for the precondition to be satisfied. If the developer knows that the method call suspension will be
+        indefinite or for an unacceptably long period, then the balking pattern may be preferred.</p>
+    <pre><code>public class Example {
+    synchronized void guardedMethod() {
+        while (!preCondition()) {
+            try {
+                // Continue to wait
+                wait();
+                // …
+            } catch (InterruptedException e) {
+                // …
+            }
+        }
+        // Actual task implementation
+    }
+    synchronized void alterObjectStateMethod() {
+        // Change the object state
+        // …
+        // Inform waiting threads
+        notify();
+    }
+}</code></pre>
+    <h4>Join</h4>
+    <p>Join-pattern provides a way to write concurrent, parallel and distributed programs by message passing. Compared
+        to the use of threads and locks, this is a high-level programming model. This template is based on join-calculus
+        and uses pattern matching. Concretely, this is done by allowing the join definition of several functions and/or
+        channels by matching concurrent call and messages patterns. It is a type of concurrency pattern because it makes
+        easier and more flexible for these entities to communicate and deal with the multi-threaded programming
+        paradigm. [<a href="https://en.wikipedia.org/wiki/Join-pattern">ref</a>]</p>
+    <p>Join-pattern in classic programming literature:</p>
+    <ul>
+        <li>Barriers</li>
+        <li>Dining philosophers problem</li>
+        <li>Mutual exclusion</li>
+        <li>Reader-writer locking</li>
+        <li>Semaphores</li>
+    </ul>
+    <h4>Lock</h4>
+    <p>One thread puts a "lock" on a resource, preventing other threads from accessing or modifying it. Java provides
+        the keyword synchronized to lock code blocks, methods or objects and libraries featuring concurrency-safe data
+        structures.</p>
+    <h4>Messaging design pattern (MDP)</h4>
+    <p>Allows the interchange of information (i.e. messages) between components and applications. In telecommunications,
+        a message exchange pattern (MEP) describes the pattern of messages required by a communications protocol to
+        establish or use a communication channel. There are two major message exchange patterns — a request–response
+        pattern, and a one-way pattern. For example, HTTP is a request–response pattern protocol, and UDP is a one-way
+        pattern.</p>
+    <h4>Monitor object</h4>
+    <p>An object whose methods are subject to mutual exclusion, thus preventing multiple objects from erroneously trying
+        to use it at the same time. Monitor is a synchronization construct that allows threads to have both mutual
+        exclusion and the ability to wait (block) for a certain condition to become false. Monitors also have a
+        mechanism for signaling other threads that their condition has been met. A monitor consists of a mutex (lock)
+        object and condition variables. A condition variable essentially is a container of threads that are waiting for
+        a certain condition. Monitors provide a mechanism for threads to temporarily give up exclusive access in order
+        to wait for some condition to be met, before regaining exclusive access and resuming their task.</p>
+    <pre><code>public void addName(String name) {
+    synchronized(this) {
+        lastName = name;
+        nameCount++;
+    }
+    nameList.add(name);
+}</code></pre>
+    <h4>Reactor</h4>
+    <p>A reactor object provides an asynchronous interface to resources that must be handled synchronously. The service
+        handler then demultiplexes the incoming requests and dispatches them synchronously to the associated request
+        handlers. </p>
+    <h4>Read-write lock</h4>
+    <p>Allows concurrent read access to an object, but requires exclusive access for write operations.An RW lock allows
+        concurrent access for read-only operations, while write operations require exclusive access. This means that
+        multiple threads can read the data in parallel but an exclusive lock is needed for writing or modifying data.
+        When a writer is writing the data, all other writers or readers will be blocked until the writer is finished
+        writing. A common use might be to control access to a data structure in memory that cannot be updated atomically
+        and is invalid (and should not be read by another thread) until the update is complete.</p>
+    <pre><code class="java">class CachedData {
+   Object data;
+   volatile boolean cacheValid;
+   final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+
+   void processCachedData() {
+     rwl.readLock().lock();
+     if (!cacheValid) {
+        // Must release read lock before acquiring write lock
+        rwl.readLock().unlock();
+        rwl.writeLock().lock();
+        try {
+          // Recheck state because another thread might have
+          // acquired write lock and changed state before we did.
+          if (!cacheValid) {
+            data = ...
+            cacheValid = true;
+          }
+          // Downgrade by acquiring read lock before releasing write lock
+          rwl.readLock().lock();
+        } finally {
+          rwl.writeLock().unlock(); // Unlock write, still hold read
+        }
+     }
+
+     try {
+       use(data);
+     } finally {
+       rwl.readLock().unlock();
+     }
+   }
+ }</code></pre>
+    <h4>Stamped Lock</h4>
+    <p>A capability-based lock with three modes for controlling read/write access. The state of a StampedLock consists
+        of a version and mode. Lock acquisition methods return a stamp that represents and controls access with respect
+        to a lock state; "try" versions of these methods may instead return the special value zero to represent failure
+        to acquire access. Lock release and conversion methods require stamps as arguments, and fail if they do not
+        match the state of the lock. The three modes are:</p>
+    <ul>
+        <li>Writing. Method writeLock() possibly blocks waiting for exclusive access, returning a stamp that can be used
+            in method unlockWrite(long) to release the lock. Untimed and timed versions of tryWriteLock are also
+            provided. When the lock is held in write mode, no read locks may be obtained, and all optimistic read
+            validations will fail.
+        </li>
+        <li>Reading. Method readLock() possibly blocks waiting for non-exclusive access, returning a stamp that can be
+            used in method unlockRead(long) to release the lock. Untimed and timed versions of tryReadLock are also
+            provided.
+        </li>
+        <li>Optimistic Reading. Method tryOptimisticRead() returns a non-zero stamp only if the lock is not currently
+            held in write mode. Method validate(long) returns true if the lock has not been acquired in write mode since
+            obtaining a given stamp. This mode can be thought of as an extremely weak version of a read-lock, that can
+            be broken by a writer at any time. The use of optimistic mode for short read-only code segments often
+            reduces contention and improves throughput. However, its use is inherently fragile. Optimistic read sections
+            should only read fields and hold them in local variables for later use after validation. Fields read while
+            in optimistic mode may be wildly inconsistent, so usage applies only when you are familiar enough with data
+            representations to check consistency and/or repeatedly invoke method validate(). For example, such steps are
+            typically required when first reading an object or array reference, and then accessing one of its fields,
+            elements or methods.
+        </li>
+    </ul>
+    <p>StampedLocks are designed for use as internal utilities in the development of thread-safe components. Their use
+        relies on knowledge of the internal properties of the data, objects, and methods they are protecting. They are
+        not reentrant, so locked bodies should not call other unknown methods that may try to re-acquire locks (although
+        you may pass a stamp to other methods that can use or convert it). The use of read lock modes relies on the
+        associated code sections being side-effect-free. Unvalidated optimistic read sections cannot call methods that
+        are not known to tolerate potential inconsistencies. Stamps use finite representations, and are not
+        cryptographically secure (i.e., a valid stamp may be guessable). Stamp values may recycle after (no sooner than)
+        one year of continuous operation. A stamp held without use or validation for longer than this period may fail to
+        validate correctly. StampedLocks are serializable, but always deserialize into initial unlocked state, so they
+        are not useful for remote locking.</p>
+    <pre><code class="java"> class Point {
+   private double x, y;
+   private final StampedLock sl = new StampedLock();
+
+   void move(double deltaX, double deltaY) { // an exclusively locked method
+     long stamp = sl.writeLock();
+     try {
+       x += deltaX;
+       y += deltaY;
+     } finally {
+       sl.unlockWrite(stamp);
+     }
+   }
+
+   double distanceFromOrigin() { // A read-only method
+     long stamp = sl.tryOptimisticRead();
+     double currentX = x, currentY = y;
+     if (!sl.validate(stamp)) {
+        stamp = sl.readLock();
+        try {
+          currentX = x;
+          currentY = y;
+        } finally {
+           sl.unlockRead(stamp);
+        }
+     }
+     return Math.sqrt(currentX * currentX + currentY * currentY);
+   }
+
+   void moveIfAtOrigin(double newX, double newY) { // upgrade
+     // Could instead start with optimistic, not read mode
+     long stamp = sl.readLock();
+     try {
+       while (x == 0.0 && y == 0.0) {
+         long ws = sl.tryConvertToWriteLock(stamp);
+         if (ws != 0L) {
+           stamp = ws;
+           x = newX;
+           y = newY;
+           break;
+         }
+         else {
+           sl.unlockRead(stamp);
+           stamp = sl.writeLock();
+         }
+       }
+     } finally {
+       sl.unlock(stamp);
+     }
+   }
+ }</code></pre>
+    <h4>Scheduler</h4>
+    <p>Explicitly control when threads may execute single-threaded code. A scheduler is what carries out the scheduling
+        activity. Schedulers are often implemented so they keep all computer resources busy (as in load balancing),
+        allow multiple users to share system resources effectively, or to achieve a target quality of service.
+        Scheduling is fundamental to computation itself, and an intrinsic part of the execution model of a computer
+        system; the concept of scheduling makes it possible to have computer multitasking with a single central
+        processing unit (CPU).</p>
+    <h4>Thread pool</h4>
+    <p>A number of threads are created to perform a number of tasks, which are usually organized in a queue. Typically,
+        there are many more tasks than threads. Can be considered a special case of the object pool pattern.Often also
+        called a replicated workers or worker-crew model, a thread pool maintains multiple threads waiting for tasks to
+        be allocated for concurrent execution by the supervising program. By maintaining a pool of threads, the model
+        increases performance and avoids latency in execution due to frequent creation and destruction of threads for
+        short-lived tasks. The number of available threads is tuned to the computing resources available to the program,
+        such as a parallel task queue after completion of execution.</p>
+    <h4>Thread-specific storage</h4>
+    <p>Static or "global" memory local to a thread. While the use of global variables is generally discouraged in modern
+        programming, legacy operating systems such as UNIX are designed for uniprocessor hardware and require some
+        additional mechanism to retain the semantics of pre-reentrant APIs. An example of such situations is where
+        functions use a global variable to set an error condition (for example the global variable errno used by many
+        functions of the C library). If errno were a global variable, a call of a system function on one thread may
+        overwrite the value previously set by a call of a system function on a different thread, possibly before
+        following code on that different thread could check for the error condition. The solution is to have errno be a
+        variable that looks like it is global, but in fact exists once per thread—i.e., it lives in thread-local
+        storage. A second use case would be multiple threads accumulating information into a global variable. To avoid a
+        race condition, every access to this global variable would have to be protected by a mutex. Alternatively, each
+        thread might accumulate into a thread-local variable (that, by definition, cannot be read from or written to
+        from other threads, implying that there can be no race conditions). Threads then only have to synchronise a
+        final accumulation from their own thread-local variable into a single, truly global variable.</p>
+    <pre><code class="java">private static final ThreadLocal&lt;Integer&gt; myThreadLocalInteger = new ThreadLocal&lt;&gt;();</code></pre>
+    <h4>Immutable object</h4>
+    <p>Strings and other concrete objects are typically expressed as immutable objects to improve readability and
+        runtime efficiency in object-oriented programming. Immutable objects are also useful because they are inherently
+        thread-safe. This is in contrast to a mutable object (changeable object), which can be modified after it is
+        created. In some cases, an object is considered immutable even if some internally used attributes change, but
+        the object's state appears unchanging from an external point of view. For example, an object that uses
+        memoization to cache the results of expensive computations could still be considered an immutable object. Other
+        benefits are that they are simpler to understand and reason about and offer higher security than mutable
+        objects. A classic example of an immutable object is an instance of the Java String class.</p>
+    <h4>Proactor</h4>
+    <p>Proactor is a software design pattern for event handling in which long running activities are running in an
+        asynchronous part. A completion handler is called after the asynchronous part has terminated. The proactor
+        pattern can be considered to be an asynchronous variant of the synchronous reactor pattern.</p>
+    <div><img src="data/p-proactor.png" class="img-fluid" alt=""/></div>
+    <h4>STM (Software transactional memory)</h4>
+    <p>In computer science, software transactional memory (STM) is a concurrency control mechanism analogous to database
+        transactions for controlling access to shared memory in concurrent computing. It is an alternative to lock-based
+        synchronization. STM is a strategy implemented in software, rather than as a hardware component. A transaction
+        in this context occurs when a piece of code executes a series of reads and writes to shared memory. </p>
+    <h4>Barrier</h4>
+    <p>In parallel computing, a barrier is a type of synchronization method. A barrier for a group of threads or
+        processes in the source code means any thread/process must stop at this point and cannot proceed until all other
+        threads/processes reach this barrier.</p>
+    <h4>Coroutine</h4>
+    <p>Coroutines are computer program components that generalize subroutines for non-preemptive multitasking, by
+        allowing execution to be suspended and resumed. Coroutines are well-suited for implementing familiar program
+        components such as cooperative tasks, exceptions, event loops, iterators, infinite lists and pipes.</p>
+    <p>Kotlin example:</p>
+    <pre><code class="kotlin">suspend fun main() = coroutineScope {
+    launch {
+       delay(1000)
+       println("Kotlin Coroutines World!")
+    }
+    println("Hello")
+}</code></pre>
+    <h4>Futures and promises</h4>
+    <p>In computer science, future, promise, delay, and deferred refer to constructs used for synchronizing program
+        execution in some concurrent programming languages. They describe an object that acts as a proxy for a result
+        that is initially unknown, usually because the computation of its value is not yet complete.</p>
+    <p>Java example:</p>
+    <pre><code class="java">public class SquareCalculator {
+
+    private ExecutorService executor
+      = Executors.newSingleThreadExecutor();
+
+    public Future&lt;Integer&gt; calculate(Integer input) {
+        return executor.submit(() -> {
+            Thread.sleep(1000);
+            return input * input;
+        });
+    }
+}</code></pre>
+
     <hr/>
     <h3>Architectural</h3>
     <ul>
