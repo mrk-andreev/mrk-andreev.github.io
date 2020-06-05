@@ -189,12 +189,16 @@
         be stored internally.</p>
     <div><img src="data/f-flyweight.jpg" class="img-fluid" alt=""/></div>
     <h4>Front controller</h4>
-    <p>The pattern relates to the design of Web applications. It provides a centralized entry point for handling requests.</p>
+    <p>The pattern relates to the design of Web applications. It provides a centralized entry point for handling
+        requests.</p>
     <div><img src="data/p-fc.png" class="img-fluid" alt=""/></div>
     <h4>Marker</h4>
-    <p>Empty interface to associate metadata with a class. An example of the application of marker interfaces from the Java programming language is the Serializable interface. </p>
+    <p>Empty interface to associate metadata with a class. An example of the application of marker interfaces from the
+        Java programming language is the Serializable interface. </p>
     <h4>Module</h4>
-    <p>Group several related elements, such as classes, singletons, methods, globally used, into a single conceptual entity. [<a href="https://www.oracle.com/corporate/features/understanding-java-9-modules.html">Java Modules</a>] </p>
+    <p>Group several related elements, such as classes, singletons, methods, globally used, into a single conceptual
+        entity. [<a href="https://www.oracle.com/corporate/features/understanding-java-9-modules.html">Java Modules</a>]
+    </p>
     <h4>Proxy</h4>
     <p>Provide a surrogate or placeholder for another object to control access to it.</p>
     <div><img src="data/p-proxy.jpg" class="img-fluid" alt=""/></div>
@@ -222,11 +226,33 @@
         <li>Visitor</li>
     </ul>
     <hr/>
+    <h3>Functional</h3>
+    <ul>
+        <li>Monoid</li>
+        <li>Functor</li>
+        <li>Applicative</li>
+        <li>Monad</li>
+        <li>Comonad</li>
+        <li>Free monad</li>
+        <li>HOF</li>
+        <li>Currying</li>
+        <li>Function composition</li>
+        <li>Closure</li>
+        <li>Generator</li>
+    </ul>
+    <hr/>
     <h3>Concurrency patterns</h3>
+    <p>https://en.wikipedia.org/wiki/Twin_pattern</p>
     <ul>
         <li>Active Object</li>
         <li>Balking</li>
+        <li>Actor</li>
+        <li>Barrier</li>
+        <li>Coroutine</li>
         <li>Binding properties</li>
+        <li>Fiber</li>
+        <li>Futex</li>
+        <li>Futures and promises</li>
         <li>Compute kernel</li>
         <li>Double-checked locking</li>
         <li>Event-based asynchronous</li>
@@ -240,6 +266,107 @@
         <li>Scheduler</li>
         <li>Thread pool</li>
         <li>Thread-specific storage</li>
+        <li>Immutable object</li>
+        <li>Nuclear</li>
+        <li>Proactor</li>
+        <li>STM (Software transactional memory)</li>
+    </ul>
+    <hr/>
+    <h3>Architectural</h3>
+    <ul>
+        <li><a href="/wiki/Action%E2%80%93domain%E2%80%93responder" title="Action–domain–responder">ADR</a></li>
+        <li><a href="/wiki/Active_record_pattern" title="Active record pattern">Active record</a></li>
+        <li><a href="/wiki/Broker_pattern" title="Broker pattern">Broker</a></li>
+        <li><a href="/wiki/Client%E2%80%93server_model" title="Client–server model">Client–server</a></li>
+        <li><a href="/wiki/Component-based_software_engineering" title="Component-based software engineering">CBD</a>
+        </li>
+        <li><a href="/wiki/Data_access_object" title="Data access object">DAO</a></li>
+        <li><a href="/wiki/Data_transfer_object" title="Data transfer object">DTO</a></li>
+        <li><a href="/wiki/Domain-driven_design" title="Domain-driven design">DDD</a></li>
+        <li><a href="/wiki/Entity-control-boundary" title="Entity-control-boundary">ECB</a></li>
+        <li><a href="/wiki/Entity%E2%80%93component%E2%80%93system" class="mw-redirect" title="Entity–component–system">ECS</a>
+        </li>
+        <li><a href="/wiki/Event-driven_architecture" title="Event-driven architecture">EDA</a></li>
+        <li><a href="/wiki/Front_controller" title="Front controller">Front controller</a></li>
+        <li><a href="/wiki/Identity_map_pattern" title="Identity map pattern">Identity map</a></li>
+        <li><a href="/wiki/Interceptor_pattern" title="Interceptor pattern">Interceptor</a></li>
+        <li><a href="/wiki/Implicit_invocation" title="Implicit invocation">Implicit invocation</a></li>
+        <li><a href="/wiki/Inversion_of_control" title="Inversion of control">Inversion of control</a></li>
+        <li><a href="/wiki/JSP_model_2_architecture" title="JSP model 2 architecture">Model 2</a></li>
+        <li><a href="/wiki/Message-oriented_middleware" title="Message-oriented middleware">MOM</a></li>
+        <li><a href="/wiki/Microservices" title="Microservices">Microservices</a></li>
+        <li><a href="/wiki/Model%E2%80%93view%E2%80%93adapter" title="Model–view–adapter">MVA</a></li>
+        <li><a href="/wiki/Model%E2%80%93view%E2%80%93controller" title="Model–view–controller">MVC</a></li>
+        <li><a href="/wiki/Model%E2%80%93view%E2%80%93presenter" title="Model–view–presenter">MVP</a></li>
+        <li><a href="/wiki/Model%E2%80%93view%E2%80%93viewmodel" title="Model–view–viewmodel">MVVM</a></li>
+        <li><a href="/wiki/Monolithic_application" title="Monolithic application">Monolithic</a></li>
+        <li><a href="/wiki/Multitier_architecture" title="Multitier architecture">Multitier</a></li>
+        <li><a href="/wiki/Naked_objects" title="Naked objects">Naked objects</a></li>
+        <li><a href="/wiki/Object_request_broker" title="Object request broker">ORB</a></li>
+        <li><a href="/wiki/Peer-to-peer" title="Peer-to-peer">P2P</a></li>
+        <li><a href="/wiki/Publish%E2%80%93subscribe_pattern" title="Publish–subscribe pattern">Publish–subscribe</a>
+        </li>
+        <li><a href="/wiki/Presentation%E2%80%93abstraction%E2%80%93control" title="Presentation–abstraction–control">PAC</a>
+        </li>
+        <li><a href="/wiki/Representational_state_transfer" title="Representational state transfer">REST</a></li>
+        <li><a href="/wiki/Service-oriented_architecture" title="Service-oriented architecture">SOA</a></li>
+        <li><a href="/wiki/Service_locator_pattern" title="Service locator pattern">Service locator</a></li>
+        <li><a href="/wiki/Shared-nothing_architecture" title="Shared-nothing architecture">SN</a></li>
+        <li><a href="/wiki/Space-based_architecture" title="Space-based architecture">SBA</a></li>
+        <li><a href="/wiki/Specification_pattern" title="Specification pattern">Specification</a></li>
+    </ul>
+    <hr/>
+    <h3>Cloud Distributed</h3>
+    <ul>
+        <li><a href="/w/index.php?title=Ambassador_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Ambassador pattern (page does not exist)">Ambassador</a></li>
+        <li><a href="/w/index.php?title=Anti-Corruption_Layer_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Anti-Corruption Layer pattern (page does not exist)">Anti-Corruption Layer</a></li>
+        <li><a href="/w/index.php?title=Bulkhead_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Bulkhead pattern (page does not exist)">Bulkhead</a></li>
+        <li><a href="/w/index.php?title=Cache-Aside_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Cache-Aside pattern (page does not exist)">Cache-Aside</a></li>
+        <li><a href="/wiki/Circuit_breaker_design_pattern" title="Circuit breaker design pattern">Circuit Breaker</a>
+        </li>
+        <li><a href="/wiki/Command%E2%80%93query_separation" title="Command–query separation">CQRS</a></li>
+        <li><a href="/wiki/Compensating_transaction" title="Compensating transaction">Compensating Transaction</a></li>
+        <li><a href="/w/index.php?title=Competing_Consumers_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Competing Consumers pattern (page does not exist)">Competing Consumers</a></li>
+        <li><a href="/w/index.php?title=Compute_Resource_Consolidation_pattern&amp;action=edit&amp;redlink=1"
+               class="new" title="Compute Resource Consolidation pattern (page does not exist)">Compute Resource
+            Consolidation</a></li>
+        <li><a href="/w/index.php?title=Event_Sourcing_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Event Sourcing pattern (page does not exist)">Event Sourcing</a></li>
+        <li><a href="/w/index.php?title=External_Configuration_Store_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="External Configuration Store pattern (page does not exist)">External Configuration Store</a></li>
+        <li><a href="/w/index.php?title=Federated_Identity_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Federated Identity pattern (page does not exist)">Federated Identity</a></li>
+        <li><a href="/w/index.php?title=Gatekeeper_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Gatekeeper pattern (page does not exist)">Gatekeeper</a></li>
+        <li><a href="/wiki/Database_index" title="Database index">Index Table</a></li>
+        <li><a href="/wiki/Leader_election" title="Leader election">Leader Election</a></li>
+        <li><a href="/wiki/MapReduce" title="MapReduce">MapReduce</a></li>
+        <li><a href="/wiki/Materialized_view" title="Materialized view">Materialized View</a></li>
+        <li><a href="/wiki/Pipeline_(software)" title="Pipeline (software)">Pipes</a></li>
+        <li><a href="/wiki/Filter_(software)" title="Filter (software)"> Filters</a></li>
+        <li><a href="/w/index.php?title=Priority_Queue_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Priority Queue pattern (page does not exist)">Priority Queue</a></li>
+        <li><a href="/wiki/Publish%E2%80%93subscribe_pattern" title="Publish–subscribe pattern">Publisher-Subscriber</a>
+        </li>
+        <li><a href="/w/index.php?title=Queue-Based_Load_Leveling_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Queue-Based Load Leveling pattern (page does not exist)">Queue-Based Load Leveling</a></li>
+        <li><a href="/w/index.php?title=Retry_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Retry pattern (page does not exist)">Retry</a></li>
+        <li><a href="/w/index.php?title=Scheduler_Agent_Supervisor_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Scheduler Agent Supervisor pattern (page does not exist)">Scheduler Agent Supervisor</a></li>
+        <li><a href="/wiki/Shard_(database_architecture)" title="Shard (database architecture)">Sharding</a></li>
+        <li><a href="/w/index.php?title=Sidecar_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Sidecar pattern (page does not exist)">Sidecar</a></li>
+        <li><a href="/w/index.php?title=Strangler_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Strangler pattern (page does not exist)">Strangler</a></li>
+        <li><a href="/wiki/Throttling_process_(computing)" title="Throttling process (computing)">Throttling</a></li>
+        <li><a href="/w/index.php?title=Valet_Key_pattern&amp;action=edit&amp;redlink=1" class="new"
+               title="Valet Key pattern (page does not exist)">Valet Key</a></li>
     </ul>
     <p>https://en.wikipedia.org/wiki/Software_design_pattern</p>
     <hr/>
