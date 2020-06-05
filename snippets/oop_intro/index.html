@@ -332,18 +332,46 @@
     <hr/>
     <h3>Functional</h3>
     <ul>
-        <li>Monoid</li>
-        <li>Functor</li>
-        <li>Applicative</li>
-        <li>Monad</li>
-        <li>Comonad</li>
-        <li>Free monad</li>
-        <li>HOF</li>
-        <li>Currying</li>
-        <li>Function composition</li>
+        <li>HOF (Higher-order function)</li>
         <li>Closure</li>
         <li>Generator</li>
     </ul>
+    <h4>HOF (Higher-order function)</h4>
+    <pre><code class="java">Function&lt;IntUnaryOperator, IntUnaryOperator&gt; twice = f -&gt; f.andThen(f);
+twice.apply(x -&gt; x + 3).applyAsInt(7); // 13</code></pre>
+    <h4>Closure</h4>
+    <pre><code class="js">function makeSizer(size) {
+  return function() {
+    document.body.style.fontSize = size + 'px';
+  };
+}
+
+var size12 = makeSizer(12);
+var size14 = makeSizer(14);
+var size16 = makeSizer(16);</code></pre>
+    <h4>Generator</h4>
+    <p>A generator is very similar to a function that returns an array, in that a generator has parameters, can be
+        called, and generates a sequence of values. However, instead of building an array containing all the values and
+        returning them all at once, a generator yields the values one at a time, which requires less memory and allows
+        the caller to get started processing the first few values immediately. In short, a generator looks like a
+        function but behaves like an iterator.</p>
+    <pre><code class="java">public Iterable&lt;Integer&gt; fibonacci(int limit){
+    return IntStream.generate(new IntSupplier() {
+        int a = 1, b = 2;
+
+        public int getAsInt() {
+            int temp = a;
+            a = b;
+            b = a + temp;
+            return temp;
+        }
+    }).limit(limit).boxed()::iterator;
+}
+
+// this could then be used as...
+for (int f: fibonacci(10)) {
+    System.out.println(f);
+}</code></pre>
     <hr/>
     <h3>Concurrency patterns</h3>
     <p>https://en.wikipedia.org/wiki/Twin_pattern</p>
