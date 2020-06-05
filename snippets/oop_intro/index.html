@@ -225,6 +225,110 @@
         <li>Template method</li>
         <li>Visitor</li>
     </ul>
+    <h4>Blackboard</h4>
+    <p>Artificial intelligence pattern for combining disparate sources of data (see blackboard system). That provides a
+        computational framework for the design and implementation of systems that integrate large and diverse
+        specialized modules, and implement complex, non-deterministic control strategies.</p>
+    <div><img src="data/p-bb.png" class="img-fluid" alt=""/></div>
+    <h4>Chain of responsibility</h4>
+    <p>Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the
+        request. Chain the receiving objects and pass the request along the chain until an object handles it.</p>
+    <div><img src="data/f-cor.jpg" class="img-fluid" alt=""/></div>
+    <h4>Command</h4>
+    <p>Encapsulate a request as an object, thereby allowing for the parameterization of clients with different requests,
+        and the queuing or logging of requests. It also allows for the support of undoable operations.</p>
+    <div><img src="data/p-command.jpg" class="img-fluid" alt=""/></div>
+    <h4>Interpreter</h4>
+    <p>Given a language, define a representation for its grammar along with an interpreter that uses the representation
+        to interpret sentences in the language. </p>
+    <div><img src="data/p-inter.jpg" class="img-fluid" alt=""/></div>
+    <h4>Iterator</h4>
+    <p>Provide a way to access the elements of an aggregate object sequentially without exposing its underlying
+        representation. </p>
+    <div><img src="data/p-iter.jpg" class="img-fluid" alt=""/></div>
+    <h4>Mediator</h4>
+    <p>Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping
+        objects from referring to each other explicitly, and it allows their interaction to vary independently.</p>
+    <div><img src="data/m-mediator.jpg" class="img-fluid" alt=""/></div>
+    <h4>Memento</h4>
+    <p>Without violating encapsulation, capture and externalize an object's internal state allowing the object to be
+        restored to this state later. The memento pattern is implemented with three objects: the originator, a caretaker
+        and a memento. The originator is some object that has an internal state. The caretaker is going to do something
+        to the originator, but wants to be able to undo the change. The caretaker first asks the originator for a
+        memento object. Then it does whatever operation (or sequence of operations) it was going to do. To roll back to
+        the state before the operations, it returns the memento object to the originator. The memento object itself is
+        an opaque object (one which the caretaker cannot, or should not, change). When using this pattern, care should
+        be taken if the originator may change other objects or resources - the memento pattern operates on a single
+        object.</p>
+    <div><img src="data/p-memento.jpg" class="img-fluid" alt=""/></div>
+    <h4>Null object</h4>
+    <p>Avoid null references by providing a default object. Null object is an object with no referenced value or with
+        defined neutral ("null") behavior. </p>
+    <h4>Observer</h4>
+    <p>The subject, maintains a list of its dependents, called observers, and notifies them automatically of any state
+        changes, usually by calling one of their methods. It is mainly used to implement distributed event handling
+        systems, in "event driven" software. In those systems, the subject is usually called a "stream of events" or
+        "stream source of events", while the observers are called "sink of events". The stream nomenclature simulates or
+        adapts to a physical setup where the observers are physically separated and have no control over the emitted
+        events of the subject/stream-source. This pattern then perfectly suits any process where data arrives through
+        I/O, that is, where data is not available to the CPU at startup, but can arrive "randomly" (HTTP requests, GPIO
+        data, user input from keyboard/mouse/..., distributed databases and blockchains, ...). Most modern languages
+        have built-in "event" constructs which implement the observer pattern components. While not mandatory most
+        'observers' implementations will use background threads listening for subject events and other support mechanism
+        from the kernel (Linux epoll, ...)</p>
+    <div><img src="data/p-obs.jpg" class="img-fluid" alt=""/></div>
+    <h4>Publish/subscribe</h4>
+    <p>Define a one-to-many dependency between objects where a state change in one object results in all its dependents
+        being notified and updated automatically. Publish–subscribe is a messaging pattern where senders of messages,
+        called publishers, do not program the messages to be sent directly to specific receivers, called subscribers,
+        but instead categorize published messages into classes without knowledge of which subscribers, if any, there may
+        be. Similarly, subscribers express interest in one or more classes and only receive messages that are of
+        interest, without knowledge of which publishers, if any, there are.</p>
+    <p>This pattern provides greater network scalability and a more dynamic network topology, with a resulting decreased
+        flexibility to modify the publisher and the structure of the published data.</p>
+    <h4>Servant</h4>
+    <p>Define common functionality for a group of classes. The servant pattern is also frequently called helper class or
+        utility class implementation for a given set of classes. The helper classes generally have no objects hence they
+        have all static methods that act upon different kinds of class objects. A Servant is a class whose instance (or
+        even just class) provides methods that take care of a desired service, while objects for which (or with whom)
+        the servant does something, are taken as parameters.</p>
+    <div><img src="data/p-servant.png" class="img-fluid" alt=""/></div>
+    <h4>Specification</h4>
+    <p>Recombinable business logic in a Boolean fashion. A specification pattern outlines a business rule that is
+        combinable with other business rules. In this pattern, a unit of business logic inherits its functionality from
+        the abstract aggregate Composite Specification class. The Composite Specification class has one function called
+        IsSatisfiedBy that returns a boolean value. After instantiation, the specification is "chained" with other
+        specifications, making new specifications easily maintainable, yet highly customizable business logic.
+        Furthermore, upon instantiation the business logic may, through method invocation or inversion of control, have
+        its state altered in order to become a delegate of other classes such as a persistence repository.</p>
+    <div><img src="data/p-spec.png" class="img-fluid" alt=""/></div>
+    <h4>State</h4>
+    <p>Allow an object to alter its behavior when its internal state changes. The object will appear to change its
+        class. The state pattern can be interpreted as a strategy pattern, which is able to switch a strategy through
+        invocations of methods defined in the pattern's interface.</p>
+    <div><img src="data/p-state.jpg" class="img-fluid" alt=""/></div>
+    <h4>Strategy</h4>
+    <p>Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm
+        vary independently from clients that use it. Typically the strategy pattern stores a reference to some code in a
+        data structure and retrieves it. This can be achieved by mechanisms such as the native function pointer, the
+        first-class function, classes or class instances in object-oriented programming languages, or accessing the
+        language implementation's internal storage of code via reflection.</p>
+    <div><img src="data/p-strategy.jpg" class="img-fluid" alt=""/></div>
+    <h4>Template method</h4>
+    <p>Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template method lets
+        subclasses redefine certain steps of an algorithm without changing the algorithm's structure. The helper methods
+        may be either abstract methods, for which case subclasses are required to provide concrete implementations, or
+        hook methods, which have empty bodies in the superclass. Subclasses can (but are not required to) customize the
+        operation by overriding the hook methods. The intent of the template method is to define the overall structure
+        of the operation, while allowing subclasses to refine, or redefine, certain steps.</p>
+    <div><img src="data/p-template.jpg" class="img-fluid" alt=""/></div>
+    <h4>Visitor</h4>
+    <p>Represent an operation to be performed on the elements of an object structure. Visitor lets a new operation be
+        defined without changing the classes of the elements on which it operates. In essence, the visitor allows adding
+        new virtual functions to a family of classes, without modifying the classes. Instead, a visitor class is created
+        that implements all of the appropriate specializations of the virtual function. The visitor takes the instance
+        reference as input, and implements the goal through double dispatch.</p>
+    <div><img src="data/p-visitor.jpg" class="img-fluid" alt=""/></div>
     <hr/>
     <h3>Functional</h3>
     <ul>
