@@ -34,8 +34,7 @@
         by relationships. Diagrams are one of the most expressive and appealing views of the repository; the diagram has
         a name and type and is typically constructed for a particular audience to convey an idea or to create a
         narrative description of part of the model. Diagrams can also be used to generate useful system artifacts such
-        as XML schemas, database schemas, programming code and more. [<a
-                href="https://sparxsystems.com/enterprise_architect_user_guide/15.1/model_domains/umldiagrams.html">ref</a>]
+        as XML schemas, database schemas, programming code and more.
     </p>
     <hr/>
     <h3>Structural Models</h3>
@@ -375,8 +374,6 @@ for (int f: fibonacci(10)) {
 }</code></pre>
     <hr/>
     <h3>Concurrency patterns</h3>
-    <p>https://en.wikipedia.org/wiki/Pattern-Oriented_Software_Architecture</p>
-    <p>https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html</p>
     <ul>
         <li>Active Object</li>
         <li>Balking</li>
@@ -833,8 +830,7 @@ class Foo {
         known as the n-tier architecture pattern. This pattern is the de facto standard for most Java EE applications
         and therefore is widely known by most architects, designers, and developers. The layered architecture pattern
         closely matches the traditional IT communication and organizational structures found in most companies, making
-        it a natural choice for most business application development efforts. [<a
-                href="https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html">ref</a>]
+        it a natural choice for most business application development efforts.
     </p>
     <div><img src="data/layers.png" class="img-fluid" alt=""/></div>
     <h4>Event-Driven Architecture</h4>
@@ -855,7 +851,6 @@ class Foo {
 
     <hr/>
     <h3>Distributed patterns</h3>
-    <p>[<a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/">MSDN Cloud Design Patterns</a>]</p>
     <ul>
         <li>Ambassador</li>
         <li>Anti-Corruption Layer</li>
@@ -901,8 +896,7 @@ class Foo {
         container acts as a client proxy. You might be wondering, why do we need to proxy the application connection
         requests? Because we need to follow the separation of concerns principle. Each container should do it’s task and
         do it well. If there are other tasks that requires the application’s function in order to work correctly, we may
-        hand those tasks to the sidecar container. [<a
-                href="https://www.magalix.com/blog/kubernetes-patterns-the-ambassador-pattern">ref</a>]</p>
+        hand those tasks to the sidecar container.</p>
     <p>Well-known use case for the Ambassador container is when your application needs to connect to a caching server
         like Memcached or Redis. Let’s have a Redis example scenario to demonstrate this pattern.</p>
     <div><img src="data/ambressor.png" class="img-fluid" alt=""/></div>
@@ -1370,8 +1364,7 @@ class Foo {
         </li>
     </ul>
     <hr/>
-    <h3>Enterprise Integration Patterns <a
-            href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/toc.html">?</a></h3>
+    <h3>Enterprise Integration Patterns</h3>
     <h4>Integration Styles</h4>
     <ul>
         <li><b>File Transfer</b>. An enterprise has multiple applications that are being built independently, with
@@ -2180,20 +2173,69 @@ class Foo {
         </li>
     </ul>
     <hr/>
-    <h2>SOLID and GRASP</h2>
-    <p>
-        <b>SOLID</b>
+    <h2>Design principles</h2>
+    <h3>Solid</h3>
     <ul>
-        <li>Single responsibility principle</li>
-        <li>Open/closed principle</li>
-        <li>Liskov substitution principle</li>
-        <li>Interface segregation principle</li>
-        <li>Dependency inversion principle</li>
+        <li>
+            <b>Single responsibility principle</b>. A class should only have a single responsibility, that is, only
+            changes to one part of the software's specification should be able to affect the specification of the class.
+        </li>
+        <li>
+            <b>Open/closed principle</b>. "Software entities ... should be open for extension, but closed for
+            modification."
+        </li>
+        <li>
+            <b>Liskov substitution principle</b>. "Objects in a program should be replaceable with instances of their
+            subtypes without altering the correctness of that program." See also design by contract.
+        </li>
+        <li>
+            <b>Interface segregation principle</b>. "Many client-specific interfaces are better than one general-purpose
+            interface."
+        </li>
+        <li>
+            <b>Dependency inversion principle</b>. One should "depend upon abstractions, [not] concretions."
+        </li>
     </ul>
-    </p>
-    <p>
-        <b>GRASP</b> (General Responsibility Assignment Software Patterns)
-    </p>
+    <h3>KISS</h3>
+    <p>KISS, an acronym for "keep it simple, stupid" or "keep it stupid simple".</p>
+    <h3>DRY</h3>
+    <p>Don't repeat yourself (DRY, or sometimes do not repeat yourself) is a principle of software development aimed at
+        reducing repetition of software patterns, replacing it with abstractions or using data normalization to avoid
+        redundancy.</p>
+    <h3>YAGNI</h3>
+    <p>Always implement things when you actually need them, never when you just foresee that you need them." </p>
+</div>
+
+<hr/>
+
+<div class="container">
+    <h2>References</h2>
+    <ul>
+        <li>
+            <a href="https://www.magalix.com/blog/kubernetes-patterns-the-ambassador-pattern">K8S Patterns</a>
+        </li>
+        <li>
+            <a href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/toc.html">Enterprise
+                Integration Patterns</a>
+        </li>
+        <li>
+            <a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/">Azure Cloud Design Patterns</a>
+        </li>
+        <li>
+            <a href="https://sparxsystems.com/enterprise_architect_user_guide/15.1/model_domains/umldiagrams.html">UML
+                Diagrams</a>
+        </li>
+        <li>
+            <a href="https://en.wikipedia.org/wiki/Pattern-Oriented_Software_Architecture">Patterns</a>
+        </li>
+        <li>
+            <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html">Java Concurrency</a>
+        </li>
+        <li>
+            <a href="https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html">Software
+                architecture patterns</a>
+        </li>
+    </ul>
 </div>
 
 <style>
