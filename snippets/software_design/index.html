@@ -1370,57 +1370,200 @@ class Foo {
         </li>
     </ul>
 
-    <h3>Enterprise Integration Patterns</h3>
-    <p>https://camel.apache.org/components/latest/eips/enterprise-integration-patterns.html</p>
-    <h2>Architectural pattern</h2>
+    <h3>Enterprise Integration Patterns <a
+            href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/toc.html">?</a></h3>
+    <h4>Integration Styles</h4>
     <ul>
-        <li>ETL (data extraction transformation and loading)
-            <ul>
-                <li>Change data capture</li>
-                <li>Near real-time ETL</li>
-                <li>Batch ETL</li>
-                <li>Data discovery</li>
-            </ul>
-            <br/>
-            <ul>
-                <li>Error handling</li>
-                <li>Job scheduling</li>
-                <li>Data validation</li>
-                <li>Slowly changing dimensions load</li>
-            </ul>
-            <br/>
-            <ul>
-                <li>EAI</li>
-                <li>Master data hub</li>
-                <li>Operational data store (ODS)</li>
-                <li>Data mart</li>
-                <li>Data warehouse</li>
-            </ul>
+        <li><b>File Transfer</b>. An enterprise has multiple applications that are being built independently, with
+            different languages and platforms. An important decision with files is what format to use. Very rarely will
+            the output of one application be exactly what's needed for another, so you'll have to do a fair bit of
+            processing of files along the way. Not just do all the applications that use a file have to read it, you
+            also have to be able to use processing tools on it. As a result, standard file formats have grown up over
+            time. Mainframe systems commonly use data feeds based on the file system formats of COBOL. Unix systems use
+            text based files. The modern fashion is to use XML. An industry of readers, writers, and transformation
+            tools has built up around each of these formats.<br/>
+            <div><img src="data/FileTransferIntegration.gif" class="img-fluid" alt=""/></div>
         </li>
-        <li>
-            Data architecture
-            <ul>
-                <li>Transaction data stores (TDS/OLTP)</li>
-                <li>Master data store</li>
-                <li>Operational data store</li>
-                <li>Data mart</li>
-                <li>Data warehouse</li>
-            </ul>
-            <br/>
-            <ul>
-                <li>Custom applications databases</li>
-                <li>Packaged application databases</li>
-            </ul>
-            <br/>
-            <ul>
-                <li>ETL</li>
-                <li>EAI</li>
-                <li>SOA</li>
-            </ul>
-            <br/>
+        <li><b>Shared Database</b>. An enterprise has multiple applications that are being built independently, with
+            different languages and platforms. The enterprise needs information to be shared rapidly and consistently.
+            If a family of integrated applications all rely on the same database, then you can be pretty sure that they
+            are always consistent all of the time. If you do get simultaneous updates to a single piece of data from
+            different sources, then you have transaction management systems that handle that about as gracefully as it
+            ever can be managed. Since the time between updates is so small, any errors are much easier to find and fix.<br/>
+            <div><img src="data/SharedDatabaseIntegration.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Remote Procedure Invocation</b>. An enterprise has multiple applications that are being built
+            independently, with different languages and platforms. The enterprise needs to share data and processes in a
+            responsive way. Remote Procedure Invocation applies the principle of encapsulation to integrating
+            applications. If an application needs some information that is owned by another application, it asks that
+            application directly. If one application needs to modify the data of another, then it does so by making a
+            call to the other application. Each application can maintain the integrity of the data it owns. Furthermore,
+            each application can alter its internal data without having every other application be affected.<br/>
+            <div><img src="data/EncapsulatedSynchronousIntegration.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Messaging</b>. An enterprise has multiple applications that are being built independently, with different
+            languages and platforms. The enterprise needs to share data and processes in a responsive way.
+            Asynchronous messaging is fundamentally a pragmatic reaction to the problems of distributed systems. Sending
+            a message does not require both systems to be up and ready at the same time. Furthermore, thinking about the
+            communication in an asynchronous manner forces developers to recognize that working with a remote
+            application is slower, which encourages design of components with high cohesion (lots of work locally) and
+            low adhesion (selective work remotely).<br/>
+            <div><img src="data/Messaging.gif" class="img-fluid" alt=""/></div>
         </li>
     </ul>
-    <div><img src="data/data-mart-wh.jpg" class="img-fluid" alt=""/></div>
+    <h4>Messaging Systems</h4>
+    <ul>
+        <li><b>Message Channel</b>. An enterprise has two separate applications that need to communicate, preferably by
+            using Messaging. When an application has information to communicate, it doesn't just fling the information
+            into the messaging system, it adds the information to a particular Message Channel. An application receiving
+            information doesn't just pick it up at random from the messaging system; it retrieves the information from a
+            particular Message Channel.<br/>
+            <div><img src="data/MessageChannelSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Message</b>. An enterprise has two separate applications that are communicating via Messaging, using a
+            Message Channel that connects them. Thus any data that is to be transmitted via a messaging system must be
+            converted into one or more messages that can be sent through messaging channels.<br/>
+            <div><img src="data/MessageSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Pipes and Filters</b>. In many enterprise integration scenarios, a single event triggers a sequence of
+            processing steps, each performing a specific function. For example, let's assume a new order arrives in our
+            enterprise in the form of a message. One requirement may be that the message is encrypted to prevent
+            eavesdroppers from spying on a customer's order. A second requirement is that the messages contain
+            authentication information in the form of a digital certificate to ensure that orders are placed only by
+            trusted customers. In addition, duplicate messages could be sent from external parties (remember all the
+            warnings on the popular shopping sites to click the 'Order Now' button only once?). To avoid duplicate
+            shipments and unhappy customers, we need to eliminate duplicate messages before subsequent order processing
+            steps are initiated. To meet these requirements, we need to transform a stream of possibly duplicated,
+            encrypted messages containing extra authentication data into a stream of unique, simple plain-text order
+            messages without the extraneous data fields.<br/>
+            Each filter exposes a very simple interface: it receives messages on the inbound pipe, processes the
+            message, and publishes the results to the outbound pipe. The pipe connects one filter to the next, sending
+            output messages from one filter to the next. Because all component use the same external interface they can
+            be composed into different solutions by connecting the components to different pipes. We can add new
+            filters, omit existing ones or rearrange them into a new sequence -- all without having to change the
+            filters themselves. The connection between filter and pipe is sometimes called port. In the basic form, each
+            filter component has one input port and one output port.<br/>
+            <div><img src="data/PipesAndFilters.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Message Router</b>. Multiple processing steps in a Pipes and Filters chain are connected by Message
+            Channels. The Message Router differs from the most basic notion of Pipes and Filters in that it connects to
+            multiple output channels. Thanks to the Pipes and Filters architecture the components surrounding the
+            Message Router are completely unaware of the existence of a Message Router. A key property of the Message
+            Router is that it does not modify the message contents. It only concerns itself with the destination of the
+            message.<br/>
+            <div><img src="data/MessageRouter.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li><b>Message Translator</b>. The previous patterns describe how to construct messages and how to route them to
+            the correct destination. In many cases, enterprise integration solutions route messages between existing
+            applications such as legacy systems, packaged applications, homegrown custom applications, or applications
+            operated by external partners. Each of these applications is usually built around a proprietary data model.
+            Each application may have a slightly different notion of the Customer entity , the attributes that define a
+            Customer and which other entities a Customer is related to. For example, the accounting system may be more
+            interested in the customer's tax payer ID numbers while the customer-relationship management (CRM) system
+            stores phone numbers and addresses. The application’s underlying data model usually drives the design of the
+            physical database schema, an interface file format or a programming interface (API) -- those entities that
+            an integration solution has to interface with. As a result, the applications expect to receive messages that
+            mimic the application's internal data format.<br/>
+            In addition to the proprietary data models and data formats incorporated in the various applications,
+            integration solutions often times interact with standardized data formats that seek to be independent from
+            specific applications. There are a number of consortia and standards bodies that define these protocols,
+            such as RosettaNet, ebXML, OAGIS and many other, industry specific consortia. In many cases, the integration
+            solution needs to be able to communicate with external parties using the ‘official’ data formats while the
+            internal systems are based on proprietary formats.<br/>
+            <div><img src="data/MessageTranslator.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Endpoint </b>. Message Endpoint code is custom to both the application and the messaging system’s
+            client API. The rest of the application knows little about message formats, messaging channels, or any of
+            the other details of communicating with other applications via messaging. It just knows that it has a
+            request or piece of data to send to another application, or is expecting those from another application. It
+            is the messaging endpoint code that takes that command or data, makes it into a message, and sends it on a
+            particular messaging channel. It is the endpoint that receives a message, extracts the contents, and gives
+            them to the application in a meaningful way.<br/>
+            <div><img src="data/MessageEndpointSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+    </ul>
+    <h4>Messaging Channels</h4>
+    <ul>
+        <li>
+            <b>Point-to-Point Channel</b>. An application is using Messaging to make remote procedure calls (RPC’s) or
+            transfer documents. A Point-to-Point Channel ensures that only one receiver consumes any given message. If
+            the channel has multiple receivers, only one of them can successfully consume a particular message. If
+            multiple receivers try to consume a single message, the channel ensures that only one of them succeeds, so
+            the receivers do not have to coordinate with each other. The channel can still have multiple receivers to
+            consume multiple messages concurrently, but only a single receiver consumes any one message.<br/>
+            <div><img src="data/PointToPointSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Publish-Subscribe Channel</b>. A Publish-Subscribe Channel works like this: It has one input channel that
+            splits into multiple output channels, one for each subscriber. When an event is published into the channel,
+            the Publish-Subscribe Channel delivers a copy of the message to each of the output channels. Each output
+            channel has only one subscriber, which is only allowed to consume a message once. In this way, each
+            subscriber only gets the message once and consumed copies disappear from their channels.<br/>
+            <div><img src="data/PublishSubscribeSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Datatype Channel</b>. An application is using Messaging to transfer different types of data, such as
+            different types of documents.
+            By using a separate Datatype Channel for each type of data, all of the messages on a given channel will
+            contain the same type of data. The sender, knowing what type the data is, will need to select the
+            appropriate channel to send it on. The receiver, knowing what channel the data was received on, will know
+            what its type is.<br/>
+            <div><img src="data/DatatypeSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Invalid Message Channel</b>. When designing a messaging system for applications to use, the administrator
+            will need to define one or more Invalid Message Channels for the applications to use.<br/>
+            <div><img src="data/InvalidMessageSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Dead Letter Channel</b>. The specific way a Dead Letter Channel works depends on the specific messaging
+            system’s implementation, if it provides one at all. The channel may be called a “dead message queue”
+            [Monson-Haefel, p.125] or “dead letter queue.” [MQSeries], [Dickman, pp.28-29] Typically, each machine the
+            messaging system is installed on has its own local Dead Letter Channel so that whatever machine a message
+            dies on, it can be moved from one local queue to another without any networking uncertainties. This also
+            records what machine the message died on. When the messaging system moves the message, it may also record
+            the original channel the message was supposed to be delivered on.<br/>
+            <div><img src="data/DeadLetterChannelSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Guaranteed Delivery</b>. With Guaranteed Delivery, the messaging system uses a built-in data store to
+            persist messages. Each computer the messaging system is installed on has its own data store so that the
+            messages can be stored locally. When the sender sends a message, the send operation does not complete
+            successfully until the message is safely stored in the sender’s data store. Subsequently, the message is not
+            deleted from one data store until it is successfully forwarded to and stored in the next data store. In this
+            way, once the sender successfully sends the message, it is always stored on disk on at least one computer
+            until is successfully delivered to and acknowledged by the receiver.<br/>
+            <div><img src="data/GuaranteedMessagingSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Channel Adapter</b>. The adapter acts as a messaging client to the messaging system and invokes
+            applications functions via an application-supplied interface. This way, any application can connect to the
+            messaging system and be integrated with other applications as long as it has a proper Channel Adapter.<br/>
+            <div><img src="data/ChannelAdapterSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Messaging Bridge</b>. Typically, there is no practical way to connect two complete messaging systems, so
+            instead we connect individual, corresponding channels between the messaging systems. The Messaging Bridge is
+            a set of Channel Adapters, where the non-messaging client is a actually another messaging system, and where
+            each pair of adapters connects a pair of corresponding channels. The bridge acts as map from one set of
+            channels to the other, and also transforms the message format of one system to the other. The connected
+            channels may be used to transmit messages between traditional clients of the messaging system, or strictly
+            for messages intended for other messaging systems.<br/>
+            <div><img src="data/MessagingBridge.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Bus</b>. What is an architecture that enables separate applications to work together, but in a
+            de-coupled fashion such that applications can be easily added or removed without affecting the others?<br/>
+            <div><img src="data/MessageBusSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Change Data Capture</b>. Data synchronization by capturing changes made to a database, and apply those
+            changes to another system.<br/>
+            <div><img src="data/CDC-Debezium.png" class="img-fluid" alt=""/></div>
+        </li>
+    </ul>
+    <hr/>
     <h2>SOLID and GRASP</h2>
     <p>
         <b>SOLID</b>
