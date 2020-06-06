@@ -1648,6 +1648,7 @@ class Foo {
         </li>
     </ul>
     <h4>Message Routing</h4>
+    <div><img src="data/RoutingPatternsDecisionTree.gif" class="img-fluid" alt=""/></div>
     <ul>
         <li>
             <b>Content-Based Router </b>. Assume that we are building an order processing system. When an incoming order
@@ -1885,7 +1886,297 @@ class Foo {
             may require the header fields and would consider a message invalid if it does not contain the proper header
             fields.
             <div><img src="data/Wrapper.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Content Enricher</b>. When sending messages from one system to another it is common for the target system
+            to require more information than the source system can provide. For example, incoming Address messages may
+            just contain the ZIP code because the designers felt that storing a redundant state code would be
+            superfluous. Likely, another system is going to want to specify both a state code and a ZIP code field. Yet
+            another system may not actually use state codes, but spell the state name out because it uses free-form
+            addresses in order to support international addresses. Likewise, one system may provide us with a customer
+            ID, but the receiving system actually requires the customer name and address. An order message sent by the
+            order management system may just contain an order number, but we need to find the customer ID associated
+            with that order, so we can pass it to the customer management system. The scenarios are plentiful.
+            <div><img src="data/DataEnricher.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Content Filter</b>. The Content Enricher helps us in situations where a message receiver requires more -
+            or different - data elements than the message creator provides. There are surprisingly many situations where
+            the opposite effect is desired: removing data elements from a message.
+            <div><img src="data/ContentFilter.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Claim Check</b>. The Content Enricher tells us how we can deal with situations where our message is
+            missing required data items. The Content Filter lets us remove uninteresting data items from a message.
+            Sometimes, we want to remove fields only temporarily. For example, a message may contain a set of data items
+            that may be needed later in the message flow, but that are not necessary for all intermediate processing
+            steps. We may not want to carry all this information through each processing step because it may cause
+            performance degradation and makes debugging harder because we carry so much extra data.
+            <div><img src="data/StoreInLibrary.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Normalizer</b>. In a business-to-business (B2B) integration scenario it is quite common for an enterprise
+            to receive messages from different business partners. These message may have the same meaning, but follow
+            different formats, depending on the partners' internal systems and preferences. For example, we built a
+            solution for a pay-per-view provider that has to accept and process viewership information from over 1700
+            (!) affiliates, most of which did not conform to a standard format.<br/>
+            The Normalizer uses a Message Router to route the incoming message to the correct Message Translator. This
+            requires the Message Router to detect the type of the incoming message. Many messaging systems equip each
+            message with a type specifier field in the Message Header to make this type of task simple. However, in many
+            B2B scenarios messages do not arrive as messages compliant with the enterprise's internal messaging system,
+            but in diverse formats such as comma separated files or XML document without associated schema. While it is
+            certainly best practice to equip any incoming data format with a type specifier we know all to well that the
+            world is far from perfect. As a result, we need to think of more general ways to identify the format of the
+            incoming message. One common way for schema-less XML documents is to use the name of the root element to
+            assume the correct type. If multiple data formats use the same root element, you can use XPATH expressions
+            to determine the existence of specific sub-nodes. Comma-separated files can require a little more
+            creativity. Sometimes you can determine the type based on the number of fields and the type of the data
+            (e.g. numeric vs. string). If the data arrives as files, the easiest way may be to use the file name or the
+            file folder structure as a surrogate Datatype Channel. Each business partner can name the file with a unique
+            naming convention. The Message Router can then use the file name to route the message to the appropriate
+            Message Translator.
+            <div><img src="data/NormalizerDetail.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Canonical Data Model</b>. I am designing several applications to work together through Messaging. Each
+            application has its own internal data format. Therefore, design a Canonical Data Model that is independent
+            from any specific application. Require each application to produce and consume messages in this common
+            format.
+            <div><img src="data/CanonicalDataModel.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Sort</b>. Sort can be used to sort a message. Imagine you consume text files and before processing each
+            file you want to be sure the content is sorted.
+        </li>
+        <li>
+            <b>Script</b>. Is used to execute a script which does not change the message (by default). This is useful
+            when you need to invoke some logic that are not in Java code such as JavaScript, Groovy or any of the other
+            Languages. The message body is not changed (by default) however the scripting context has access to the
+            current Exchange and can essentially change the message or headers directly. But the return value from the
+            script is discarded and not used. If the return value should be used as a changed message body then use
+            Message Translator EIP instead.
+        </li>
+        <li>
+            <b>Validate</b>. Validate uses an expression or predicates to validate the contents of a message. It is
+            useful for ensuring that messages are valid before attempting to process them. You can use the validate DSL
+            with all kind of Predicates and Expressions. Validate evaluates the Predicate/Expression and if it is false
+            a PredicateValidationException is thrown. If it is true message processing continues.
+        </li>
+    </ul>
+    <h4>Messaging Endpoints</h4>
+    <ul>
+        <li>
+            <b>Messaging Gateway</b>. How do you encapsulate access to the messaging system from the rest of the
+            application? Use a Messaging Gateway, a class than wraps messaging-specific method calls and exposes
+            domain-specific methods to the application.<br/>
+            The Messaging Gateway encapsulates messaging-specific code (e.g., the code required to send or receive a
+            message) and separates it from the rest of the application code. This way, only the Messaging Gateway code
+            knows about the messaging system; the rest of the application code does not. The Messaging Gateway exposes a
+            business function to the rest of the application so that instead of requiring the application to set
+            properties like Message.MessageReadPropertyFilter.AppSpecific, a Messaging Gateway exposes methods such as
+            GetCreditScore that accept strongly typed parameters just like any other method. A Messaging Gateway is a
+            messaging-specific version of the more general Gateway pattern [EAA].
+            <div><img src="data/MessagingGatewaySolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Messaging Mapper</b>. When integrating applications using messaging, the data inside a message is often
+            derived from domain objects inside the integrated applications. If we use a Document Message, the message
+            itself may directly represent one or domain objects. If we use a Command Message, some of the data fields
+            associated with the command are likely to be extracted from domain objects as well. There are some distinct
+            differences between messages and objects. For example, most objects rely on associations in the form of
+            object references and inheritance relationships. Many messaging infrastructures do not support these
+            concepts because they have to be able to communicate with a range of applications, some of which may not be
+            object-oriented at all.<br/>
+            The Messaging Mapper accesses one or more domain objects and converts them into a message as required by the
+            messaging channel. It also performs the opposite function, creating or updating domain objects based on
+            incoming messages. Since the Messaging Mapper is implemented as a separate class that references the domain
+            object(s) and the messaging layer, neither layer is aware of the other. The layers don't even know about the
+            Messaging Mapper.
+            <div><img src="data/MessagingMapperClassDiagram.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Transactional Client</b>. A messaging system, by necessity, uses transactional behavior internally. It
+            may be useful for an external client to be able to control the scope of the transactions that impact its
+            behavior.<br/>
+            Both a sender and a receiver can be transactional. With a sender, the message isn’t “really” added to the
+            channel until the sender commits the transaction. With a receiver, the message isn’t “really” removed from
+            the channel until the receiver commits the transaction. A sender that uses explicit transactions can be used
+            with a receiver that uses implicit transactions, and vise versa. A single channel might have a combination
+            of implicitly and explicitly transactional senders; it could also have a combination of receivers.
+            <div><img src="data/TransactionalClientSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Polling Consumer</b>. An application needs to consume Messages, but it wants to control when it consumes
+            each message. This is also known as a synchronous receiver, because the receiver thread blocks until a
+            message is received. We call it a Polling Consumer because the receiver polls for a message, processes it,
+            then polls for another. As a convenience, messaging API’s usually provide a receive method that blocks until
+            a message is delivered, in addition to methods like receiveNoWait() and Receive(0) that return immediately
+            if no message is available. This difference is only apparent when the receiver is polling faster than
+            messages are arriving.
+            <div><img src="data/PollingConsumerSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Event-Driven Consumer</b>. An application needs to consume Messages as soon as they’re delivered.This is
+            also known as an asynchronous receiver, because the receiver does not have a running thread until a callback
+            thread delivers a message. We call it an Event-Driven Consumer because the receiver acts like the message
+            delivery is an event that triggers the receiver into action.
+            <div><img src="data/EventDrivenConsumerSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Competing Consumers</b>. An application is using Messaging. However, it cannot process messages as fast
+            as they’re being added to the channel.<br/>
 
+            Competing Consumers are multiple consumers that are all created to receive messages from a single
+            Point-to-Point Channel. When the channel delivers a message, any of the consumers could potentially receive
+            it. The messaging system's implementation determines which consumer actually receives the message, but in
+            effect the consumers compete with each other to be the receiver. Once a consumer receives a message, it can
+            delegate to the rest of its application to help process the message. (This solution only works with
+            Point-to-Point Channels; multiple consumers on a Publish-Subscribe Channel just create more copies of each
+            message.)
+            <div><img src="data/CompetingConsumers.gif" class="img-fluid" alt=""/></div>
+            <div><img src="data/apache_kafka.png" class="img-fluid" alt=""/></div>
+            <p>In the example above, a Kafka topic consists of three partitions divided across two consumers. A Message
+                Router distributes the messages across the three Point-to-Point Channels. This router is generally a
+                that works off the message key. This allows the sender to control the distribution of messages, e.g. to
+                assure related messages go onto the same partition. This can be necessary as in-order delivery across
+                partitions is not guaranteed.</p>
+        </li>
+        <li>
+            <b>Message Dispatcher</b>. An application is using Messaging. The application needs multiple consumers on a
+            single Message Channel to work in a coordinated fashion. Create a Message Dispatcher on a channel that will
+            consume messages from a channel and distribute them to performers.
+            <div><img src="data/MessageDispatcher.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Selective Consumer</b>. An application is using Messaging. It consumes Messages from a Message Channel,
+            but it does not necessarily want to consume all of the messages on that channel, just some of them.
+            Make the consumer a Selective Consumer, one that filteres the messages delivered by its channel so that it
+            only receives the ones that match its criteria.
+            <div><img src="data/MessageSelectorSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Durable Subscriber</b>. An application is receiving messages on a Publish-Subscribe Channel. A durable
+            subscription saves messages for an inactive subscriber and delivers these saved messages when the subscriber
+            reconnects. In this way, a subscriber will not lose any messages even though it disconnected. A durable
+            subscription has no effect on the behavior of the subscriber or the messaging system while the subscriber is
+            active (e.g., connected). A connected subscriber acts the same whether its subscription is durable or
+            non-durable. The difference is in how the messaging system behaves when the subscriber is disconnected.
+            <div><img src="data/DurableSubscriptionSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Idempotent Receiver</b>. Even when a sender application only sends a message once, the receiver
+            application may receive the message more than once. The term idempotent is used in mathematics to describe a
+            function that produces the same result if it is applied to itself, i.e. f(x) = f(f(x)). In Messaging this
+            concepts translates into a message that has the same effect whether it is received once or multiple times.
+            This means that a message can safely be resent without causing any problems even if the receiver receives
+            duplicates of the same message.
+        </li>
+        <li>
+            <b>Service Activator</b>. An application has a service that it would like to make available to other
+            applications. A Service Activator can be one-way (request only) or two-way (Request-Reply). The service can
+            be as simple as a method call—synchronous and non-remote—perhaps part of a Service Layer [EAA]. The
+            activator can be hard-coded to always invoke the same service, or can use reflection to invoke the service
+            indicated by the message. The activator handles all of the messaging details and invokes the service like
+            any other client, such that the service doesn’t even know it’s being invoked through messaging.
+            <div><img src="data/MessagingAdapterSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+    </ul>
+    <h4>System Management</h4>
+    <ul>
+        <li>
+            <b>Control Bus</b>. Naturally, enterprise integration systems are distributed. In fact, one of the defining
+            qualities of an enterprise messaging system is to enable communication between disparate systems. Messaging
+            systems allow information to be routed and transformed so that data can be exchanged between these systems.
+            In most cases, these applications are spread across multiple networks, buildings, cities or continents. Use
+            a Control Bus to manage an enterprise integration system. The Control Bus uses the same messaging mechanism
+            used by the application data, but uses separate channels to transmit data that is relevant to the management
+            of components involved in the message flow.
+            <div><img src="data/ControlBus.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Detour</b>. A Wire Tap is useful to inspect messages that travel across a channel. Sometimes, though, we
+            need to modify or reroute the messages instead of simply inspecting them. The Detour uses a simple
+            context-based router with two output channels. One output channel passes the unmodified message to the
+            original destination. When instructed by the Control Bus, the Detour routes messages to a different channel.
+            This channel sends the message to additional components that can inspect and/or modify the message.
+            Ultimately, these components route the message to the same destination.
+            <div><img src="data/Detour.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Wire Tap</b>. Point-to-Point Channels are often used for Document Messages because they ensure that
+            exactly one consumer will consume each message. However, for testing, monitoring or troubleshooting, it may
+            be useful to be able to inspect all messages that travel across the channel. The Wire Tap is a fixed
+            Recipient List with two output channels. It consumes messages off the input channel and publishes the
+            unmodified message to both output channels. To insert the Wire Tap into a channel, you need to create an
+            additional channel and change the destination receiver to consume of the second channel. Because the
+            analysis logic is located inside a second component, we can insert a generic Wire Tap into any channel
+            without any danger of modifying the primary channel behavior. This improves reuse and reduces the risk of
+            instrumenting an existing solution.
+            <div><img src="data/WireTap.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message History</b>. One of key benefits of a message-based systems is the loose coupling between
+            participants; the message sender and recipient make no (or few) assumptions about each other's identity. If
+            a message recipient retrieves a message from a message channel, it generally does not know nor care which
+            application put the message on the channel. The message is by definition self-contained and is not
+            associated with a specific sender. This is one of the architectural strengths of message-based systems.<br/>
+            However, the same property can make debugging and analyzing dependencies very difficult. If we are not sure
+            where a message goes, how can we assess the impact of a change in the message format? Likewise, if we don't
+            know which application published a message it is difficult to correct a problem with the message.
+            <div><img src="data/MessageHistory.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Store</b>. As the Message History describes, the architectural principle of loose coupling allows
+            for flexibility in the solution, but can make it difficult to gain insight into the dynamic behavior of the
+            integration solution. When using a Message Store, we can take advantage of the asynchronous nature of a
+            messaging infrastructure. When we send a message to a channel, we send a duplicate of the message to a
+            special channel to be collected by the Message Store. This can be performed by the component itself or we
+            can insert a Wire Tap into the channel. We can consider the secondary channel that carries a copy of the
+            message as part of the Control Bus. Sending a second message in a 'fire-and-forget' mode will not slow down
+            the flow of the main application messages. It does, however, increase network traffic. That's why we may not
+            store the complete message, but just a few key fields that are required for later analysis, such as a
+            message ID, or the channel on which the message was sent and a timestamp.
+            <div><img src="data/MessageStore.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Smart Proxy</b>. A pair of Wire Taps can be used to track messages that flow through a component.
+            However, this approach assumes that the component publishes messages to a fixed output channel. However,
+            many service-style components publish reply messages to the channel specified by the Return Address included
+            in the request message. <br/>
+            The Smart Proxy intercepts messages sent on the request channel to the Request-Reply service. For each
+            incoming message, the Smart Proxy stores the Return Address specified by the original sender. It then
+            replaces the Return Address in the message with the channel the reply channel that the Smart Proxy is
+            listening on. When a reply message comes in on that channel, the Smart Proxy retrieves the stored Return
+            Address and uses a Message Router to forward the unmodified reply address to that channel.
+            <div><img src="data/SmartProxy.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Test Message</b>. The Control Bus describes a number of approaches to monitor the health of the message
+            processing system. Each component in the system can publish periodic "heartbeat" messages to the control bus
+            in order to keep the monitoring mechanism informed that the component is still active. The heartbeat
+            messages can contain vital stats of the component as well, such as the number of messages processed, the
+            average time required to process a message or the percentage of CPU utilization on the machine.
+            <div><img src="data/TestMessage.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Channel Purger</b>. Use a Channel Purger to remove unwanted messages from a channel.
+
+            A simple Channel Purger simply remove all the messages from a channel. This may be sufficient for test
+            scenarios where we want to reset the system into a consistent state. If we are debugging a production system
+            we may need to remove individual message or a set of messages based on specific criteria, such as the
+            message ID or the values of specific message fields.
+        </li>
+        <li>
+            <b>Log</b>. You can use the Log component which logs the Message content. You can use the Tracer which
+            trace logs message flow. You can also use a Processor or Bean and log from Java code. You can use the
+            log DSL.
+        </li>
+        <li>
+            <b>Step</b>. A step groups together the child processors into a single composite unit. This allows to
+            capture metrics at a group level which can make management and monitoring of Camel routes easier by using
+            higher-level abstractions. You can also think this as a middle-level between route vs each individual
+            processors in the routes.
+            <div><img src="data/PipesAndFilters%20(1).gif" class="img-fluid" alt=""/></div>
         </li>
     </ul>
     <hr/>
