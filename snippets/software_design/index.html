@@ -1369,7 +1369,7 @@ class Foo {
             without blocking concurrent application instances that access the same data.
         </li>
     </ul>
-
+    <hr/>
     <h3>Enterprise Integration Patterns <a
             href="https://www.enterpriseintegrationpatterns.com/patterns/messaging/toc.html">?</a></h3>
     <h4>Integration Styles</h4>
@@ -1412,6 +1412,7 @@ class Foo {
         </li>
     </ul>
     <h4>Messaging Systems</h4>
+    <div><img src="data/m-patterns.png" class="img-fluid" alt=""/></div>
     <ul>
         <li><b>Message Channel</b>. An enterprise has two separate applications that need to communicate, preferably by
             using Messaging. When an application has information to communicate, it doesn't just fling the information
@@ -1554,13 +1555,337 @@ class Foo {
         </li>
         <li>
             <b>Message Bus</b>. What is an architecture that enables separate applications to work together, but in a
-            de-coupled fashion such that applications can be easily added or removed without affecting the others?<br/>
+            de-coupled fashion such that applications can be easily added or removed without affecting the others? A
+            Message Bus is a combination of a common data model, a common command set, and a messaging infrastructure to
+            allow different systems to communicate through a shared set of interfaces. This is analogous to a
+            communications bus in a computer system, which serves as the focal point for communication between the CPU,
+            main memory, and peripherals. Just as in the hardware analogy, there are a number of pieces that come
+            together to form the message bus.<br/>
             <div><img src="data/MessageBusSolution.gif" class="img-fluid" alt=""/></div>
         </li>
         <li>
             <b>Change Data Capture</b>. Data synchronization by capturing changes made to a database, and apply those
             changes to another system.<br/>
             <div><img src="data/CDC-Debezium.png" class="img-fluid" alt=""/></div>
+        </li>
+    </ul>
+    <h4>Message Construction</h4>
+    <ul>
+        <li>
+            <b>Command Message</b>. There is no specific message type for commands; a Command Message is simply a
+            regular message that happens to contain a command. In JMS, the command message could be any type of message;
+            examples include an ObjectMessage containing a Serializable command object, a TextMessage containing the
+            command in XML form, etc. In .NET, a command message is a Message with a command stored in it. A Simple
+            Object Access Protocol (SOAP) request is a command message.
+        </li>
+        <li>
+            <b>Document Message</b>. Whereas a Command Message tells the receiver to invoke certain behavior, a Document
+            Message just passes data and lets the receiver decide what, if anything, to do with the data. The data is a
+            single unit of data, a single object or data structure which may decompose into smaller units.
+        </li>
+        <li>
+            <b>Event Message</b>. When a subject has an event to announce, it will create an event object, wrap it in a
+            message, and send it on a channel. The observer will receive the event message, get the event, and process
+            it. Messaging does not change the event notification, just makes sure that the notification gets to the
+            observer.
+        </li>
+        <li>
+            <b>Request-Reply</b>.
+            <div><img src="data/RequestReply.gif" class="img-fluid" alt=""/></div>
+            <p>For example when using JMS with InOut the component will by default perform these actions:</p>
+            <ul>
+                <li>create by default a temporary inbound queue</li>
+
+                <li>set the JMSReplyTo destination on the request message</li>
+
+                <li>set the JMSCorrelationID on the request message</li>
+
+                <li>send the request message</li>
+
+                <li>consume the response and associate the inbound message to the request using the JMSCorrelationID (as
+                    you
+                    may be performing many concurrent request/responses).
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>Return Address </b>. This way, the replier does not need to know where to send the reply, it can just ask
+            the request. If different messages to the same replier require replies to different places, the replier
+            knows where to send the reply for each request. This encapsulates the knowledge of what channels to use for
+            requests and replies within the requestor so those decisions do not have to be hard coded within the
+            replier. A Return Address is put in the header of a message because it’s not part of the data being
+            transmitted.
+            <div><img src="data/ReturnAddressSolution.gif" class="img-fluid" alt=""/></div>
+            <p>For example when using JMS with InOut the component will by default return to the address given in
+                JMSReplyTo.</p>
+        </li>
+        <li>
+            <b>Correlation Identifier</b>. When working with the ActiveMQ or JMS components the correlation identifier
+            header is called JMSCorrelationID. You can add your own correlation identifier to any message exchange to
+            help correlate messages together to a single conversation (or business process).<br/>
+            Some EIP patterns will spin off a sub message, and in those cases, Camel will add a correlation id on the
+            Exchange as a property with they key Exchange.CORRELATION_ID, which links back to the source Exchange. For
+            example the Splitter, Multicast, Recipient List, and Wire Tap EIP does this.
+        </li>
+        <li>
+            <b>Message Sequence </b>. Whenever a large set of data may need to be broken into message-size chunks, send
+            the data as a Message Sequence and mark each message with sequence identification fields.
+            <div><img src="data/MessageSequenceSize.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Expiration</b>. Set the Message Expiration to specify a time limit how long the message is
+            viable. Once the time for which a message is viable passes, and the message still has not been consumed,
+            then the message will expire. The messaging system’s consumers will ignore an expired message; they treat
+            the message as if it where never sent in the first place. Most messaging system implementations reroute
+            expired messages to the Dead Letter Channel, while others simply discard expired messages; this may be
+            configurable.
+            <div><img src="data/MessageExpirationSolution.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Format Indicator</b>. The format indicator enables the sender to tell the receiver the format of the
+            message. This way, a receiver expecting several possible formats knows which one a message is using and
+            therefore how to interpret the message’s contents.
+        </li>
+    </ul>
+    <h4>Message Routing</h4>
+    <ul>
+        <li>
+            <b>Content-Based Router </b>. Assume that we are building an order processing system. When an incoming order
+            is received, we first validate the order and then verify that the ordered item is available in the
+            warehouse. This function is performed by the inventory system. This sequence of processing steps is a
+            perfect candidate for the Pipes and Filters style. We create two filters, one for the validation step and
+            one for the inventory system, and route the incoming messages through both filters. However, in many
+            enterprise integration scenarios more than one inventory system exists with each system being able to handle
+            only specific items.<br/>
+            The Content-Based Router examines the message content and routes the message onto a different channel based
+            on data contained in the message. The routing can be based on a number of criteria such as existence of
+            fields, specific field values etc. When implementing a Content-Based Router, special caution should be taken
+            to make the routing function easy to maintain as the router can become a point of frequent maintenance. In
+            more sophisticated integration scenarios, the Content-Based Router can take on the form of a configurable
+            rules engine that computes the destination channel based on a set of configurable rules.<br/>
+            <div><img src="data/ContentBasedRouter.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Filter</b>. Continuing with the order processing example, let's assume that company management
+            publishes price changes and promotions to large customers. Whenever a price for an item changes, we send a
+            message notifying the customer. We do the same if we are running a special promotion, e.g. all widgets are
+            10% off in the month of November. Some customers may be interested in receiving price updates or promotions
+            only related to specific items. If I purchase primarily gadgets, I may not be interested in knowing whether
+            widgets are on sale or not. The Message Filter has only a single output channel. If the message content
+            matches the criteria specified by the Message Filter, the message is routed to the output channel. If the
+            message content does not match the criteria, the message is discarded.<br/>
+            <div><img src="data/MessageFilter.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Dynamic Router </b>. Besides the usual input and output channels the Dynamic Router uses an additional
+            control channel. During system start-up, each potential recipient sends a special message to the Dynamic
+            Router on this control channel, announcing its presence and listing the conditions under which it can handle
+            a message. The Dynamic Router stores the 'preferences' for each participant in a rule base. When a message
+            arrives, the Dynamic Router evaluates all rules and routes the message to the recipient whose rules are
+            fulfilled. This allows for efficient, predictive routing without the maintenance dependency of the Dynamic
+            Router on each potential recipient.<br/>
+            <div><img src="data/DynamicRouter.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Recipient List</b>. A Content-Based Router allows us to route a message to the correct system based on
+            message content. This process is transparent to the original sender in the sense that the originator simply
+            sends the message to a channel, where the router picks it up and takes care of everything.<br/>
+
+            In some cases, though, we may want to specify one or more recipients for the message. A common analogy are
+            the recipient lists implemented in most e-mail systems. For each e-mail message, the sender can specify a
+            list of recipients. The mail system then ensures transport of the message content to each recipient. An
+            example from the domain of enterprise integration would be a situation where a function can be performed by
+            one or more providers. For example, we may have a contract with multiple credit agencies to assess the
+            credit worthiness of our customers. When a small order comes in we may simply route the credit request
+            message to one credit agency. If a customer places a large order, we may want to route the credit request
+            message to multiple agencies and compare the results before making a decision. In this case, the list of
+            recipients depends on the dollar value of the order.<br/>
+
+            In another situation, we may want to route an order message to a select list of suppliers to obtain a quote
+            for the requested item. Rather than sending the request to all vendors, we may want to control which vendors
+            receive the request, possibly based on user preferences.<br/>
+            <div><img src="data/RecipientList.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Splitter</b>. Many messages passing through an integration solution consist of multiple elements. For
+            example, an order placed by a customer consists of more than just a single line item. As outlined in the
+            description of the Content-Based Router, each line item may need to be handled by a different inventory
+            system. Thus, we need to find an approach to process a complete order, but treat each order item contained
+            in the order individually.<br/>
+            <div><img src="data/Sequencer.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Aggregator </b>. A Splitter is useful to break out a single message into a sequence of sub-messages that
+            can be processed individually. Likewise, a Recipient List or a Publish-Subscribe Channel is useful to
+            forward a request message to multiple recipients in parallel in order to get multiple responses to choose
+            from. In most of these scenarios, the further processing depends on successful processing of the
+            sub-messages. For example, we want to select the best bid from a number of vendor responses or we want to
+            bill the client for an order after all items have been pulled from the warehouse.
+            <div><img src="data/Aggregator.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Resequencer</b>. A Message Router can route messages from one channel to different channels based on
+            message content or other criteria. Because individual messages may follow different routes, some messages
+            are likely to pass through the processing steps sooner than others, resulting in the messages getting out of
+            order. However, some subsequent processing steps do require in-sequence processing of messages, for example
+            to maintain referential integrity.
+            <div><img src="data/Resequencer.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Composed Message Processor</b>. The order-processing example presented in the Content-Based Router and
+            Splitter patterns processes an incoming order consisting of individual line items. Each line item requires
+            an inventory check with the respective inventory system. After all items have been verified we want to pass
+            the validated order message to the next processing step.
+            <div><img src="data/DistributionAggregate.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Scatter-Gather</b>. In the order processing example introduced in the previous patterns , each order item
+            that is not currently in stock could be supplied by one of multiple external suppliers. However, the
+            suppliers may or may not have the respective item in stock themselves, they may charge a different price and
+            may be able to supply the part by a different date. To fill the order in the best way possible, we should
+            request quotes from all suppliers and decide which one provides us with the best term for the requested
+            item.
+            <div><img src="data/BroadcastAggregate.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Routing Slip</b>. Most of the routing patterns presented in this section route incoming messages to one
+            or more destinations based on a set of rules. Sometimes, though, we need to route a message not just to a
+            single component, but through a whole series of components. Let's assume, for example, that we use a Pipes
+            and Filters architecture to process incoming messages that have to undergo a sequence of processing steps
+            and business rule validations. Since the nature of the validations varies widely and may depend on external
+            systems (e.g., credit card validations), we implement each type of step as a separate filter. Each filter
+            inspects the incoming message, and applies the business rule(s) to the message. If the message does not
+            fulfill the conditions specified by the rules it is routed to an exception channel. The channels between the
+            filters determine the sequence of validations that the message needs to undergo.
+            <div><img src="data/RoutingTableSimple.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Process Manager</b>. The Routing Slip demonstrates how a message can be routed through a dynamic series
+            of processing steps. The solution of the Routing Slip is based on two key assumptions: the sequence of
+            processing steps has to be determined up-front and the sequence is linear. In many cases, these assumptions
+            may not be fulfilled. For example, routing decisions might have to be made based on intermediate results.
+            Or, the processing steps may not be sequential, but multiple steps might be executed in parallel.
+            <div><img src="data/ProcessManager.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Message Broker</b>. Many patterns in this chapter present ways to route messages to the proper
+            destination without the originating application being aware of the ultimate destination of the message. Most
+            of the patterns focused on specific types of routing logic. However, in aggregate, these patterns solve a
+            bigger problem.
+            <div><img src="data/MessageBroker.gif" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Throttler</b>. The Throttler Pattern allows you to ensure that a specific endpoint does not get
+            overloaded, or that we don’t exceed an agreed SLA with some external service.
+        </li>
+        <li>
+            <b>Sampling</b>. A sampling throttler allows you to extract a sample of the exchanges from the traffic
+            through a route.
+            It is configured with a sampling period during which only a single exchange is allowed to pass through. All
+            other exchanges will be stopped. Will by default use a sample period of 1 seconds.
+        </li>
+        <li>
+            <b>Delayer</b>. I can delay the sending of a message.
+        </li>
+        <li>
+            <b>Load Balancer</b>. The Load Balancer Pattern allows you to delegate to one of a number of endpoints using
+            a variety of different load balancing policies.
+            <ul>
+                <li><b>Round Robin</b> -
+
+                    The exchanges are selected from in a round robin fashion. This is a well known and classic policy,
+                    which spreads the load evenly.
+                </li>
+
+                <li><b>Random</b> -
+
+                    A random endpoint is selected for each exchange.
+                </li>
+
+                <li><b>Sticky</b> -
+
+                    Sticky load balancing using an Expression to calculate a correlation key to perform the sticky load
+                    balancing; rather like jsessionid in the web or JMSXGroupID in JMS.
+                </li>
+
+                <li><b>Topic</b> -
+
+                    Topic which sends to all destinations (rather like JMS Topics)
+                </li>
+
+                <li><b>Failover</b> -
+
+                    In case of failures the exchange will be tried on the next endpoint.
+                </li>
+
+                <li><b>Weighted Round-Robin</b> -
+
+                    The weighted load balancing policy allows you to specify a processing load distribution ratio for
+                    each server with respect to the others. In addition to the weight, endpoint selection is then
+                    further refined using round-robin distribution based on weight.
+                </li>
+
+                <li><b>Weighted Random</b> -
+
+                    The weighted load balancing policy allows you to specify a processing load distribution ratio for
+                    each server with respect to others.In addition to the weight, endpoint selection is then further
+                    refined using random distribution based on weight.
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>Circuit Breaker</b> - The Circuit Breaker pattern is inspired by the real-world electrical circuit
+            breaker, which is used to detect excessive current draw and fail fast to protect electrical equipment. The
+            software-based circuit breaker works on the same notion, by encapsulating the operation and monitoring it
+            for failures. The Circuit Breaker pattern operates in three states, as illustrated in the following figure:
+            <div><img src="data/CircuitBreaker.png" class="img-fluid" alt=""/></div>
+        </li>
+        <li>
+            <b>Service Call</b> - The Service Call EIP allows to call remote services in a distributed system. The
+            service to call is looked up in a service registry of some sorts such as Kubernetes, Consul, Etcd,
+            Zookeeper, DNS. The EIP separates the configuration of the service registry from the calling of the service.
+        </li>
+        <li>
+            <b>Saga</b> - The Saga EIP provides a way to define a series of related actions in a route that should
+            be either completed successfully (all of them) or not-executed/compensated. Sagas implementations are able
+            to coordinate distributed services communicating using any transport towards a globally consistent
+            outcome.<br/>
+            Although their main purpose is similar, Sagas are different from classical ACID distributed (XA)
+            transactions because the status of the different participating services is guaranteed to be consistent only
+            at the end of the Saga and not in any intermediate step (lack of isolation).<br/>
+            Conversely, Sagas are suitable for many use cases where usage of distributed transactions is discouraged.
+            For example, services participating in a Saga are allowed to use any kind of datastore: classical databases
+            or even NoSQL non-transactional datastores. Sagas are also suitable for being used in stateless cloud
+            services as they do not require a transaction log to be stored alongside the service.<br/>
+            Differently from transactions, Sagas are also not required to be completed in a small amount of time,
+            because they don’t use database-level locks. They can live for a longer timespan: from few seconds to
+            several days. The Saga EIP implementation based on the MicroProfile sandbox spec (see camel-lra) is indeed
+            called LRA that stands for "Long Running Action". It also supports coordination of external heterogeneous
+            services, written with any language/technology and also running outside a JVM.<br/>
+            Sagas don’t use locks on data, instead they define the concept of "Compensating Action" that is an action
+            that should be executed when the standard flow encounters an error, with the purpose of restoring the status
+            that was present before the flow execution.<br/>
+        </li>
+        <li>
+            <b>Multicast</b> - The Multicast EIP allows to route the same message to a number of endpoints and process
+            them in a different way. The main difference between the Multicast and Splitter is that Splitter will split
+            the message into several pieces but the Multicast will not modify the request message.
+        </li>
+    </ul>
+    <h4>Message Transformation</h4>
+    <div><img src="data/MetadataIntegration.gif" class="img-fluid" alt=""/></div>
+    <ul>
+        <li>
+            <b>Envelope Wrapper</b>.
+            Most messaging systems divide the message data into a header and a body. The header contains fields that are
+            used by the messaging infrastructure to manage the flow of messages. However, most endpoint systems that
+            participate in the integration solution generally are not aware of these extra data elements. In some cases,
+            systems may even consider these fields as erroneous because they do not match the message format used by the
+            application. On the other hand, the messaging components that route the messages between the applications
+            may require the header fields and would consider a message invalid if it does not contain the proper header
+            fields.
+            <div><img src="data/Wrapper.gif" class="img-fluid" alt=""/></div>
+
         </li>
     </ul>
     <hr/>
@@ -1580,6 +1905,12 @@ class Foo {
     </p>
 </div>
 
+<style>
+    .img-fluid {
+        margin-top: 30px;
+        margin-bottom: 50px;
+    }
+</style>
 <script>hljs.initHighlightingOnLoad();</script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript"> (function (d, w, c) {
