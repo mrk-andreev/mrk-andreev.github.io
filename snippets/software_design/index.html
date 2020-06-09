@@ -242,16 +242,65 @@
     <p>Provide an interface for creating families of related or dependent objects without specifying their concrete
         classes.</p>
     <div><img src="data/p-f.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public abstract class AbstractJmsListenerContainerFactory&lt;C extends AbstractMessageListenerContainer&gt;
+		implements JmsListenerContainerFactory&lt;C&gt; {
+// ...
+protected abstract C createContainerInstance();
+// ...
+}
+
+
+public class SimpleJmsListenerContainerFactory
+		extends AbstractJmsListenerContainerFactory&lt;SimpleMessageListenerContainer&gt; {
+
+	@Override
+	protected SimpleMessageListenerContainer createContainerInstance() {
+		return new SimpleMessageListenerContainer();
+	}
+
+}</code></pre>
     <hr/>
     <h4>Builder</h4>
     <p>Separate the construction of a complex object from its representation, allowing the same construction process to
         create various representations.</p>
     <div><img src="data/p-builder.png" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public static class NodeConfigBuilder {
+// ...
+public NodeConfigBuilder setSharedLibDirectory(String sharedLibDirectory) {
+    this.sharedLibDirectory = sharedLibDirectory;
+    return this;
+}
+
+// ...
+public NodeConfigBuilder setShardHandlerFactoryConfig(PluginInfo shardHandlerFactoryConfig) {
+    this.shardHandlerFactoryConfig = shardHandlerFactoryConfig;
+    return this;
+}
+
+// ...
+public NodeConfig build() {
+      // if some things weren't set then set them now.  Simple primitives are set on the field declaration
+      if (loader == null) {
+        loader = new SolrResourceLoader(solrHome);
+      }
+
+      return new NodeConfig(nodeName, coreRootDirectory, solrDataHome, booleanQueryMaxClauseCount, ...);
+}
+</code></pre>
     <hr/>
     <h4>Dependency Injection</h4>
     <p>Separate the construction of a complex object from its representation, allowing the same construction process to
         create various representations.</p>
     <div><img src="data/p-di.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public class FooService {
+
+    private FooFormatter fooFormatter;
+
+    @Autowired
+    public FooService(FooFormatter fooFormatter) {
+        this.fooFormatter = fooFormatter;
+    }
+}</code></pre>
     <hr/>
     <h4>Factory method pattern</h4>
     <p>In class-based programming, the factory method pattern is a creational pattern that uses factory methods to deal
@@ -260,11 +309,33 @@
         implemented by child classes, or implemented in a base class and optionally overridden by derived classes—rather
         than by calling a constructor.</p>
     <div><img src="data/p-fm.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">@Component
+public class InstanceFooFactory {
+
+    @Bean
+    public Foo createInstance() {
+        return new Foo();
+    }
+}</code></pre>
     <hr/>
     <h4>Lazy initialization</h4>
     <p>In computer programming, lazy initialization is the tactic of delaying the creation of an object, the calculation
         of a value, or some other expensive process until the first time it is needed. It is a kind of lazy evaluation
         that refers specifically to the instantiation of objects or other resources.</p>
+    <pre><code class="java">@Lazy
+@Service
+public FooService {}</code></pre>
+    <pre><code class="java">public class FooServiceWrapper {
+    private FooService service;
+
+    public FooService getService() {
+        if (service == null) { // not thread safe!
+            service = new FooService();
+        }
+
+        return service;
+    }
+}</code></pre>
     <hr/>
     <h4>Multiton pattern</h4>
     <p>In software engineering, the multiton pattern is a design pattern which generalizes the singleton pattern.
@@ -281,12 +352,65 @@
     <p>The prototype pattern is a creational design pattern in software development. It is used when the type of objects
         to create is determined by a prototypical instance, which is cloned to produce new objects.</p>
     <div><img src="data/f-proto.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">@Component
+public class FooService {
+    @Bean
+    @Scope(value= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public Foo foo() {
+        return new Foo();
+    }
+}</code></pre>
+    <pre><code class="java">public abstract class Shape {
+    public abstract Shape clone();
+}
+
+public class Circle extends Shape {
+    private int radius;
+
+    public Circle() {
+    }
+
+    public Circle(Circle target) {
+        if (target != null) {
+            this.radius = target.radius;
+        }
+    }
+
+    @Override
+    public Shape clone() {
+        return new Circle(this);
+    }
+}</code></pre>
     <hr/>
     <h4>Singleton</h4>
     <p>In software engineering, the singleton pattern is a software design pattern that restricts the instantiation of a
         class to one "single" instance. This is useful when exactly one object is needed to coordinate actions across
         the system. The term comes from the mathematical concept of a singleton.</p>
     <div><img src="data/p-singl.png" class="img-fluid" alt=""/></div>
+    <pre><code class="java">@Component
+public class FooService {
+    @Bean
+    @Scope(value= ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public Foo foo() {
+        return new Foo();
+    }
+}</code></pre>
+    <pre><code class="java">public class Singleton {
+        private static volatile Singleton instance;
+
+        public static Singleton getInstance() {
+		Singleton localInstance = instance;
+		if (localInstance == null) {
+			synchronized (Singleton.class) {
+				localInstance = instance;
+				if (localInstance == null) {
+					instance = localInstance = new Singleton();
+				}
+			}
+		}
+		return localInstance;
+	}
+}</code></pre>
     <hr/>
     <h3>Structural patterns</h3>
     <ul>
