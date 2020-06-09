@@ -429,9 +429,78 @@ public class FooService {
     <h4>Adapter</h4>
     <p>Converts one interface to another so that it matches what the client is expecting</p>
     <div><img src="data/p-adapter.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">final class TermVectorsAdapter {
+    private IndexReader reader;
+
+    TermVectorsAdapter(IndexReader reader) {
+        this.reader = Objects.requireNonNull(reader);
+    }
+
+    List&lt;TermVectorEntry&gt; getTermVector(int docid, String field) throws IOException {
+        Terms termVector = reader.getTermVector(docid, field);
+        if (termVector == null) {
+          // no term vector available
+          log.warn("No term vector indexed for doc: #{} and field: {}", docid, field);
+          return Collections.emptyList();
+        }
+
+        List&lt;TermVectorEntry&gt; res = new ArrayList<>();
+        TermsEnum te = termVector.iterator();
+        while (te.next() != null) {
+          res.add(TermVectorEntry.of(te));
+        }
+        return res;
+    }
+
+}</code></pre>
     <h4>Bridge</h4>
     <p>Decouple an abstraction from its implementation allowing the two to vary independently.</p>
     <div><img src="data/p-bridge.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public abstract class Message {
+    MessageSender messageSender;
+    public Message(MessageSender messageSender) {
+        this.messageSender=messageSender;
+    }
+     abstract public void send();
+}
+
+public class TextMessage extends Message {
+    public TextMessage(MessageSender messageSender) {
+        super(messageSender);
+    }
+    @Override
+    public void send(){
+      messageSender.sendMessage();
+    }
+}
+
+public class EmailMessage extends Message {
+    public EmailMessage(MessageSender messageSender) {
+        super(messageSender);
+    }
+    @Override
+    public void send(){
+        messageSender.sendMessage();
+    }
+}
+
+public interface MessageSender {
+    public void sendMessage();
+}
+
+public class TextMessageSender implements MessageSender {
+    @Override
+    public void sendMessage(){
+        System.out.println("TextMessageSender: Sending text message...");
+    }
+}
+
+public class EmailMessageSender implements MessageSender {
+    @Override
+    public void sendMessage(){
+        System.out.println("EmailMessageSender: Sending email message...");
+    }
+}</code></pre>
     <h4>Composite</h4>
     <p>Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual
         objects and compositions of objects uniformly.</p>
@@ -441,10 +510,54 @@ public class FooService {
         responsibilities to an object dynamically keeping the same interface. Decorators provide a flexible alternative
         to subclassing for extending functionality. </p>
     <div><img src="data/p-decorator.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface DataSource {
+    void writeData(String data);
+
+    String readData();
+}
+
+public class FileDataSource implements DataSource {
+    // ...
+}
+
+public class DataSourceDecorator implements DataSource {
+    // ...
+}
+
+public class EncryptionDecorator extends DataSourceDecorator {
+    // ...
+    @Override
+    public String readData() {
+        return decode(super.readData());
+    }
+}
+
+// Example
+DataSourceDecorator encoded = new CompressionDecorator(
+                                         new EncryptionDecorator(
+                                             new FileDataSource("out/OutputDemo.txt")));
+</code></pre>
+
     <h4>Facade</h4>
     <p>Provide a unified interface to a set of interfaces in a subsystem. Facade defines a higher-level interface that
         makes the subsystem easier to use.</p>
     <div><img src="data/p-facade.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface AuthenticationFacade {
+    String getUsername();
+}
+
+@Component
+public class AuthenticationFacadeImpl implements AuthenticationFacade {
+    @Override
+    public String getUsername() {
+        KeycloakPrincipal keycloakPrincipal = (KeycloakPrincipal) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return keycloakPrincipal.getKeycloakSecurityContext().getToken().getPreferredUsername();
+    }
+}
+</code></pre>
     <h4>Flyweight</h4>
     <p>Use sharing to support large numbers of similar objects efficiently. A classic example usage of the flyweight
         pattern is the data structures for graphical representation of characters in a word processor. It might be
