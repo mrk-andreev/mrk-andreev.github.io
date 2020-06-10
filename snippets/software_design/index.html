@@ -567,6 +567,7 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
         character in the document; only the position of each character (in the document and/or the page) would need to
         be stored internally.</p>
     <div><img src="data/f-flyweight.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">// example: cache</code></pre>
     <h4>Front controller</h4>
     <p>The pattern relates to the design of Web applications. It provides a centralized entry point for handling
         requests.</p>
@@ -574,6 +575,9 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
     <h4>Marker</h4>
     <p>Empty interface to associate metadata with a class. An example of the application of marker interfaces from the
         Java programming language is the Serializable interface. </p>
+    <pre><code class="java">public interface Serializable {
+}</code></pre>
+
     <h4>Module</h4>
     <p>Group several related elements, such as classes, singletons, methods, globally used, into a single conceptual
         entity. [<a href="https://www.oracle.com/corporate/features/understanding-java-9-modules.html">Java Modules</a>]
@@ -581,6 +585,17 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
     <h4>Proxy</h4>
     <p>Provide a surrogate or placeholder for another object to control access to it.</p>
     <div><img src="data/p-proxy.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public Object replaceWithProxyIfNeeded(Object t, Class implClass) {
+// ...
+        if (implClass.getInterfaces().length == 0) {
+                return Enhancer.create(implClass,
+                        (InvocationHandler) (proxy, method, args) -&gt; getInvocationHandlerLogic(method, args, t));
+            }
+
+
+            return Proxy.newProxyInstance(implClass.getClassLoader(), implClass.getInterfaces(),
+                    (proxy, method, args) -&gt; getInvocationHandlerLogic(method, args, t));
+}</code></pre>
     <h4>Twin</h4>
     <p>Twin allows modeling of multiple inheritance in programming languages that do not support this feature.</p>
     <div><img src="data/p-twin.png" class="img-fluid" alt=""/></div>
