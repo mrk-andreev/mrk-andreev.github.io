@@ -628,18 +628,99 @@ public class AuthenticationFacadeImpl implements AuthenticationFacade {
     <p>Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the
         request. Chain the receiving objects and pass the request along the chain until an object handles it.</p>
     <div><img src="data/f-cor.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface FilterChain {
+    public void doFilter ( ServletRequest request, ServletResponse response ) throws IOException, ServletException;
+}
+
+class Chain implements FilterChain {
+    public void doFilter(ServletRequest request, ServletResponse response)
+                throws IOException, ServletException {
+            // ...
+    }
+}
+
+public class AuthenticationFilter implements Filter {
+    @Override
+  public void doFilter(ServletRequest request,
+                       ServletResponse response,
+                       FilterChain filterChain)
+                           throws IOException, ServletException {
+        // ...
+        filterChain.doFilter(httpRequest, httpResponse);
+        // ...
+    }
+}
+</code></pre>
     <h4>Command</h4>
     <p>Encapsulate a request as an object, thereby allowing for the parameterization of clients with different requests,
         and the queuing or logging of requests. It also allows for the support of undoable operations.</p>
     <div><img src="data/p-command.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface OnReconnect {
+  void command() throws SessionExpiredException;
+}
+
+
+public class ZkController implements Closeable {
+    // ...
+    public OnReconnect getConfigDirListener() {
+        return () -> {
+          synchronized (confDirectoryListeners) {
+            for (String s : confDirectoryListeners.keySet()) {
+              setConfWatcher(s, new WatcherImpl(s), null);
+              fireEventListeners(s);
+            }
+          }
+        };
+      }
+    // ...
+}
+</code></pre>
     <h4>Interpreter</h4>
     <p>Given a language, define a representation for its grammar along with an interpreter that uses the representation
         to interpret sentences in the language. </p>
     <div><img src="data/p-inter.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public class Interpreter
+	implements Runnable, ConsoleInterface,Serializable {
+
+    public Object eval( String statements ) throws EvalError {
+            if ( Interpreter.DEBUG ) debug("eval(String): "+statements);
+            return eval(statements, globalNameSpace);
+        }
+
+}</code></pre>
     <h4>Iterator</h4>
     <p>Provide a way to access the elements of an aggregate object sequentially without exposing its underlying
         representation. </p>
     <div><img src="data/p-iter.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface Iterator&lt;E&gt; {
+    boolean hasNext();
+
+    E next();
+}
+
+class StructuredGraph {
+    // ...
+    public Stamp getReturnStamp() {
+            Stamp returnStamp = null;
+            Iterator var2 = this.getNodes(ReturnNode.TYPE).iterator();
+
+            while(var2.hasNext()) {
+                ReturnNode returnNode = (ReturnNode)var2.next();
+                ValueNode result = returnNode.result();
+                if (result != null) {
+                    if (returnStamp == null) {
+                        returnStamp = result.stamp(NodeView.DEFAULT);
+                    } else {
+                        returnStamp = returnStamp.meet(result.stamp(NodeView.DEFAULT));
+                    }
+                }
+            }
+
+            return returnStamp;
+        }
+    // ...
+}
+    </code></pre>
     <h4>Mediator</h4>
     <p>Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping
         objects from referring to each other explicitly, and it allows their interaction to vary independently.</p>
