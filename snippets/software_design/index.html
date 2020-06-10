@@ -725,6 +725,15 @@ class StructuredGraph {
     <p>Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping
         objects from referring to each other explicitly, and it allows their interaction to vary independently.</p>
     <div><img src="data/m-mediator.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">package java.util;
+
+public class Timer {
+    // ...
+    public void schedule(TimerTask task, long delay){ // ...
+    }
+    // ...
+}
+</code></pre>
     <h4>Memento</h4>
     <p>Without violating encapsulation, capture and externalize an object's internal state allowing the object to be
         restored to this state later. The memento pattern is implemented with three objects: the originator, a caretaker
@@ -736,6 +745,55 @@ class StructuredGraph {
         be taken if the originator may change other objects or resources - the memento pattern operates on a single
         object.</p>
     <div><img src="data/p-memento.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">class Foo {
+    private static final Gson gson = new Gson();
+
+    private History history;
+    private State state;
+
+    public void execute(Command c) {
+        history.push(c, new Memento(this));
+        c.execute();
+    }
+
+    public void undo() {
+        if (history.undo())
+            state.update();
+    }
+
+    public String backup() {
+        return gson.toJson(state);
+    }
+
+    public void restore(String rawState) {
+        this.state = gson.fromString(rawState);
+    }
+
+}
+
+public class History {
+    // ..
+    public boolean undo() {
+        // ..
+        getMemento().restore();
+        // ..
+    }
+    // ..
+}
+
+public class Memento {
+    private String backup;
+    private Foo foo;
+
+    public Memento(Foo foo) {
+        this.foo = foo;
+        this.backup = editor.backup();
+    }
+
+    public void restore() {
+        foo.restore(backup);
+    }
+}</code></pre>
     <h4>Null object</h4>
     <p>Avoid null references by providing a default object. Null object is an object with no referenced value or with
         defined neutral ("null") behavior. </p>
@@ -752,15 +810,21 @@ class StructuredGraph {
         'observers' implementations will use background threads listening for subject events and other support mechanism
         from the kernel (Linux epoll, ...)</p>
     <div><img src="data/p-obs.jpg" class="img-fluid" alt=""/></div>
-    <h4>Publish/subscribe</h4>
-    <p>Define a one-to-many dependency between objects where a state change in one object results in all its dependents
-        being notified and updated automatically. Publish–subscribe is a messaging pattern where senders of messages,
-        called publishers, do not program the messages to be sent directly to specific receivers, called subscribers,
-        but instead categorize published messages into classes without knowledge of which subscribers, if any, there may
-        be. Similarly, subscribers express interest in one or more classes and only receive messages that are of
-        interest, without knowledge of which publishers, if any, there are.</p>
-    <p>This pattern provides greater network scalability and a more dynamic network topology, with a resulting decreased
-        flexibility to modify the publisher and the structure of the published data.</p>
+    <pre><code class="java">interface Subscriber {
+    void notify(Event e);
+}
+
+class Publisher {
+    private List&lt;Subscriber&gt; subscribers;
+
+    public void subscribe(Subscriber s) {
+        subscribers.add(s);
+    }
+
+    public void notify(Event e) {
+        subscribers.forEach(s => s.notify(e));
+    }
+}</code></pre>
     <h4>Servant</h4>
     <p>Define common functionality for a group of classes. The servant pattern is also frequently called helper class or
         utility class implementation for a given set of classes. The helper classes generally have no objects hence they
@@ -782,6 +846,167 @@ class StructuredGraph {
         class. The state pattern can be interpreted as a strategy pattern, which is able to switch a strategy through
         invocations of methods defined in the pattern's interface.</p>
     <div><img src="data/p-state.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public abstract class State {
+    Player player;
+
+    State(Player player) {
+        this.player = player;
+    }
+
+    public abstract String onLock();
+    public abstract String onPlay();
+    public abstract String onNext();
+    public abstract String onPrevious();
+}
+
+public class LockedState extends State {
+
+    LockedState(Player player) {
+        super(player);
+        player.setPlaying(false);
+    }
+
+    @Override
+    public String onLock() {
+        if (player.isPlaying()) {
+            player.changeState(new ReadyState(player));
+            return "Stop playing";
+        } else {
+            return "Locked...";
+        }
+    }
+
+    @Override
+    public String onPlay() {
+        player.changeState(new ReadyState(player));
+        return "Ready";
+    }
+
+    @Override
+    public String onNext() {
+        return "Locked...";
+    }
+
+    @Override
+    public String onPrevious() {
+        return "Locked...";
+    }
+}
+
+public class ReadyState extends State {
+
+    public ReadyState(Player player) {
+        super(player);
+    }
+
+    @Override
+    public String onLock() {
+        player.changeState(new LockedState(player));
+        return "Locked...";
+    }
+
+    @Override
+    public String onPlay() {
+        String action = player.startPlayback();
+        player.changeState(new PlayingState(player));
+        return action;
+    }
+
+    @Override
+    public String onNext() {
+        return "Locked...";
+    }
+
+    @Override
+    public String onPrevious() {
+        return "Locked...";
+    }
+}
+
+public class PlayingState extends State {
+
+    PlayingState(Player player) {
+        super(player);
+    }
+
+    @Override
+    public String onLock() {
+        player.changeState(new LockedState(player));
+        player.setCurrentTrackAfterStop();
+        return "Stop playing";
+    }
+
+    @Override
+    public String onPlay() {
+        player.changeState(new ReadyState(player));
+        return "Paused...";
+    }
+
+    @Override
+    public String onNext() {
+        return player.nextTrack();
+    }
+
+    @Override
+    public String onPrevious() {
+        return player.previousTrack();
+    }
+}
+
+public class Player {
+    private State state;
+    private boolean playing = false;
+    private List&lt;String&gt; playlist = new ArrayList<>();
+    private int currentTrack = 0;
+
+    public Player() {
+        this.state = new ReadyState(this);
+        setPlaying(true);
+        for (int i = 1; i <= 12; i++) {
+            playlist.add("Track " + i);
+        }
+    }
+
+    public void changeState(State state) {
+        this.state = state;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public String startPlayback() {
+        return "Playing " + playlist.get(currentTrack);
+    }
+
+    public String nextTrack() {
+        currentTrack++;
+        if (currentTrack > playlist.size() - 1) {
+            currentTrack = 0;
+        }
+        return "Playing " + playlist.get(currentTrack);
+    }
+
+    public String previousTrack() {
+        currentTrack--;
+        if (currentTrack < 0) {
+            currentTrack = playlist.size() - 1;
+        }
+        return "Playing " + playlist.get(currentTrack);
+    }
+
+    public void setCurrentTrackAfterStop() {
+        this.currentTrack = 0;
+    }
+}</code></pre>
     <h4>Strategy</h4>
     <p>Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm
         vary independently from clients that use it. Typically the strategy pattern stores a reference to some code in a
@@ -789,6 +1014,9 @@ class StructuredGraph {
         first-class function, classes or class instances in object-oriented programming languages, or accessing the
         language implementation's internal storage of code via reflection.</p>
     <div><img src="data/p-strategy.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">Collections.sort(List.of(1, 4, 3), Integer::compareTo);
+
+Integer::compareTo // is strategy</code></pre>
     <h4>Template method</h4>
     <p>Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template method lets
         subclasses redefine certain steps of an algorithm without changing the algorithm's structure. The helper methods
@@ -797,6 +1025,31 @@ class StructuredGraph {
         operation by overriding the hook methods. The intent of the template method is to define the overall structure
         of the operation, while allowing subclasses to refine, or redefine, certain steps.</p>
     <div><img src="data/p-template.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public abstract class Network {
+    abstract boolean logIn();
+    abstract boolean sendData(byte[] data);
+    abstract void logOut();
+
+    public boolean post(String message) {
+        logIn();
+        boolean result = sendData(message.getBytes());
+        logout();
+        return result;
+    }
+}
+
+public class Facebook extends Network {
+    public boolean logIn(String userName, String password) {
+        // ...
+    }
+    public boolean sendData(byte[] data) {
+        // ...
+    }
+    public boolean logOut() {
+        // ...
+    }
+}
+</code></pre>
     <h4>Visitor</h4>
     <p>Represent an operation to be performed on the elements of an object structure. Visitor lets a new operation be
         defined without changing the classes of the elements on which it operates. In essence, the visitor allows adding
@@ -804,6 +1057,31 @@ class StructuredGraph {
         that implements all of the appropriate specializations of the virtual function. The visitor takes the instance
         reference as input, and implements the goal through double dispatch.</p>
     <div><img src="data/p-visitor.jpg" class="img-fluid" alt=""/></div>
+    <pre><code class="java">public interface FileVisitor&lt;T&gt; {
+    FileVisitResult preVisitDirectory(T dir, BasicFileAttributes attrs)
+        throws IOException;
+
+    FileVisitResult visitFile(T file, BasicFileAttributes attrs)
+        throws IOException;
+
+    FileVisitResult visitFileFailed(T file, IOException exc)
+        throws IOException;
+
+    FileVisitResult postVisitDirectory(T dir, IOException exc)
+        throws IOException;
+}
+
+public class SimpleFileVisitor&lt;T&gt; implements FileVisitor&lt;T&gt; {
+    // ...
+}
+
+public enum FileVisitResult {
+    CONTINUE, TERMINATE, SKIP_SUBTREE, SKIP_SIBLINGS
+}
+
+Files.walkFileTree(env.configFile(), EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor&lt;Path&gt;() {
+        // ...
+}</code></pre>
     <hr/>
     <h3>Functional</h3>
     <ul>
