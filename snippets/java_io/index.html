@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java IO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Java IO</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <p>The java.io package contains many classes that your programs can use to read and write data. Most of the
+            classes implement sequential access streams. The sequential access streams can be divided into two groups:
+            those that read and write bytes and those that read and write Unicode characters. Each sequential access
+            stream has a speciality, such as reading from or writing to a file, filtering data as its read or written,
+            or serializing an object.</p>
+
+        <p>The java.nio.file package provides extensive support for file and file system I/O. This is a very
+            comprehensive API, but the key entry points are as follows:</p>
+        <ul>
+            <li>The <code>Path</code> class has methods for manipulating a path.</li>
+            <li>The <code>Files</code> class has methods for file operations, such as moving, copy, deleting, and also
+                methods for
+                retrieving and setting file attributes.
+            </li>
+            <li>The <code>FileSystem</code> class has a variety of methods for obtaining information about the file
+                system.
+            </li>
+        </ul>
+    </div>
+    <p><img src="data/io-fileiomethods.gif" alt="" class="img-fluid"/></p>
+    <pre><code class="bash">Path file = ...;
+byte[] fileArray = Files.readAllBytes(file);</code></pre>
+    <pre><code class="bash">Charset charset = Charset.forName("US-ASCII");
+try (BufferedReader reader = Files.newBufferedReader(file, charset)) {
+    String line = null;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+} catch (IOException x) {
+    System.err.format("IOException: %s%n", x);
+}</code></pre>
+    <pre><code class="bash">Path file = ...;
+try (InputStream in = Files.newInputStream(file);
+    BufferedReader reader =
+      new BufferedReader(new InputStreamReader(in))) {
+    String line = null;
+    while ((line = reader.readLine()) != null) {
+        System.out.println(line);
+    }
+} catch (IOException x) {
+    System.err.println(x);
+}</code></pre>
+    <pre><code class="bash">// Defaults to READ
+try (SeekableByteChannel sbc = Files.newByteChannel(file)) {
+    ByteBuffer buf = ByteBuffer.allocate(10);
+
+    // Read the bytes with the proper encoding for this platform.  If
+    // you skip this step, you might see something that looks like
+    // Chinese characters when you expect Latin-style characters.
+    String encoding = System.getProperty("file.encoding");
+    while (sbc.read(buf) > 0) {
+        buf.rewind();
+        System.out.print(Charset.forName(encoding).decode(buf));
+        buf.flip();
+    }
+} catch (IOException x) {
+    System.out.println("caught exception: " + x);</code></pre>
+    <h2>MIME Content Type</h2>
+    <pre><code class="java">Path path = Path.of("data/io-fileiomethods.gif");
+System.out.println(Files.probeContentType(path));</code></pre>
+
+    <h2>Walking the File Tree</h2>
+    <p>To walk a file tree, you first need to implement a FileVisitor. A FileVisitor specifies the required behavior at
+        key points in the traversal process: when a file is visited, before a directory is accessed, after a directory
+        is accessed, or when a failure occurs. If you don't need to implement all four of the FileVisitor methods,
+        instead of implementing the FileVisitor interface, you can extend the SimpleFileVisitor class. This class, which
+        implements the FileVisitor interface, visits all files in a tree and throws an IOError when an error is
+        encountered. You can extend this class and override only the methods that you require.</p>
+    <pre><code class="java">Files.walkFileTree(Path.of("src/"), new SimpleFileVisitor&lt;&gt;(){
+    @Override
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        System.out.println(String.format("Found dir = %s", dir));
+        return super.preVisitDirectory(dir, attrs);
+    }
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        System.out.println(String.format("Found file = %s", file));
+        return super.visitFile(file, attrs);
+    }
+});</code></pre>
+    <h2>Watching a Directory for Changes</h2>
+    <p>The <code>WatchService API</code> is fairly low level, allowing you to customize it. You can use it as is, or you
+        can choose
+        to create a high-level API on top of this mechanism so that it is suited to your particular needs.</p>
+    <pre><code class="java">try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
+    Path path = Path.of("data/");
+    WatchKey watchKey = path.register(watcher,
+        StandardWatchEventKinds.ENTRY_CREATE,
+        StandardWatchEventKinds.ENTRY_DELETE,
+        StandardWatchEventKinds.ENTRY_MODIFY);
+
+    for (; ; ) {
+        for (WatchEvent&lt;?&gt; event : watchKey.pollEvents()) {
+            WatchEvent.Kind&lt;?&gt; kind = event.kind();
+            System.out.println(kind.name());
+            WatchEvent&lt;Path&gt; ev = (WatchEvent&lt;Path&gt;)event;
+            System.out.println(path.resolve(ev.context()));
+        }
+    }
+
+}</code></pre>
+    <p>The Watch Service API is designed for applications that need to be notified about file change events. It is well
+        suited for any application, like an editor or IDE, that potentially has many open files and needs to ensure that
+        the files are synchronized with the file system. It is also well suited for an application server that watches a
+        directory, perhaps waiting for .jsp or .jar files to drop, in order to deploy them.</p>
+    <p>This API is not designed for indexing a hard drive. Most file system implementations have native support for file
+        change notification. The Watch Service API takes advantage of this support where available. However, when a file
+        system does not support this mechanism, the Watch Service will poll the file system, waiting for events.</p>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://docs.oracle.com/javase/tutorial/essential/io/summary.html">The Java™ Tutorials</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
