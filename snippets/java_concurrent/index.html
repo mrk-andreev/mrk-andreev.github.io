@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Concurrent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Java Concurrent</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h2>Intro</h2>
+    <ul>
+        <li><b>Thread.start() / join()</b>. Provide a Runnable object. The Runnable interface defines a single method,
+            run, meant to contain the code executed in the thread. The Runnable object is passed to the Thread
+            constructor, as in the HelloRunnable example:
+            <pre><code class="java">public class HelloRunnable implements Runnable {
+
+    public void run() {
+        System.out.println("Hello from a thread!");
+    }
+
+    public static void main(String args[]) {
+        (new Thread(new HelloRunnable())).start();
+    }
+
+}</code></pre>
+            The join method allows one thread to wait for the completion of another. If t is a Thread object whose
+            thread is currently executing,
+            <pre><code class="java">t.join();</code></pre>
+            causes the current thread to pause execution until t's thread terminates. Overloads of join allow the
+            programmer to specify a waiting period. However, as with sleep, join is dependent on the OS for timing, so
+            you should not assume that join will wait exactly as long as you specify.<br/>
+            Like sleep, join responds to an interrupt by exiting with an InterruptedException.
+        </li>
+        <li>volatile</li>
+        <li>final</li>
+        <li>CAS</li>
+        <li>lazySet</li>
+        <li>weakCompareAndSet</li>
+        <li>double checked locking</li>
+        <li>safe publishing</li>
+        <li>Synchronized, Object.wait() / notify() / notifyAll()</li>
+    </ul>
+    <h2>Concurrent Collections</h2>
+    <ul>
+        <li>BlockingQueue</li>
+        <li>ConcurrentHashMap, ConcurrentSkipListMap</li>
+        <li>CopyOnWriteArrayList, CopyOnWriteArraySet</li>
+    </ul>
+    <h2>Synchronizers</h2>
+    <ul>
+        <li>
+            <b>Lock</b><br/>
+            <pre><code class="java">     Lock l = ...;
+     l.lock();
+     try {
+         // access the resource protected by this lock
+     } finally {
+         l.unlock();
+     }</code></pre>
+            All Lock implementations must enforce the same memory synchronization semantics as provided by the built-in
+            monitor lock, as described in section 17.4 of The Java™ Language Specification:
+            <ul>
+                <li>A successful lock operation has the same memory synchronization effects as a successful Lock
+                    action.
+                </li>
+                <li>A successful unlock operation has the same memory synchronization effects as a successful Unlock
+                    action.
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>Condition</b><br/>
+            Condition factors out the Object monitor methods (wait, notify and notifyAll) into distinct objects to give
+            the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock
+            implementations. Where a Lock replaces the use of synchronized methods and statements, a Condition replaces
+            the use of the Object monitor methods.<br/>
+            Conditions (also known as condition queues or condition variables) provide a means for one thread to suspend
+            execution (to "wait") until notified by another thread that some state condition may now be true. Because
+            access to this shared state information occurs in different threads, it must be protected, so a lock of some
+            form is associated with the condition. The key property that waiting for a condition provides is that it
+            atomically releases the associated lock and suspends the current thread, just like Object.wait.<br/>
+            A Condition instance is intrinsically bound to a lock. To obtain a Condition instance for a particular Lock
+            instance use its newCondition() method.<br/>
+            <pre><code class="java">class BoundedBuffer {
+   final Lock lock = new ReentrantLock();
+   final Condition notFull  = lock.newCondition();
+   final Condition notEmpty = lock.newCondition();
+
+   final Object[] items = new Object[100];
+   int putptr, takeptr, count;
+
+   public void put(Object x) throws InterruptedException {
+     lock.lock();
+     try {
+       while (count == items.length)
+         notFull.await();
+       items[putptr] = x;
+       if (++putptr == items.length) putptr = 0;
+       ++count;
+       notEmpty.signal();
+     } finally {
+       lock.unlock();
+     }
+   }
+
+   public Object take() throws InterruptedException {
+     lock.lock();
+     try {
+       while (count == 0)
+         notEmpty.await();
+       Object x = items[takeptr];
+       if (++takeptr == items.length) takeptr = 0;
+       --count;
+       notFull.signal();
+       return x;
+     } finally {
+       lock.unlock();
+     }
+   }
+ }
+ </code></pre>
+        </li>
+        <li>
+            <b>ReentrantLock</b><br/>
+            A reentrant mutual exclusion Lock with the same basic behavior and semantics as the implicit monitor lock
+            accessed using synchronized methods and statements, but with extended capabilities. <br/>
+            A ReentrantLock is owned by the thread last successfully locking, but not yet unlocking it. A thread
+            invoking lock will return, successfully acquiring the lock, when the lock is not owned by another thread.
+            The method will return immediately if the current thread already owns the lock. This can be checked using
+            methods isHeldByCurrentThread(), and getHoldCount().
+        </li>
+        <li>
+            <b>ReentrantReadWriteLock</b><br/>
+            An implementation of ReadWriteLock supporting similar semantics to ReentrantLock.<br/>
+            This class has the following properties:
+            <ul>
+                <li>Acquisition order. This class does not impose a reader or writer preference ordering for lock
+                    access. However, it does support an optional fairness policy.
+                    <ul>
+                        <li>Non-fair mode (default). When constructed as non-fair (the default), the order of entry to
+                            the read and write lock is unspecified, subject to reentrancy constraints. A nonfair lock
+                            that is continuously contended may indefinitely postpone one or more reader or writer
+                            threads, but will normally have higher throughput than a fair lock.
+                        </li>
+                        <li>Fair mode. When constructed as fair, threads contend for entry using an approximately
+                            arrival-order policy. When the currently held lock is released either the longest-waiting
+                            single writer thread will be assigned the write lock, or if there is a group of reader
+                            threads waiting longer than all waiting writer threads, that group will be assigned the read
+                            lock. A thread that tries to acquire a fair read lock (non-reentrantly) will block if either
+                            the write lock is held, or there is a waiting writer thread. The thread will not acquire the
+                            read lock until after the oldest currently waiting writer thread has acquired and released
+                            the write lock. Of course, if a waiting writer abandons its wait, leaving one or more reader
+                            threads as the longest waiters in the queue with the write lock free, then those readers
+                            will be assigned the read lock.
+                            A thread that tries to acquire a fair write lock (non-reentrantly) will block unless both
+                            the read lock and write lock are free (which implies there are no waiting threads). (Note
+                            that the non-blocking ReentrantReadWriteLock.ReadLock.tryLock() and
+                            ReentrantReadWriteLock.WriteLock.tryLock() methods do not honor this fair setting and will
+                            acquire the lock if it is possible, regardless of waiting threads.)
+                        </li>
+                    </ul>
+                </li>
+                <li>Reentrancy. This lock allows both readers and writers to reacquire read or write locks in the style
+                    of a ReentrantLock. Non-reentrant readers are not allowed until all write locks held by the writing
+                    thread have been released. Additionally, a writer can acquire the read lock, but not vice-versa.
+                    Among other applications, reentrancy can be useful when write locks are held during calls or
+                    callbacks to methods that perform reads under read locks. If a reader tries to acquire the write
+                    lock it will never succeed.
+                </li>
+                <li>Lock downgrading. Reentrancy also allows downgrading from the write lock to a read lock, by
+                    acquiring the write lock, then the read lock and then releasing the write lock. However, upgrading
+                    from a read lock to the write lock is not possible.
+                </li>
+                <li>Interruption of lock acquisition. The read lock and write lock both support interruption during lock
+                    acquisition.
+                </li>
+            </ul>
+            <pre><code class="java">class RWDictionary {
+    private final Map&lt;String, Data&gt; m = new TreeMap&lt;String, Data&gt;();
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final Lock r = rwl.readLock();
+    private final Lock w = rwl.writeLock();
+
+    public Data get(String key) {
+        r.lock();
+        try { return m.get(key); }
+        finally { r.unlock(); }
+    }
+    public String[] allKeys() {
+        r.lock();
+        try { return m.keySet().toArray(); }
+        finally { r.unlock(); }
+    }
+    public Data put(String key, Data value) {
+        w.lock();
+        try { return m.put(key, value); }
+        finally { w.unlock(); }
+    }
+    public void clear() {
+        w.lock();
+        try { m.clear(); }
+        finally { w.unlock(); }
+    }
+ }</code></pre>
+        </li>
+        <li>
+            <b>StampedLock</b><br/>
+            StampedLock is an alternative to using a ReadWriteLock (implemented by ReentrantReadWriteLock). The main
+            differences between StampedLock and ReentrantReadWriteLock are that:
+            <ul>
+                <li>StampedLocks allow optimistic locking for read operations</li>
+                <li>ReentrantLocks are reentrant (StampedLocks are not)</li>
+            </ul>
+            So if you have a scenario where you have contention (otherwise you may as well use synchronized or a simple
+            Lock) and more readers than writers, using a StampedLock can significantly improve performance.
+            <br/>
+            A capability-based lock with three modes for controlling read/write access. The state of a StampedLock
+            consists of a version and mode. Lock acquisition methods return a stamp that represents and controls access
+            with respect to a lock state; "try" versions of these methods may instead return the special value zero to
+            represent failure to acquire access. Lock release and conversion methods require stamps as arguments, and
+            fail if they do not match the state of the lock. The three modes are:
+            <ul>
+                <li>
+                    Writing. Method writeLock() possibly blocks waiting for exclusive access, returning a stamp that can
+                    be used in method unlockWrite(long) to release the lock. Untimed and timed versions of tryWriteLock
+                    are also provided. When the lock is held in write mode, no read locks may be obtained, and all
+                    optimistic read validations will fail.
+                </li>
+                <li>
+                    Reading. Method readLock() possibly blocks waiting for non-exclusive access, returning a stamp that
+                    can be used in method unlockRead(long) to release the lock. Untimed and timed versions of
+                    tryReadLock are also provided.
+                </li>
+                <li>
+                    Optimistic Reading. Method tryOptimisticRead() returns a non-zero stamp only if the lock is not
+                    currently held in write mode. Method validate(long) returns true if the lock has not been acquired
+                    in write mode since obtaining a given stamp. This mode can be thought of as an extremely weak
+                    version of a read-lock, that can be broken by a writer at any time. The use of optimistic mode for
+                    short read-only code segments often reduces contention and improves throughput. However, its use is
+                    inherently fragile. Optimistic read sections should only read fields and hold them in local
+                    variables for later use after validation. Fields read while in optimistic mode may be wildly
+                    inconsistent, so usage applies only when you are familiar enough with data representations to check
+                    consistency and/or repeatedly invoke method validate(). For example, such steps are typically
+                    required when first reading an object or array reference, and then accessing one of its fields,
+                    elements or methods.
+                </li>
+            </ul>
+            <pre><code class="java"> class Point {
+   private double x, y;
+   private final StampedLock sl = new StampedLock();
+
+   void move(double deltaX, double deltaY) { // an exclusively locked method
+     long stamp = sl.writeLock();
+     try {
+       x += deltaX;
+       y += deltaY;
+     } finally {
+       sl.unlockWrite(stamp);
+     }
+   }
+
+   double distanceFromOrigin() { // A read-only method
+     long stamp = sl.tryOptimisticRead();
+     double currentX = x, currentY = y;
+     if (!sl.validate(stamp)) {
+        stamp = sl.readLock();
+        try {
+          currentX = x;
+          currentY = y;
+        } finally {
+           sl.unlockRead(stamp);
+        }
+     }
+     return Math.sqrt(currentX * currentX + currentY * currentY);
+   }
+
+   void moveIfAtOrigin(double newX, double newY) { // upgrade
+     // Could instead start with optimistic, not read mode
+     long stamp = sl.readLock();
+     try {
+       while (x == 0.0 && y == 0.0) {
+         long ws = sl.tryConvertToWriteLock(stamp);
+         if (ws != 0L) {
+           stamp = ws;
+           x = newX;
+           y = newY;
+           break;
+         }
+         else {
+           sl.unlockRead(stamp);
+           stamp = sl.writeLock();
+         }
+       }
+     } finally {
+       sl.unlock(stamp);
+     }
+   }
+ }</code></pre>
+        </li>
+        <li>
+            <b>Semaphore</b>.<br/>
+            <img src="data/semaphore.gif" alt="" class="img-fluid"/>
+        </li>
+        <li>
+            <b>CountDownLatch</b>. <br/>
+            <img src="data/CountDownLatch.gif" alt="" class="img-fluid"/>
+        </li>
+        <li>
+            <b>CyclicBarrier</b> <br/>
+            <img src="data/CyclicBarrier.gif" alt="" class="img-fluid"/>
+        </li>
+        <li>
+            <b>Exchanger</b> <br/>
+            <img src="data/Exchanger.gif" alt="" class="img-fluid"/>
+        </li>
+        <li>
+            <b>Phaser</b><br/>
+            <img src="data/Phaser.gif" alt="" class="img-fluid"/>
+        </li>
+    </ul>
+    <h2>Thread pool</h2>
+    <ul>
+        <li>Executors</li>
+        <li>ExecutorService</li>
+        <li>ThreadPoolExecutor</li>
+        <li>ScheduledExecutorService</li>
+        <li>ScheduledThreadPoolExecutor</li>
+    </ul>
+    <h2>Future</h2>
+    <ul>
+        <li>Callable</li>
+        <li>Future</li>
+    </ul>
+    <h2>Atomic</h2>
+    <p>The java.util.concurrent.atomic package defines classes that support atomic operations on single variables. All
+        classes have get and set methods that work like reads and writes on volatile variables. That is, a set has a
+        happens-before relationship with any subsequent get on the same variable. The atomic compareAndSet method also
+        has these memory consistency features, as do the simple atomic arithmetic methods that apply to integer atomic
+        variables.</p>
+    <pre><code class="java">// not thread safe
+class Counter {
+    private int c = 0;
+
+    public void increment() {
+        c++;
+    }
+
+    public void decrement() {
+        c--;
+    }
+
+    public int value() {
+        return c;
+    }
+
+}</code></pre>
+    <pre><code class="java">// synchronized
+class SynchronizedCounter {
+    private int c = 0;
+
+    public synchronized void increment() {
+        c++;
+    }
+
+    public synchronized void decrement() {
+        c--;
+    }
+
+    public synchronized int value() {
+        return c;
+    }
+
+}</code></pre>
+    <pre><code class="java">// atomic
+import java.util.concurrent.atomic.AtomicInteger;
+
+class AtomicCounter {
+    private AtomicInteger c = new AtomicInteger(0);
+
+    public void increment() {
+        c.incrementAndGet();
+    }
+
+    public void decrement() {
+        c.decrementAndGet();
+    }
+
+    public int value() {
+        return c.get();
+    }
+
+}</code></pre>
+    <h2>Accumulator</h2>
+    <p>One or more variables that together maintain a running long value updated using a supplied function. When updates
+        (method accumulate(long)) are contended across threads, the set of variables may grow dynamically to reduce
+        contention. Method get() (or, equivalently, longValue()) returns the current value across the variables
+        maintaining updates.</p>
+    <p>This class is usually preferable to AtomicLong when multiple threads update a common value that is used for
+        purposes such as collecting statistics, not for fine-grained synchronization control. Under low update
+        contention, the two classes have similar characteristics. But under high contention, expected throughput of this
+        class is significantly higher, at the expense of higher space consumption.</p>
+    <p>The order of accumulation within or across threads is not guaranteed and cannot be depended upon, so this class
+        is only applicable to functions for which the order of accumulation does not matter. The supplied accumulator
+        function should be side-effect-free, since it may be re-applied when attempted updates fail due to contention
+        among threads. The function is applied with the current value as its first argument, and the given update as the
+        second argument. For example, to maintain a running maximum value, you could supply Long::max along with
+        Long.MIN_VALUE as the identity.</p>
+    <p>Class LongAdder provides analogs of the functionality of this class for the common special case of maintaining
+        counts and sums. The call new LongAdder() is equivalent to new LongAccumulator((x, y) -> x + y, 0L.</p>
+    <p>This class extends Number, but does not define methods such as equals, hashCode and compareTo because instances
+        are expected to be mutated, and so are not useful as collection keys.</p>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://habr.com/ru/company/golovachcourses/blog/217051/">Java Concurrent course</a></li>
+            <li><a href="https://habr.com/ru/post/277669/">Java Concurrent notes</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
