@@ -53,20 +53,96 @@
             you should not assume that join will wait exactly as long as you specify.<br/>
             Like sleep, join responds to an interrupt by exiting with an InterruptedException.
         </li>
-        <li>volatile</li>
-        <li>final</li>
-        <li>CAS</li>
-        <li>lazySet</li>
-        <li>weakCompareAndSet</li>
-        <li>double checked locking</li>
+        <li>
+            <b>Volatile</b>. The Java volatile keyword is intended to address variable visibility problems. By declaring
+            the counter variable volatile all writes to the counter variable will be written back to main memory
+            immediately. Also, all reads of the counter variable will be read directly from main memory.
+        </li>
+        <li>
+            <b>CAS (Compare and Swap)</b>. <br/>
+            CAS is generally much faster than locking, but it does depend on the degree of contention. Because CAS may
+            force a retry if the value changes between reading and comparing, a thread can theoretically get stuck in a
+            busy-wait if the variable in question is being hit hard by many other threads (or if it is expensive to
+            compute a new value from the old value (or both)).<br/>
+            The main issue with CAS is that it is much more difficult to program with correctly than locking. Mind you,
+            locking is, in turn, much harder to use correctly than message-passing or STM, so don't take this as a
+            ringing endorsement for the use of locks.
+        </li>
+        <li>
+            <b>Double checked locking</b>.<br/>
+            <pre><code class="java">// Broken multithreaded version
+// "Double-Checked Locking" idiom
+class Foo {
+    private Helper helper;
+    public Helper getHelper() {
+        if (helper == null) {
+            synchronized (this) {
+                if (helper == null) {
+                    helper = new Helper();
+                }
+            }
+        }
+        return helper;
+    }
+
+    // other functions and members...
+}</code></pre>
+        </li>
         <li>safe publishing</li>
         <li>Synchronized, Object.wait() / notify() / notifyAll()</li>
     </ul>
     <h2>Concurrent Collections</h2>
     <ul>
-        <li>BlockingQueue</li>
-        <li>ConcurrentHashMap, ConcurrentSkipListMap</li>
-        <li>CopyOnWriteArrayList, CopyOnWriteArraySet</li>
+        <li>
+            <b>BlockingQueue</b><br/>
+            BlockingQueue methods come in four forms, with different ways of handling operations that cannot be
+            satisfied immediately, but may be satisfied at some point in the future: one throws an exception, the second
+            returns a special value (either null or false, depending on the operation), the third blocks the current
+            thread indefinitely until the operation can succeed, and the fourth blocks for only a given maximum time
+            limit before giving up.<br/>
+            A BlockingQueue does not accept null elements. Implementations throw NullPointerException on attempts to
+            add, put or offer a null. A null is used as a sentinel value to indicate failure of poll operations.<br/>
+            <ul>
+                <li>ArrayBlockingQueue</li>
+                <li>LinkedBlockingQueue</li>
+                <li>LinkedBlockingDeque</li>
+                <li>SynchronousQueue</li>
+                <li>LinkedTransferQueue</li>
+                <li>DelayQueue</li>
+                <li>PriorityBlockingQueue</li>
+            </ul>
+        </li>
+        <li>
+            <b>ConcurrentHashMap</b><br/>
+            A hash table supporting full concurrency of retrievals and high expected concurrency for updates. This class
+            obeys the same functional specification as Hashtable, and includes versions of methods corresponding to each
+            method of Hashtable. However, even though all operations are thread-safe, retrieval operations do not entail
+            locking, and there is not any support for locking the entire table in a way that prevents all access. This
+            class is fully interoperable with Hashtable in programs that rely on its thread safety but not on its
+            synchronization details.<br/>
+            <b>ConcurrentSkipListMap</b><br/>
+            A scalable concurrent ConcurrentNavigableMap implementation. The map is sorted according to the natural
+            ordering of its keys, or by a Comparator provided at map creation time, depending on which constructor is
+            used.<br/>
+            This class implements a concurrent variant of SkipLists providing expected average log(n) time cost for the
+            containsKey, get, put and remove operations and their variants. Insertion, removal, update, and access
+            operations safely execute concurrently by multiple threads.<br/>
+            <img src="data/maps.png" alt="" class="img-fluid"/>
+        </li>
+        <li>
+            <b>CopyOnWriteArrayList, CopyOnWriteArraySet</b>.<br/>
+            A thread-safe variant of ArrayList in which all mutative operations (add, set, and so on) are implemented by
+            making a fresh copy of the underlying array.<br/>
+            This is ordinarily too costly, but may be more efficient than alternatives when traversal operations vastly
+            outnumber mutations, and is useful when you cannot or don't want to synchronize traversals, yet need to
+            preclude interference among concurrent threads. The "snapshot" style iterator method uses a reference to the
+            state of the array at the point that the iterator was created. This array never changes during the lifetime
+            of the iterator, so interference is impossible and the iterator is guaranteed not to throw
+            ConcurrentModificationException. The iterator will not reflect additions, removals, or changes to the list
+            since the iterator was created. Element-changing operations on iterators themselves (remove, set, and add)
+            are not supported. These methods throw UnsupportedOperationException.
+            All elements are permitted, including null.
+        </li>
     </ul>
     <h2>Synchronizers</h2>
     <ul>
@@ -437,6 +513,9 @@ class AtomicCounter {
         <ul>
             <li><a href="https://habr.com/ru/company/golovachcourses/blog/217051/">Java Concurrent course</a></li>
             <li><a href="https://habr.com/ru/post/277669/">Java Concurrent notes</a></li>
+            <li>
+                <a href="https://www.javaspecialists.eu/talks/jfokus13/PhaserAndStampedLock.pdf">PhaserAndStampedLock</a>
+            </li>
         </ul>
     </div>
     <div class="text-right">
