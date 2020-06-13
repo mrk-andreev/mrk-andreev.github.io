@@ -418,16 +418,130 @@ class Foo {
     </ul>
     <h2>Thread pool</h2>
     <ul>
-        <li>Executors</li>
-        <li>ExecutorService</li>
-        <li>ThreadPoolExecutor</li>
-        <li>ScheduledExecutorService</li>
-        <li>ScheduledThreadPoolExecutor</li>
+        <li>
+            <b>Executors</b>.
+            An object that executes submitted Runnable tasks. This interface provides a way of decoupling task
+            submission from the mechanics of how each task will be run, including details of thread use, scheduling,
+            etc. An Executor is normally used instead of explicitly creating threads. For example, rather than invoking
+            new Thread(new(RunnableTask())).start() for each of a set of tasks, you might use:
+            <pre><code class="java"> Executor executor = anExecutor;
+ executor.execute(new RunnableTask1());
+ executor.execute(new RunnableTask2());
+ ...</code></pre>
+        </li>
+        <li>
+            <b>ExecutorService</b>
+
+            <ul>
+                <li>
+                    <b>ThreadPoolExecutor</b>. Thread pools address two different problems: they usually provide
+                    improved performance when executing large numbers of asynchronous tasks, due to reduced per-task
+                    invocation overhead, and they provide a means of bounding and managing the resources, including
+                    threads, consumed when executing a collection of tasks. Each ThreadPoolExecutor also maintains some
+                    basic statistics, such as the number of completed tasks. <br/>
+                    To be useful across a wide range of contexts, this class provides many adjustable parameters and
+                    extensibility hooks. However, programmers are urged to use the more convenient Executors factory
+                    methods Executors.newCachedThreadPool() (unbounded thread pool, with automatic thread reclamation),
+                    Executors.newFixedThreadPool(int) (fixed size thread pool) and Executors.newSingleThreadExecutor()
+                    (single background thread), that preconfigure settings for the most common usage scenarios.
+                    Otherwise, use the following guide when manually configuring and tuning this class:
+                    <ul>
+                        <li>Core and maximum pool sizes</li>
+                        <li>On-demand construction</li>
+                        <li>Creating new threads</li>
+                        <li>Keep-alive times</li>
+                        <li>Rejected tasks</li>
+                        <li>Hook methods</li>
+                        <li>Queue maintenance</li>
+                        <li>Finalization</li>
+                    </ul>
+                </li>
+                <li>
+                    <b>ForkJoinPool</b>. An ExecutorService for running ForkJoinTasks. A ForkJoinPool provides the entry
+                    point for submissions from non-ForkJoinTask clients, as well as management and monitoring
+                    operations. <br/>
+                    A ForkJoinPool differs from other kinds of ExecutorService mainly by virtue of employing
+                    work-stealing: all threads in the pool attempt to find and execute tasks submitted to the pool
+                    and/or created by other active tasks (eventually blocking waiting for work if none exist). This
+                    enables efficient processing when most tasks spawn other subtasks (as do most ForkJoinTasks), as
+                    well as when many small tasks are submitted to the pool from external clients. Especially when
+                    setting asyncMode to true in constructors, ForkJoinPools may also be appropriate for use with
+                    event-style tasks that are never joined. <br/>
+                    As is the case with other ExecutorServices, there are three main task execution methods summarized
+                    in the following table. These are designed to be used primarily by clients not already engaged in
+                    fork/join computations in the current pool. The main forms of these methods accept instances of
+                    ForkJoinTask, but overloaded forms also allow mixed execution of plain Runnable- or Callable- based
+                    activities as well. However, tasks that are already executing in a pool should normally instead use
+                    the within-computation forms listed in the table unless using async event-style tasks that are not
+                    usually joined, in which case there is little difference among choice of methods. <br/>
+                    This implementation restricts the maximum number of running threads to 32767. Attempts to create
+                    pools with greater than the maximum number result in IllegalArgumentException.
+                </li>
+                <li>
+                    <b>ScheduledThreadPoolExecutor</b>. A ThreadPoolExecutor that can additionally schedule commands to
+                    run after a given delay, or to execute periodically. This class is preferable to Timer when multiple
+                    worker threads are needed, or when the additional flexibility or capabilities of ThreadPoolExecutor
+                    (which this class extends) are required.<br/>
+                    Delayed tasks execute no sooner than they are enabled, but without any real-time guarantees about
+                    when, after they are enabled, they will commence. Tasks scheduled for exactly the same execution
+                    time are enabled in first-in-first-out (FIFO) order of submission.<br/>
+                    When a submitted task is cancelled before it is run, execution is suppressed. By default, such a
+                    cancelled task is not automatically removed from the work queue until its delay elapses. While this
+                    enables further inspection and monitoring, it may also cause unbounded retention of cancelled tasks.
+                    To avoid this, set setRemoveOnCancelPolicy(boolean) to true, which causes tasks to be immediately
+                    removed from the work queue at time of cancellation. <br/>
+                    Successive executions of a task scheduled via scheduleAtFixedRate or scheduleWithFixedDelay do not
+                    overlap. While different executions may be performed by different threads, the effects of prior
+                    executions happen-before those of subsequent ones.
+                </li>
+            </ul>
+            The main difference between ForkJoinPool and ThreadPoolExecutor is that ForkJoinPool is designed to accept
+            and execute ForkJoinTask, which is a lightweight version of FutureTask, while ThreadPoolExecutor is designed
+            to provide a normal thread pool which executes each submitted task using one of possibly several pooled
+            threads. <br/>
+            Another key difference between ThreadPoolExecutor and ForkJoinPool class is that ForkJoinPool uses work
+            stealing pattern, which means one thread can also execute a pending task from another thread. This improves
+            efficient in case of ForkJoinTask as most of ForkJoinTask algorithm spawn new tasks. You can further read
+            Java Concurrency in Practice by Brian Goetz to learn more about work stealing pattern and other parallel
+            computing patterns.
+        </li>
     </ul>
     <h2>Future</h2>
     <ul>
-        <li>Callable</li>
-        <li>Future</li>
+        <li>
+            <b>Callable</b>. <br/>
+            The Callable interface is similar to Runnable, in that both are designed for classes whose instances are
+            potentially executed by another thread. A Runnable, however, does not return a result and cannot throw a
+            checked exception.
+        </li>
+        <li>
+            <b>Future</b><br/>
+            A Future represents the result of an asynchronous computation. Methods are provided to check if the
+            computation is complete, to wait for its completion, and to retrieve the result of the computation. The
+            result can only be retrieved using method get when the computation has completed, blocking if necessary
+            until it is ready. Cancellation is performed by the cancel method. Additional methods are provided to
+            determine if the task completed normally or was cancelled. Once a computation has completed, the computation
+            cannot be cancelled. If you would like to use a Future for the sake of cancellability but not provide a
+            usable result, you can declare types of the form Future<?> and return null as a result of the underlying
+            task.
+            <pre><code class="java"> interface ArchiveSearcher { String search(String target); }
+ class App {
+   ExecutorService executor = ...
+   ArchiveSearcher searcher = ...
+   void showSearch(final String target)
+       throws InterruptedException {
+     Future&lt;String&gt; future
+       = executor.submit(new Callable&lt;String&gt;() {
+         public String call() {
+             return searcher.search(target);
+         }});
+     displayOtherThings(); // do other things while searching
+     try {
+       displayText(future.get()); // use future
+     } catch (ExecutionException ex) { cleanup(); return; }
+   }
+ }</code></pre>
+        </li>
     </ul>
     <h2>Atomic</h2>
     <p>The java.util.concurrent.atomic package defines classes that support atomic operations on single variables. All
