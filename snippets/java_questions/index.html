@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java questions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Java questions</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <b>Explain JDK, JRE and JVM?</b>
+        <ul>
+            <li>
+                <b>JDK</b>. It stands for Java Development Kit. It is the tool necessary to compile, document and
+                package Java programs. It contains JRE + development tools.
+            </li>
+            <li>
+                <b>JRE</b>. It stands for Java Runtime Environment. JRE refers to a runtime environment in which Java
+                bytecode can be executed. It’s an implementation of the JVM which physically exists.
+            </li>
+            <li>
+                <b>JVM</b>. It stands for Java Virtual Machine. It is an abstract machine. It is a specification that
+                provides a run-time environment in which Java bytecode can be executed. JVM follows three notations:
+                Specification, Implementation, and Runtime Instance.
+            </li>
+        </ul>
+    </div>
+    <div>
+        <b>What is the difference between equals() and == in Java?</b>
+        <p>Equals() method is defined in Object class in Java and used for checking equality of two objects defined by
+            business logic.</p>
+        <p>“==” or equality operator in Java is a binary operator provided by Java programming language and used to
+            compare primitives and objects. public boolean equals(Object o) is the method provided by the Object class.
+            The default implementation uses == operator to compare two objects. For example: method can be overridden
+            like String class. equals() method is used to compare the values of two objects.</p>
+    </div>
+    <div>
+        <b>What are the differences between Heap and Stack Memory in Java?</b>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Stack</th>
+                <th scope="col">Heap</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Memory</td>
+                <td>Stack memory is used only by one thread of execution.</td>
+                <td>Heap memory is used by all the parts of the application.</td>
+            </tr>
+            <tr>
+                <td>Access</td>
+                <td>Stack memory can’t be accessed by other threads.</td>
+                <td>Objects stored in the heap are globally accessible.</td>
+            </tr>
+            <tr>
+                <td>Memory Management</td>
+                <td>Follows LIFO manner to free memory.</td>
+                <td>Memory management is based on the generation associated with each object.</td>
+            </tr>
+            <tr>
+                <td>Lifetime</td>
+                <td>Exists until the end of execution of the thread.</td>
+                <td>Heap memory lives from the start till the end of application execution.</td>
+            </tr>
+            <tr>
+                <td>Usage</td>
+                <td>Stack memory only contains local primitive and reference variables to objects in heap space.</td>
+                <td>Whenever an object is created, it’s always stored in the Heap space.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <b>What are access modifiers in Java?</b>
+        <div>
+            <img src="img/java-modif.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>What is final keyword in Java?</b>
+        <ul>
+            <li>final variable. When the final keyword is used with a variable then its value can’t be changed once
+                assigned. In case the no value has been assigned to the final variable then using only the class
+                constructor a value can be assigned to it.
+            </li>
+            <li>final method. When a method is declared final then it can’t be overridden by the inheriting class.</li>
+            <li>final class. When a class is declared as final in Java, it can’t be extended by any subclass class but
+                it can extend other class.
+            </li>
+        </ul>
+    </div>
+    <div>
+        <b>What is exception hierarchy in java?</b>
+        <div>
+            <img src="img/java-exceptions.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>What are the differences between processes and threads?</b>
+        <div>
+            <img src="img/java-p-vs-t.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Difference between String, StringBuilder, and StringBuffer.</b>
+        <div>
+            <img src="img/java-sb.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Describe Java IO Streams</b>
+        <div>
+            <img src="img/java-io.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>What is a classloader in Java?</b>
+        <p>The Java ClassLoader is a subset of JVM (Java Virtual Machine) that is responsible for loading the class
+            files. Whenever a Java program is executed it is first loaded by the classloader. Java provides three
+            built-in classloaders:</p>
+        <ol>
+            <li>Bootstrap ClassLoader</li>
+            <li>Extension ClassLoader</li>
+            <li>System/Application ClassLoader</li>
+        </ol>
+    </div>
+    <div>
+        <b>Describe Generics Naming convention</b>
+        <ul>
+            <li>E for an element</li>
+            <li>K for a map key</li>
+            <li>V for a map value</li>
+            <li>N for a number</li>
+            <li>T for a generic data type</li>
+            <li>S , U , V , and so forth for multiple generic types</li>
+        </ul>
+    </div>
+    <div>
+        <b>What is the life-cycle of a servlet?</b>
+        <div>
+            <img src="img/java-servlet.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Name the different modules of the Spring framework.</b>
+        <div>
+            <img src="img/java-spring.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Describe key JDBC interfaces.</b>
+        <ul>
+            <li>Driver - Knows how to get a connection to the database</li>
+            <li>Connection - Knows how to communicate with the database</li>
+            <li>Statement - Knows how to run the SQL</li>
+            <li>ResultSet - Knows what was returned by a SELECT query</li>
+        </ul>
+        <div>
+            <img src="img/jdbc/driver.png" alt="" class="img-fluid"/>
+            <img src="img/jdbc/conn.png" alt="" class="img-fluid"/>
+            <img src="img/jdbc/st.png" alt="" class="img-fluid"/>
+            <img src="img/jdbc/rs.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Explain Hibernate architecture.</b>
+        <div>
+            <img src="img/java-hibernate.png" alt="" class="img-fluid"/>
+        </div>
+    </div>
+    <div>
+        <b>Explain Spring Annotations.</b>
+        <div>
+            <img src="img/java-spring-annotations.jpg" alt="" class="img-fluid"/>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
