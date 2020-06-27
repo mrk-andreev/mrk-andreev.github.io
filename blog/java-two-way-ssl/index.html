@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Two Way SSL Client (+ Spring example)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Java Two way SSL Client</h1>
+        <h4>(+ Spring example)</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./img/one-two-way-ssl.png"
+                alt="one and two way ssl"/></div>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <ol>
+        <li>Offline CA Certificate exchange (upload your certificate to server)</li>
+        <li>Create JKS (Java Key Storage) with keys</li>
+        <li>Configure http client</li>
+    </ol>
+</div>
+<hr/>
+<div class="container">
+    <h2>Create JKS (Java Key Storage) with keys</h2>
+    <p>Convert the certificate and private key to <code>PKCS 12</code></p>
+    <pre><code>openssl pkcs12 -export -in ./{your_cert}.cer -inkey ./{your_key}.key -name {host} -out {output_name}.p12</code></pre>
+    <p>Import <code>PKCS 12</code> and CA to keystore</p>
+    <pre><code>keytool -importkeystore -deststorepass {password} -destkeystore ./{keystore.jks} -srckeystore ./{key.12} -srcstoretype PKCS12
+keytool -import -alias bundle -trustcacerts -file ./{your_cert}.cer -keystore {keystore.jks}</code></pre>
+</div>
+<div class="container">
+    <h2>Configure http client</h2>
+    <p>At first add <code>org.apache.httpcomponents:httpclient</code> to dependencies:</p>
+    <pre><code>// gradle
+compile group: 'org.apache.httpcomponents', name: 'httpclient'
+
+&lt;!-- maven --&gt;
+&lt;dependency&gt;
+    &lt;groupId>org.apache.httpcomponents&lt;/groupId&gt;
+    &lt;artifactId>httpclient&lt;/artifactId&gt;
+&lt;/dependency></code></pre>
+    <p>At second configure <code>requestFactory</code> using key from keystore</p>
+    <pre><code class="java">@Configuration
+public class TwoWaySslConfiguration {
+    @Value("classpath:keystore.jks")
+    private Resource keyStoreData;
+
+    @Value("${keystore-pwd}")
+    private String keyStorePassword;
+
+    @Value("${key-pwd}")
+    private String keyPassword;
+
+    @Bean
+    @SneakyThrows
+    public RestTemplate restTemplate() {
+        KeyStore keyStore = KeyStore.getInstance("jks");
+        keyStore.load(new BufferedInputStream(keyStoreData.getInputStream()), keyStorePassword.toCharArray());
+
+        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+                new SSLContextBuilder()
+                        .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                        .loadKeyMaterial(keyStore, keyPassword.toCharArray()).build()
+                , NoopHostnameVerifier.INSTANCE);
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(socketFactory)
+                .setMaxConnTotal(1)
+                .setMaxConnPerRoute(5)
+                .build();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        requestFactory.setReadTimeout(10000);
+        requestFactory.setConnectionRequestTimeout(10000);
+
+        return new RestTemplate(requestFactory);
+    }
+}</code></pre>
+    <p>So you can use <code>RestTemplate</code> as standard rest client for Spring or just use
+        <code>requestFactory</code>.</p>
+    <h2>*Advice: use secret store instead share credentials in your jar</h2>
+    <p>You can use <a href="https://www.vaultproject.io/">Vault by HashiCorp</a> if you want to provide right credential
+        strategy.</p>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">Mark Andreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
