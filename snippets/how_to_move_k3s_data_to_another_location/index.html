@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to move k3s data to another location</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to move k3s data to another location</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p>The standard data location used for k3s is <code>/run/k3s</code>, <code>/var/lib/kubelet/pods</code>, <code>/var/lib/rancher</code>.
+        Because this directory contains all
+        containers/images/volumes, it can be large. So you no need to store this in OS Volume when you can use separate
+        data volume.</p>
+    <h3>1. Stop daemon</h3>
+    <pre><code class="bash"># systemctl stop k3s</code></pre>
+    <pre><code class="bash"># systemctl stop k3s-agent</code></pre>
+    <pre><code class="bash"># /usr/local/bin/k3s-killall.sh</code></pre>
+    <h3>2. Copy files to new location</h3>
+    <pre><code class="bash"># mv /run/k3s/ /datadrive/k3s/</code></pre>
+    <pre><code class="bash"># mv /var/lib/kubelet/pods/ /datadrive/k3s-pods/</code></pre>
+    <pre><code class="bash"># mv /var/lib/rancher/ /datadrive/k3s-rancher/</code></pre>
+    <h3>3. Create symbolic link</h3>
+    <pre><code class="bash"># ln -s /datadrive/k3s/ /run/k3s</code></pre>
+    <pre><code class="bash"># ln -s /datadrive/k3s-pods/ /var/lib/kubelet/pods</code></pre>
+    <pre><code class="bash"># ln -s /datadrive/k3s-rancher/ /var/lib/rancher</code></pre>
+    <h3>4. Start daemon</h3>
+    <pre><code class="bash"># systemctl start k3s</code></pre>
+    <pre><code class="bash"># systemctl start k3s-agent</code></pre>
+
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
