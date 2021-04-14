@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mark Andreev (Machine Learning Engineer)</title>
     <meta name="description" content="Machine Learning Engineer">
-    <meta name=”robots” content="index, follow">
+    <meta name="robots" content="index, follow">
     <link rel="apple-touch-icon" sizes="144x144" href="upload/img/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="upload/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="upload/img/icons/favicon-16x16.png">
@@ -60,7 +60,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        
+
         @media (min-width: 800px) {
             .body {
                 display: grid;
@@ -111,7 +111,7 @@
             <div class="header-title">
                 <div>
                     <picture>
-                        <source srcset="upload/img/avatar-100x100.webp" type="image/webp" />
+                        <source srcset="upload/img/avatar-100x100.webp" type="image/webp"/>
                         <img class="d-block mx-auto mb-4 rounded" src="upload/img/avatar-100x100.png" alt=""
                              width="100"
                              height="100"/>
@@ -137,17 +137,17 @@
                 <span class="block-item">
                     CV:
                     <a href="/upload/resume/cv.pdf">English</a>
+                    &amp;
                     <a href="/upload/resume/cv-ru.pdf">Russian</a>
                 </span>
             </div>
             <div class="block">
                 <span class="block-title">// Blog</span>
-
                 <span class="block-item">
                     <a href="/blog/jvm-performance">JVM Performance</a>
                 </span>
                 <span class="block-item">
-                    <a href="/blog/postgres-index">Postgres Indexes, Deep dive</a>
+                    <a href="/blog/postgres-index">Overview of Postgres Indexes</a>
                 </span>
             </div>
             <div class="block">
@@ -159,7 +159,10 @@
             <div class="block">
                 <span class="block-title">// Projects</span>
                 <span class="block-item">
-                    <a href="https://github.com/mrk-andreev/demo-tsplayer">Time series player (Demo)</a>
+                    <a href="https://github.com/mrk-andreev/demo-tsplayer">[Demo] Time series player</a>
+                </span>
+                <span class="block-item">
+                    <a href="https://github.com/mrk-andreev/demo-offline-lock">[Demo] Offline lock with Redis</a>
                 </span>
                 <span class="block-item">
                     <a href="http://bigdata-indicators.com/">Bigdata Indicators</a>
@@ -177,7 +180,7 @@
                     <a href="/upload/certs/AWS_Well-Architected_Training.pdf">AWS Well-Architected Training</a>
                 </span>
                 <span class="block-item">
-                    Deep Dive into
+                    Deep Dive into AWS
                     <a href="/upload/certs/Deep_Dive_into_Amazon_Simple_Storage_Service_(Amazon_S3).pdf">S3</a>,
                     <a href="/upload/certs/Deep_Dive_into_Amazon_Glacier.pdf">Glacer</a>,
                     <a href="/upload/certs/Deep_Dive_into_Amazon_Elastic_File_System_(EFS).pdf">EFS</a>
@@ -193,36 +196,41 @@
         <div class="body-col">
             <div class="block">
                 <span class="block-title">// Experience</span>
-                <span class="block-item"><strong><a href="https://conundrum.ai/">Conundrum.ai</a></strong>, 2017-now</span>
+                <span class="block-item"><strong><a
+                        href="https://conundrum.ai/">Conundrum.ai</a></strong>, 2017-now</span>
                 <span class="block-item">#[Machine Learning Engineer]</span>
                 <span class="block-item block-item-sm">
                     <ul>
                         <li>Developed Machine learning lifecycle platform for Industrial Automation (on top of kubernetes)</li>
                         <li>Developed Data Storage Service for sensors data</li>
+                        <li>Developed ETL service based on Apache Camel</li>
                         <li>Developed end to end machine learning application for flight analysis</li>
-                        <li>Created ad hook analysis for tabular, geo, textual data for customer needs</li>
+                        <li>Created ad hoc analysis for tabular, geo, textual data for customer needs</li>
                     </ul>
                 </span>
-                <span class="block-item"><strong><a href="https://ignite.apache.org/">Apache Ignite</a></strong>, 2020-now</span>
-                <span class="block-item">#[Contributor to Apache Ignite Machine Learning]</span>
+                <span class="block-item">// Contribute to Open Source</span>
                 <span class="block-item block-item-sm">
                     <ul>
-                        <li>Developed advanced feature encoding techniques</li>
-                        <li>Developed advanced distances metrics</li>
-                        <li>Integrated Yandex Catboost model inference</li>
+                        <li><strong>Apache Camel</strong>. Add fix for header override by Azure Storage Blob download consumer. </li>
+                        <li><strong>Apache Ignite</strong>. Add target encoding preprocessor.</li>
+                        <li><strong>Apache Ignite</strong>. Add catboost inference integration.</li>
+                        <li><strong>Apache Ignite</strong>. Add new distances (BrayCurtis, Canberra, JensenShannon and etc).</li>
+                        <li><strong>Apache Ignite</strong>. Code cleanup in Util classes.</li>
+                        <li><strong>Zipkin</strong>. Add experimental PostgreSQL storage.</li>
+                        <li><strong>Tornado Swagger</strong>. Swagger API Documentation builder for tornado server.</li>
                     </ul>
                 </span>
             </div>
             <div class="block">
                 <span class="block-title">// Development Stack</span>
                 <span class="block-item">
-                    <strong>BigData</strong>. Spark, Ignite, Hadoop, Cassandra, HBase, Kafka.
+                    <strong>Data Processing</strong>. Spark, Hadoop, HBase, Kafka, PostgreSQL.
                 </span>
                 <span class="block-item">
-                    <strong>Java</strong>. Spring: MVC, Data, AMQP, Kafka, Integration, Batch, Security, State machine
+                    <strong>Java</strong>. Spring: MVC, Data, AMQP, Kafka, Integration, Batch, Security, State machine, Apache Camel, Quarkus.
                 </span>
                 <span class="block-item">
-                    <strong>Python</strong>. Pandas, Scikit-learn, Matplotlib, Tornado
+                    <strong>Python</strong>. Pandas, Scikit-learn, XGBoost, LightGBM, Catboost, Matplotlib, Tornado
                 </span>
                 <span class="block-item">
                     <strong>Typescript</strong>. Angular, RxJS, Apollo
