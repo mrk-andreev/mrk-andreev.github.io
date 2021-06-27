@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How test Java code structure in unit tests (archunit)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How test Java code structure in unit tests</h1>
+        <h4>Introduction to archunit</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.tngtech.archunit&lt;/groupId&gt;
+    &lt;artifactId&gt;archunit&lt;/artifactId&gt;
+    &lt;version&gt;0.19.0&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+<hr/>
+<div class="container">
+    <h2>ArchUnit</h2>
+    <p>ArchUnit is library for checking the architecture of your Java code. This library available under
+        <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache-2.0 License</a>.</p>
+    <b>Goals:</b>
+    <ul>
+        <li>Check dependencies between packages and classes, layers and slices</li>
+        <li>Check for cyclic dependencies</li>
+        <li>Check annotations for classes and methods</li>
+        <li>Extend with your own rules</li>
+    </ul>
+    <h2>Example</h2>
+    <pre><code class="java">class ArchitectureTest {
+  private JavaClasses importedClasses;
+
+  @BeforeEach
+  void setup() {
+    importedClasses = new ClassFileImporter().importPackages("name.mrkandreev.project");
+  }
+
+  @Test
+  void noClassesShouldAccessStandardStreams() {
+    // only logger
+    NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS.check(importedClasses);
+  }
+}</code></pre>
+    <h2>Predefined rules</h2>
+    <p>You can found general predefined rules in <code>com.tngtech.archunit.library.GeneralCodingRules</code> like:</p>
+    <ul>
+        <li>NO_CLASSES_SHOULD_ACCESS_STANDARD_STREAMS</li>
+        <li>NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS</li>
+        <li>NO_CLASSES_SHOULD_USE_JODATIME</li>
+        <li>NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING</li>
+        <li>NO_CLASSES_SHOULD_USE_FIELD_INJECTION</li>
+    </ul>
+    <p>And dependency rules available in <code>com.tngtech.archunit.library.DependencyRules</code>:</p>
+    <ul>
+        <li>NO_CLASSES_SHOULD_DEPEND_UPPER_PACKAGES</li>
+    </ul>
+    <h2>Example Spring rules</h2>
+    <p>Require RestController name:</p>
+    <pre><code class="java">  @Test
+  void controllerNameRule() {
+    classes()
+        .that()
+        .areAnnotatedWith(RestController.class)
+        .should()
+        .haveSimpleNameContaining("Controller")
+        .check(importedClasses);
+  }</code></pre>
+    <p>Require @Validated for RestController:</p>
+    <pre><code class="java">@Test
+  void restControllerValidationRule() {
+    classes()
+        .that()
+        .areAnnotatedWith(RestController.class)
+        .should()
+        .beAnnotatedWith(Validated.class)
+        .check(importedClasses);
+  }
+
+@Test
+  void restControllerValidationRequestBodyRule() {
+    classes()
+        .that()
+        .areAnnotatedWith(RestController.class)
+        .should(
+            new ArchCondition<>("Any @RequestBody must be @Valid") {
+              @Override
+              public void check(JavaClass javaClass, ConditionEvents conditionEvents) {
+                for (JavaMethod method : javaClass.getMethods()) {
+                  if (method.isConstructor()) {
+                    continue;
+                  }
+
+                  for (Parameter parameter : method.reflect().getParameters()) {
+                    if (parameter.isAnnotationPresent(RequestBody.class)
+                        && !parameter.isAnnotationPresent(Valid.class)) {
+                      conditionEvents.add(
+                          new SimpleConditionEvent(
+                              javaClass,
+                              false,
+                              javaClass.getName()
+                                  + " contains method "
+                                  + method
+                                  + " with @RequestBody and without Valid"));
+                    }
+                  }
+                }
+              }
+            })
+        .check(importedClasses);
+  }
+</code></pre>
+    <p>Require @Configuration classname ends with Config</p>
+    <pre><code class="java">@Test
+  void configurationNameRule() {
+    classes()
+        .that()
+        .areAnnotatedWith(Configuration.class)
+        .should()
+        .haveSimpleNameEndingWith("Config")
+        .check(importedClasses);
+  }</code></pre>
+    <p>You can extend this list, just share your rules: <a
+            href="mailto:mark.andreev@gmail.com">mark.andreev@gmail.com</a> or <a
+            href="https://t.me/mrkandreev">https://t.me/mrkandreev</a>.</p>
+</div>
+<hr/>
+<div class="container">
+    <h2>P.S.</h2>
+    <p>Remember about code formatter tools like <a href="https://github.com/google/google-java-format">google-java-format</a>
+        and static analysis tools like <a href="https://pmd.github.io/">pmd</a>, <a href="https://spotbugs.github.io/">spotbugs</a>,
+        <a href="https://maven.apache.org/plugins/maven-checkstyle-plugin/">maven checkstyle</a>,
+        <a href="https://github.com/google/error-prone">google errorprone</a>.
+    </p>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">Mark Andreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
