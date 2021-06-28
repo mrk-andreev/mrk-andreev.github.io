@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to log slow queries in hibernate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to log slow queries in hibernate</h1>
+        <h2></h2>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h2>Add LOG_QUERIES_SLOWER_THAN_MS to hibernate properties</h2>
+    <pre><code class="yaml">spring:
+  jpa:
+    properties:
+      hibernate:
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 100</code></pre>
+    <h2>Change logging level for org.hibernate.SQL_SLOW</h2>
+    <pre><code class="yaml">logging:
+  level:
+    org:
+      hibernate:
+        SQL_SLOW: info</code></pre>
+    <h2>After this slow queries will be visible in your logs</h2>
+    <pre><code>INFO 7882 --- [nio-8080-exec-1] org.hibernate.SQL_SLOW                   : SlowQuery: 3004 milliseconds. SQL: 'HikariProxyPreparedStatement@87979891 wrapping SELECT 1 as ret FROM (SELECT pg_sleep(3.0)) foo'</code></pre>
+    <hr/>
+    <h2>[DEBUG] Service with slow query</h2>
+    <pre><code class="java">@Service
+@RequiredArgsConstructor
+public class MainService {
+  private final EntityManagerFactory entityManagerFactory;
+
+  @Transactional
+  public String handle(Double sleepTimeout) {
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    EntityTransaction entityTransaction = entityManager.getTransaction();
+    try {
+      entityTransaction.begin();
+      Query
+          query = entityManager.createNativeQuery(String.format("SELECT 1 as ret FROM (SELECT pg_sleep(%s)) foo", sleepTimeout));
+      query.getResultList();
+      return "OK";
+    } finally {
+      entityTransaction.commit();
+      entityManager.close();
+    }
+  }
+}</code></pre>
+    <pre><code class="java">@RestController
+@RequestMapping("/api")
+@RequiredArgsConstructor
+public class MainController {
+  private final MainService mainService;
+
+  @PostMapping
+  public String handler(@RequestParam Double sleepTimeout) {
+    return mainService.handle(sleepTimeout);
+  }
+}</code></pre>
+    <pre><code>POST http://localhost:8080/api?sleepTimeout=0.01
+
+###
+
+POST http://localhost:8080/api?sleepTimeout=3</code></pre>
+    <div>Example project available at <a href="https://github.com/mrk-andreev/example_hibernate_slow_queries">github.com/mrk-andreev/example_hibernate_slow_queries</a>
+    </div>
+</div>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
