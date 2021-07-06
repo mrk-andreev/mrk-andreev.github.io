@@ -71,17 +71,30 @@
             </tr>
         </table>
     </div>
-    <pre><code class="bash">&gt; Enter your code here</code></pre>
-    <div>
-        <p>{{ Enter text here }} </p>
-    </div>
-    <div>
-        <hr/>
-        <b>Related articles</b>:
-        <ul>
-            <li><a href="#">{{ Enter link text here }}</a></li>
-        </ul>
-    </div>
+    <p>Based on TP, FN, FP, TN we can evaluate <code>prediction</code> and <code>recall</code>:</p>
+    <ul>
+        <li>Accuracy = (TP + TN) / (TP + TN + FP + FN)</li>
+        <li>Precision = TP / (TP + FP)</li>
+        <li>Recall = TP / (TP + FN)</li>
+        <li>F1 = 2 * Precision * Recall / (Precision + Recall)</li>
+        <li>F_Beta = (1 + Beta^2) * Precision * Recall / (Beta^2 * Precision + Recall)</li>
+    </ul>
+    <p><b>Why accuracy is not all what you need?</b> If we have imbalance classes like many positives and some negatives
+        we can achieve high accuracy just predict positive class all the time.</p>
+    <h2>Reduce I vs II type</h2>
+    <p>All the time we should choose between I type "false alarm" and II type "miss".</p>
+    <ul>
+        <li><b>Reduce I type</b> when we want to minimize false alarms.</li>
+        <li><b>Reduce II type</b> when we want to minimize miss.</li>
+    </ul>
+    <h2>Applications</h2>
+    <p><b>Static code analysis</b>. We want to detect bug in code expression so we can got "false alarm" (code is
+        correct but tool is alarmed) / "hit" (correct but founded) / "miss" (missed bug). </p>
+    <p><b>Fraud detection</b>. We want to detect fraud operation based on operation pattern.</p>
+    <p><b>Computer virus detection</b>. We want to detect virus based on program activity.</p>
+    <p><b>Text search</b>. We want to detect relevant documents. But in these case actually we want to found most
+        relevant documents. That means that we want to use rank quality functions like @K (top K) for precition@K and
+        accuracy@K.</p>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
