@@ -2,10 +2,11 @@
   "name": "mrk-andreev.github.io",
   "version": "1.0.0",
   "description": "",
-  "dependencies": {
-    "live-server": "^1.2.1"
+  "devDependencies": {
+    "glob-parent": "^6.0.0",
+    "live-server": "^1.2.1",
+    "uuid": "^8.3.2"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "live-server ."
   },
