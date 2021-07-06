@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confusion matrix (I, II type errors)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Confusion matrix (I, II type errors)</h1>
+        <h4>Disclaimer: This terms applicable not only for Machine Learning</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <p>Lets talk about documents that we want to classify as <code>relevant</code> (mark as 1) or
+            <code>irrelevant</code> (mark as 0).
+            In this context does not necessary to specify classification method: it could be complex machine learning
+            algorithms or just manual attached label. If we known <code>actual</code> label then we can compare our
+            marks (known as <code>predicted</code>) with actual: compare <code>actual</code> and <code>prediction</code>.
+        </p>
+        <p>If we got multiple documents than we can score (evaluate quality) our prediction mechanism with some sort of
+            quality functions.</p>
+        <table class="table">
+            <tr>
+                <td></td>
+                <th>Predicted positive</th>
+                <th>Predicted negative</th>
+            </tr>
+            <tr>
+                <th>Actual positive</th>
+                <td class="correct">
+                    True Positive<br/>
+                    <span class="badge badge-secondary">hit</span>
+                </td>
+                <td class="incorrect">
+                    False Negative<br/>
+                    <span class="badge badge-danger">II type</span>
+                    <span class="badge badge-secondary">miss</span>
+                </td>
+            </tr>
+            <tr>
+                <th>Actual negative</th>
+                <td class="incorrect">
+                    False Positive<br/>
+                    <span class="badge badge-danger">I type</span>
+                    <span class="badge badge-secondary">false alarm</span>
+                </td>
+                <td class="correct">
+                    True Negative<br/>
+                    <span class="badge badge-secondary">correct rejection</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <pre><code class="bash">&gt; Enter your code here</code></pre>
+    <div>
+        <p>{{ Enter text here }} </p>
+    </div>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="#">{{ Enter link text here }}</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<style>
+    .table td, th {
+        text-align: center;
+        vertical-align: text-after-edge;
+    }
+
+    .correct {
+        color: forestgreen;
+    }
+
+    .incorrect {
+        color: crimson;
+    }
+</style>
+</body>
+</html>
