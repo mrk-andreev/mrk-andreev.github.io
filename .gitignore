@@ -104,3 +104,5 @@ modules.xml
 .nfs*
 
 # End of https://www.gitignore.io/api/linux,intellij+all
+
+node_modules/*
