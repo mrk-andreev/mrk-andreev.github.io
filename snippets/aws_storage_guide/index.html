@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AWS Storage Guide (S3, Glacer, EBS, EFS)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>AWS Storage Guide</h1>
+        <h4>S3, Glacer, EBS, EFS</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h2>Agenda</h2>
+    <p>Various storage solutions are available in AWS Cloud, which differ primarily in the level of automation from the
+        cloud provider: from a block disk given under full user control to Key-Value storage with a programmable object
+        lifecycle and access characteristics. It should be noted that each type of storage is suitable for its
+        workload.</p>
+    <p>This note covers only general purpose storages: EBS, EFS, S3, Glacer. For storing structured or semi-structured
+        data, we recommend referring to database.</p>
+    <h2>Introduction</h2>
+    <p><b>Data locality</b>. Before diving into storage types, let's take a look at the basics of data locality in AWS
+        Cloud. All data centers
+        are divided into regions - the physical location where our data centers are located. A group of interconnected
+        data centers is called an Availability Zone. Each AWS Region is made up of multiple isolated and physically
+        separate Availability Zones in a single geographic area. An Availability Zone is one or more data centers with
+        redundant power supply, networking, and connectivity in the AWS Region.</p>
+    <div>
+        <img src="assets/aws-data-locality-0.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <img src="assets/aws-data-locality-1.png" alt="" class="img-fluid"/>
+    </div>
+    <p>The hierarchy is as follows: different regions> one region> one availability zone (AZ). Every time we want to
+        increase the availability of our service, in the event of a data center failure, we are moving towards
+        decreasing locality. The highest level of fault tolerance that can be obtained within this model is multi
+        region, which is exactly what Netflix did after the failure of one of the regions.</p>
+    <p>Related: Story by Netflix <a
+            href="https://netflixtechblog.com/a-closer-look-at-the-christmas-eve-outage-d7b409a529ee">A Closer Look at
+        the Christmas Eve Outage
+    </a>.</p>
+    <p><b>Access pattern</b>. When considering different types of storage, it is important to take into account not only
+        the
+        size of files, but also the access pattern: how often the data is accessed, what is the ratio between read and
+        write operations, how elastic the storage should be (maximum available space).</p>
+    <p><b>Price</b>. Taking into account the access pattern, you can calculate the cost of a particular solution. It is
+        worth noting here that more AWS Managed services allow you to flexibly rate individual files. For example, files
+        of an archive type, access to which is rare or exclusive, can be converted to an archive type of storage:
+        storing such data is much cheaper than a standard storage class. https://calculator.aws/#/</p>
+    <p><b>Access control</b>. Depending on the type of storage, the access restriction options vary: from POSIX flags to
+        object-level management with AWS IAM and the ability to maintain an independent access log (AWS Trails).</p>
+    <p><b>Availability</b>. Availability usually refers to both the ability to obtain data and the risk of data loss.
+        Increased
+        availability increases storage costs through redundant storage of data by locating in multiple AZs or multiple
+        regions. It is also worth considering the speed of data access: it can vary from a few milliseconds to hours (in
+        the case of S3 Glacer Deep Archive).</p>
+    <div>
+        <img src="assets/aws-availability-0.png" alt="" class="img-fluid"/>
+    </div>
+    <p><b>Storage types</b>. Storage in AWS can be divided into Block (EBS, like classic hard drives), File (EFS, like
+        NFS),
+        Object (S3, like Key-Value file storage).</p>
+    <div>
+        <img src="assets/aws-storages.png" alt="" class="img-fluid"/>
+    </div>
+    <h1>EBS</h1>
+    <p>EBS (Elastic Block Store) is like a regular hard drive and is mounted on the file system. To access this type of
+        data, an EC2 (VM) is required in the same Availability Zone as the EBS volume. For Provisioned IOPS SSD drives,
+        you can use a shared drive for multiple EC2 Instances (VMs).
+        The maximum size of a single disk is 16 TiB, if you need more space, connect an additional disk.</p>
+    <p>All files on a disk have a single storage class, which is determined by the type of disk:</p>
+    <ul>
+        <li>SSD
+            <ul>
+                <li>General Purpose SSD</li>
+                <li>Provisioned IOPS SSD</li>
+            </ul>
+        </li>
+        <li>HDD
+            <ul>
+                <li>Cold HDD</li>
+                <li>Throughput Optimized HDD</li>
+            </ul>
+        </li>
+        <li>Previous generation (Magnetic)</li>
+    </ul>
+    <div>
+        <img src="assets/aws-ebs-compare-0.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <img src="assets/aws-ebs-compare-1.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <img src="assets/aws-ebs-compare-2.png" alt="" class="img-fluid"/>
+    </div>
+    <p>This type of disk supports encryption at all stages: data transfer, storage, archiving.</p>
+    <p>Archived copies (Snapshots). Supports automatic creation of scheduled backups, as well as copying them to
+        separate regions to increase storage reliability.</p>
+    <p>An important feature of using this type of disk in the context of EC2 Instances (VM): they are not automatically
+        deleted after the EC2 Instance is uninstalled. After removing the VM, you need to uninstall Volumes
+        separately.</p>
+    <p><b>Summary</b>. This type of storage is closest to the classical data storage approach. The user has a great deal
+        of
+        independence, receiving in return the speed and ease of integration with classic applications focused on working
+        with a hard drive. The downside is the need for manual management, the limited size of each disk, and the lack
+        of built-in data replication.</p>
+    <p><b>Best for</b>: Most workloads with fast access speeds and application fault tolerance (e.g. DBMS).</p>
+    <p><b>Not for</b>: big data storage.</p>
+    <h1>EFS</h1>
+    <p>EFS (Elastic File System) is most similar to a network drive (NFS), it supports both placement in one
+        Availability Zone (One Zone) and in several (Regional).</p>
+    <p>The file storage type is specific to each EFS instance and varies in the following ranges:</p>
+    <ul>
+        <li>General Purpose - Ideal for latency-sensitive use cases, like web serving environments and content
+            management systems
+        </li>
+        <li>Max I / O - Scale to higher levels of aggregate throughput and operations per second (Max I / O performance
+            mode is not available for file systems using One Zone storage classes.)
+        </li>
+    </ul>
+    <p>Likewise, encryption is supported with EBS.</p>
+    <p>To save money, it is proposed to automatically move unused files to the Infrequent Access storage class.</p>
+    <p><b>Summary</b>. This type of storage is intermediate between EBS (focused on user management) and S3 (a service
+        for managing binary objects), before using instances of this type, be sure to evaluate its cost, perhaps S3Fuse
+        (mount s3 to file system) will be more preferable for you in in terms of price.</p>
+    <p><b>Best for</b>: filing documents.</p>
+    <p><b>Not for</b>: large raw data.</p>
+    <h1>S3</h1>
+    <p>S3 (Simple Storage Service) is a service for storing binary data. A data storage unit is an Object located in a
+        Bucket, which in turn is located in one of the AWS regions. At the same time, access to the bucket is not
+        limited by the region, but rather affects the speed and price of data access.</p>
+    <p>It supports file versioning (S3 Version), as well as blocking the deletion of files for a specified period (S3
+        Object Lock).</p>
+    <p>The storage class is defined at the object level, so files in the same bucket can have a different storage class.
+        As a result, have different storage and access rates.</p>
+    <ul>
+        <li>S3 Standard</li>
+        <li>S3 Intelligent Tiering</li>
+        <li>S3 Standard IA</li>
+        <li>S3 One Zone IA</li>
+        <li>S3 Glacer</li>
+        <li>S3 Glacer Deep Archive</li>
+    </ul>
+    <p>Glacer is a special class of data storage. It is designed for archival data storage with ultra-low data retrieval
+        rates. This is offset by the storage cost, which reaches 1 USD per TiB per month.</p>
+    <div>
+        <img src="assets/aws-s3-compare.png" alt="" class="img-fluid"/>
+    </div>
+    <p>It is recommended to use s3 Standard by default and based on data usage analytics move files in automatic or
+        semi-automatic mode to other classes. The Lifecycle Manager can help with this.</p>
+    <p>Note that the use of Intelligent Tiering is advisable in the case of large files, billing is per file.</p>
+    <div>
+        <img src="assets/aws-s3-storage-access.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <img src="assets/aws-s3-storage-lifecycle.png" alt="" class="img-fluid"/>
+    </div>
+    <p>[ALERT] Be sure to configure Lifecycle to delete temporary files multipart uploads (Delete expired delete markers
+        or incomplete multipart uploads). This is often where unexpected storage costs are hidden, which are not visible
+        in the overall usage analysis.</p>
+    <p>For operations on a large amount of data, it is proposed to use s3 Batch Operations.</p>
+    <div>
+        <img src="assets/aws-s3-batch.png" alt="" class="img-fluid"/>
+    </div>
+    <p>Events. Based on events, it is recommended to implement a pipeline for processing new data: instead of scanning
+        the list of bucket objects, it is proposed to use events (for example, a new object was created), on the basis
+        of which to work with specific files. Events can be consumed by</p>
+    <ul>
+        <li>Lambda</li>
+        <li>SNS topic</li>
+        <li>SQS queue</li>
+    </ul>
+    <p>Use CloudTrail or Server access logging to audit data access.</p>
+    <p>Hosting of static files. S3 can be used as hosting for static files by pre-configuring CloudFront as a caching
+        revers proxy.</p>
+    <p><b>Summary</b>. S3 is a full-fledged data storage service, while the user defines data management policies
+        through the API. The flexible access control model and storage class make S3 a good option for storing source
+        files that do not require instant access.</p>
+    <p><b>Best for</b>: media / raw files</p>
+    <p><b>Not for</b>: storing DBMS hot files</p>
+    <h1>Summary</h1>
+    <div>
+        <img src="assets/aws-summary-0.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <img src="assets/aws-summary-1.png" alt="" class="img-fluid"/>
+    </div>
+    <hr/>
+    <h2>(Bonus) Snow family</h2>
+    <div>
+        <img src="assets/aws-time-to-transfer.png" alt="" class="img-fluid"/>
+    </div>
+    <p>Limited online data transfer options due to:</p>
+    <ul>
+        <li>Connectivity limitations</li>
+        <li>Bandwidth constraints</li>
+        <li>Restrictions on protocol support</li>
+        <li>Legacy environments</li>
+        <li>Data properties and usage patterns</li>
+        <li>Data collected in remote/ austere locations</li>
+    </ul>
+    <div>
+        <img src="assets/aws-snow-family.png" alt="" class="img-fluid"/>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<style>
+    .img-fluid {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+</body>
+</html>
