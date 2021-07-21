@@ -1,0 +1,14 @@
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.parent.notifyAboutReady();
+    });
+     window.updateValue = (value) => {
+        document.getElementById('counter').innerText = value;
+    }
+</script>
+<div>
+    <h1>
+        Number from parent =
+        <span id="counter"></span>
+    </h1>
+</div>
