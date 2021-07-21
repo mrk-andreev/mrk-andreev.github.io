@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quorum in Distributed Systems</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Quorum in Distributed Systems</h1>
+        <h4>How to avoid two groups of servers making independent decisions, by requiring majority for taking every
+            decision.</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p>
+        <b>Problem</b>. In a distributed system, whenever a server takes any action, it needs to ensure that in the
+        event of a crash the results of the actions are available to the clients. This can be achieved by replicating
+        the result to other servers in the cluster. But that leads to the question: how many other servers need to
+        confirm the replication before the original server can be confident that the update is fully recognized. If the
+        original server waits for too many replications, then it will respond slowly - reducing liveness. But if it
+        doesn't have enough replications, then the update could be lost - a failure of safety. It's critical to balance
+        between the overall system performance and system continuity.
+    </p>
+    <p>
+        <b>Solution</b>. A cluster agrees that it's received an update when a majority of the nodes in the cluster have
+        acknowledged the update. We call this number a quorum. So if we have a cluster of five nodes, we need a quorum
+        of three. (For a cluster of n nodes, the quorum is n/2 + 1.)</p>
+
+    <p>The need for a quorum indicates how many failures can be tolerated - which is the size of the cluster minus the
+        quorum. A cluster of five nodes can tolerate two of them failing. In general, if we want to tolerate 'f'
+        failures we need a cluster size of 2f + 1
+    </p>
+
+    <p>
+        The cluster can function only if majority of servers are up and running. In systems doing data replication,
+        there are two things to consider:
+    </p>
+    <ul>
+        <li>The throughput of write operations.</li>
+        <li>The number of failures which need to be tolerated.</li>
+    </ul>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Number of Servers</th>
+            <th>Quorum</th>
+            <th>Number Of Tolerated Failures</th>
+            <th>Representative Throughput</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>0</td>
+            <td>100</td>
+        </tr>
+
+        <tr>
+            <td>2</td>
+            <td>2</td>
+            <td>0</td>
+            <td>85</td>
+        </tr>
+
+        <tr>
+            <td>3</td>
+            <td>2</td>
+            <td>1</td>
+            <td>82</td>
+        </tr>
+
+        <tr>
+            <td>4</td>
+            <td>3</td>
+            <td>1</td>
+            <td>57</td>
+        </tr>
+
+        <tr>
+            <td>5</td>
+            <td>3</td>
+            <td>2</td>
+            <td>48</td>
+        </tr>
+
+        <tr>
+            <td>6</td>
+            <td>4</td>
+            <td>2</td>
+            <td>41</td>
+        </tr>
+
+        <tr>
+            <td>7</td>
+            <td>5</td>
+            <td>3</td>
+            <td>36</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>
+        More at <a href="https://martinfowler.com/articles/patterns-of-distributed-systems/quorum.html">
+        https://martinfowler.com/articles/patterns-of-distributed-systems/quorum.html</a>
+    </p>
+</div>
+<hr/>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VK1VT2Q5G4"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-VK1VT2Q5G4');
+</script>
+</body>
+</html>
