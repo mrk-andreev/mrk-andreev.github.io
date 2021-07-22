@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Snippets</title>
+    <title>IFrame communication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
@@ -11,43 +12,57 @@
     <link rel="stylesheet"
           href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
 <div class="container">
     <div class="py-5 text-center">
-        <h1>Snippets</h1>
+        <h1>IFrame communication</h1>
+        <h4>From parent to child and from child to parent.</h4>
     </div>
 </div>
 <hr/>
 <div class="container">
     <div>
-        <ul>
-            <li><a href="/snippets/gitignore-generator"><code>.gitignore</code> generator</a></li>
-            <li><a href="/snippets/clocks">Clocks</a></li>
-            <li><a href="/snippets/quorum-in-distributed-systems">Quorum in Distributed Systems</a></li>
-            <li><a href="/snippets/aws_storage_guide">AWS Storage Guide (S3, Glacer, EBS, EFS)</a></li>
-            <li><a href="/snippets/confusion_matrix">Confusion matrix (I, II type errors)</a></li>
-            <li><a href="/snippets/apache_ignite_catboost">Apache Ignite Catboost Integration</a></li>
-            <li><a href="/snippets/hibernate_fetching_strategies">Hibernate fetching strategies</a></li>
-            <li><a href="/snippets/hibernate_how_log_slow_queries">How to log slow queries in hibernate</a></li>
-            <li><a href="/snippets/how_to_move_docker_data_to_another_location">How to move docker data to another
-                location</a></li>
-            <li><a href="/snippets/how_to_move_k3s_data_to_another_location">How to move k3s data to another
-                location</a></li>
-            <li><a href="/snippets/azure_data_drive">How to mount Azure data drive</a></li>
-            <li><a href="/snippets/how_create_new_db_and_user_in_postgres">How to create new db & user in PostgreSQL</a>
-            </li>
-            <li><a href="/snippets/how_to_allow_external_connections_to_postgres">How to allow external connections to
-                PostgreSQL</a></li>
-            <li><a href="/snippets/software_design">Software design</a></li>
-            <li><a href="/snippets/java_collections">Java Collections</a></li>
-            <li><a href="/snippets/java_io">Java IO</a></li>
-            <li><a href="/snippets/java_concurrent">Java Concurrent</a></li>
-            <li><a href="/snippets/iframe_communication">IFrame communication</a></li>
-            <li><a href="/snippets/python_how_to_execute_terminal_commands">Python: How to execute terminal commands</a>
-            </li>
-        </ul>
+        <h4 id="is-ready-container">Container is not ready</h4>
+        <iframe name="container" src="child.html" width="100%" height="300px"></iframe>
+        <script>
+            window.notifyAboutReady = () => {
+                document.getElementById('is-ready-container').innerText = 'Container is ready'
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const frame = window.frames['container'];
+
+                let i = 0;
+                setInterval(() => frame.updateValue(i++), 1_000);
+            });
+        </script>
     </div>
+    <pre><code class="javascript">// child
+document.addEventListener('DOMContentLoaded', () => {
+    window.parent.notifyAboutReady();
+});
+window.updateValue = (value) => {
+    document.getElementById('counter').innerText = value;
+}
+
+// parent
+window.notifyAboutReady = () => {
+    document.getElementById('is-ready-container').innerText = 'Container is ready'
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const frame = window.frames['container'];
+
+    let i = 0;
+    setInterval(() => frame.updateValue(i++), 1_000);
+});</code></pre>
 </div>
 <script>hljs.initHighlightingOnLoad();</script>
 <!-- Yandex.Metrika counter -->
