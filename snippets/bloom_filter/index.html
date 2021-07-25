@@ -42,6 +42,10 @@
             incorrect answer. With more elements in the filter, the error rate increases. An empty Bloom filter is a
             bit-array of m bits, all set to 0. There are also k different hash functions, each of which maps a set
             element to one of the m bit positions.</p>
+        <p>The hash functions used in a Bloom filter should be independent and uniformly distributed. They should also
+            be as fast as possible (cryptographic hashes such as sha1, though widely used therefore are not very good
+            choices). Examples of fast, simple hashes that are independent enough include murmur, the fnv series of
+            hashes, and HashMix.</p>
         <p><b>Applications</b>. Bloom filters find application in network routers, in web browsers(to detect the
             malicious urls), in password checkers(to not a set a weak or guessable or list of forbidden passwords), etc.
             <br/>
@@ -52,17 +56,59 @@
         <p><b>Bloom filter vs Hash Table</b>. Bloom filter is more memory efficient and more faster but does not
             accurate (possible false alarms) and does not support remove operation.</p>
     </div>
-    <pre><code class="bash">&gt; Enter your code here</code></pre>
-    <div>
-        <p>{{ Enter text here }} </p>
-    </div>
-    <div>
-        <hr/>
-        <b>Related articles</b>:
-        <ul>
-            <li><a href="#">{{ Enter link text here }}</a></li>
-        </ul>
-    </div>
+    <pre><code class="bash">from math import log
+
+
+class BloomFilter:
+    """Bloom filter"""
+
+    def __init__(self, items_count, fp_prob):
+        assert 0 &lt;= fp_prob &lt;= 1, "Probability should be in range [0,1]"
+        assert items_count &gt; 0, "Items count must be positive"
+
+        self._size = self._evaluate_size(items_count, fp_prob)
+        self._hash_count = self._evaluate_hash_count(self._size, items_count)
+        self._bit_array = [0] * self._size
+
+    def add(self, item):
+        """Add an element to bloom filter"""
+        for i in range(self._hash_count):
+            digest = self._evaluate_hash(item, i)
+            self._bit_array[digest] = True
+
+    def __contains__(self, item):
+        """ x.__contains__(y) &lt;==&gt; y in x (possible false positive). """
+        for i in range(self._hash_count):
+            digest = self._evaluate_hash(item, i)
+            if not self._bit_array[digest]:
+                return False
+        return True
+
+    @classmethod
+    def _evaluate_size(cls, items_count, fp_prob):
+        m = -(items_count * log(fp_prob)) / (log(2) ** 2)
+        return int(m)
+
+    @classmethod
+    def _evaluate_hash_count(cls, size, items_count):
+        k = (size / items_count) * log(2)
+        return int(k)
+
+    def _evaluate_hash(self, item, k):
+        return k * hash(item) % self._size
+
+
+def test_contains():
+    f = BloomFilter(items_count=100, fp_prob=0.01)
+    f.add('x')
+    assert 'x' in f
+
+
+def test_not_contains():
+    f = BloomFilter(items_count=100, fp_prob=0.01)
+    f.add('x')
+    assert 'y' not in f
+</code></pre>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
