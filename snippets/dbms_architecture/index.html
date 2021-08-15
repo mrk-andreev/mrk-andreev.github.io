@@ -39,6 +39,17 @@
     <div>
         <img src="DBMS_Arch.svg" alt="" class="img-fluid"/>
     </div>
+    <br/>
+    <h2>How store values</h2>
+    <ul>
+        <li><b>By ROWS</b>. By row in general. RDB typically stores values by rows but large texts stores outside in
+            blobs.
+        </li>
+        <li><b>By COLUMNS</b>. Column DB (Analytics DB) stores values by columns. That allows to quick access value
+            in wide column tables.
+        </li>
+    </ul>
+    <p>For optimal storage consumption databases use compression, for quick access - indexes.</p>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
