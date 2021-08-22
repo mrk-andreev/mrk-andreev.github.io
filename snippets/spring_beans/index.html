@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring beans</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Spring beans</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <blockquote class="blockquote">In Spring, the objects that form the backbone of your application and that are
+        managed by the Spring IoC
+        container are called beans. A bean is an object that is instantiated, assembled, and otherwise managed by a
+        Spring IoC container. Otherwise, a bean is simply one of many objects in your application. Beans, and the
+        dependencies among them, are reflected in the configuration metadata used by a container.
+    </blockquote>
+    <h2>Define bean</h2>
+    <pre><code class="java">class ExampleBean {}</code></pre>
+    <p>Define in xml</p>
+    <pre><code class="xml">&lt;bean name="anotherExample" class="examples.ExampleBean"/&gt;</code></pre>
+    <p>Define with Annotations</p>
+    <pre><code class="java">@Component
+class ExampleBean {}</code></pre>
+    <h2>Bean lifecycle</h2>
+    <ul>
+        <li>Instantiation</li>
+        <li>Populate properties</li>
+        <li>BeanNameAware's setBeanName()</li>
+        <li>BeanFactoryAware's setBeanFactory()</li>
+        <li>Pre-initialization BeanPostProcessors</li>
+        <li>InitializingBeans's afterPropertiesSet()</li>
+        <li>Call custom init-method</li>
+        <li>Post-initialization BeanPostProcessors</li>
+        <li><b>READY</b></li>
+        <li>DisposableBean's destroy()</li>
+        <li>Call custom destroy method</li>
+    </ul>
+    <h3>Custom init</h3>
+    <ul>
+        <li>Methods annotated with @PostConstruct</li>
+        <li>afterPropertiesSet() as defined by the InitializingBean callback interface</li>
+        <li> A custom configured init() method</li>
+    </ul>
+    <h3>Custom destroy</h3>
+    <ul>
+        <li>Methods annotated with @PreDestroy</li>
+        <li>destroy() as defined by the DisposableBean callback interface</li>
+        <li>A custom configured destroy() method</li>
+    </ul>
+    <h2>Aware Interfaces</h2>
+    <p>Besides ApplicationContextAware and BeanNameAware discussed above, Spring offers a range of Aware interfaces that
+        allow beans to indicate to the container that they require a certain infrastructure dependency. </p>
+    <ul>
+        <li>ApplicationContextAware</li>
+        <li>ApplicationEventPublisherAware</li>
+        <li>BeanClassLoaderAware</li>
+        <li>BeanFactoryAware</li>
+        <li>BeanNameAware</li>
+        <li>BootstrapContextAware</li>
+        <li>LoadTimeWeaverAware</li>
+        <li>MessageSourceAware</li>
+        <li>NotificationPublisherAware</li>
+        <li>PortletConfigAware</li>
+        <li>ResourceLoaderAware</li>
+        <li>ServletConfigAware</li>
+        <li>ServletContextAware</li>
+    </ul>
+    <h2>Customizing beans using a BeanPostProcessor</h2>
+    <p>The BeanPostProcessor interface defines callback methods that you can implement to provide your own (or override
+        the container's default) instantiation logic, dependency-resolution logic, and so forth. If you want to
+        implement some custom logic after the Spring container finishes instantiating, configuring, and initializing a
+        bean, you can plug in one or more BeanPostProcessor implementations.</p>
+    <pre><code class="java">public class InstantiationTracingBeanPostProcessor implements BeanPostProcessor {
+
+  // simply return the instantiated bean as-is
+  public Object postProcessBeforeInitialization(Object bean, String beanName)
+                                                                     throws BeansException {
+      return bean; // we could potentially return any object reference here...
+  }
+
+  public Object postProcessAfterInitialization(Object bean, String beanName)
+                                                                     throws BeansException {
+      System.out.println("Bean '" + beanName + "' created : " + bean.toString());
+      return bean;
+  }
+}</code></pre>
+    <h2>Customizing configuration metadata with a BeanFactoryPostProcessor</h2>
+    <p>The next extension point that we will look at is the
+        org.springframework.beans.factory.config.BeanFactoryPostProcessor. The semantics of this interface are similar
+        to those of the BeanPostProcessor, with one major difference: BeanFactoryPostProcessors operate on the bean
+        configuration metadata; that is, the Spring IoC container allows BeanFactoryPostProcessors to read the
+        configuration metadata and potentially change it before the container instantiates any beans other than
+        BeanFactoryPostProcessors.</p>
+    <pre><code class="xml">&lt;bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"&gt;
+    &lt;property name="locations" value="classpath:com/foo/jdbc.properties"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="dataSource" destroy-method="close"
+      class="org.apache.commons.dbcp.BasicDataSource"&gt;
+    &lt;property name="driverClassName" value="${jdbc.driverClassName}"/&gt;
+    &lt;property name="url" value="${jdbc.url}"/&gt;
+    &lt;property name="username" value="${jdbc.username}"/&gt;
+    &lt;property name="password" value="${jdbc.password}"/&gt;
+&lt;/bean&gt;</code></pre>
+    <h3>Lazy-initialized Beans</h3>
+    <p>By default, ApplicationContext implementations eagerly create and configure all singleton beans as part of the
+        initialization process. Generally, this pre-instantiation is desirable, because errors in the configuration or
+        surrounding environment are discovered immediately, as opposed to hours or even days later. When this behavior
+        is not desirable, you can prevent pre-instantiation of a singleton bean by marking the bean definition as being
+        lazy-initialized. A lazy-initialized bean tells the IoC container to create a bean instance when it is first
+        requested, rather than at startup.</p>
+    <p>However, when a lazy-initialized bean is a dependency of a singleton bean that is not lazy-initialized, the
+        ApplicationContext creates the lazy-initialized bean at startup, because it must satisfy the singleton’s
+        dependencies. The lazy-initialized bean is injected into a singleton bean elsewhere that is not
+        lazy-initialized.</p>
+    <h2>Scopes</h2>
+    <ul>
+        <li>singleton</li>
+        <li>prototype</li>
+        <li>request</li>
+        <li>session</li>
+        <li>global session</li>
+    </ul>
+    <h3>Custom scopes</h3>
+    <p>As of Spring 2.0, the bean scoping mechanism is extensible. You can define your own scopes, or even redefine
+        existing scopes, although the latter is considered bad practice and you cannot override the built-in singleton
+        and prototype scopes.</p>
+    <p>To integrate your custom scope(s) into the Spring container, you need to implement the
+        org.springframework.beans.factory.config.Scope interface, which is described in this section. For an idea of how
+        to implement your own scopes, see the Scope implementations that are supplied with the Spring Framework itself
+        and the Scope Javadoc, which explains the methods you need to implement in more detail.</p>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<style>
+    .blockquote {
+        border-left: 5px solid black;
+        padding-left: 5px;
+    }
+</style>
+</body>
+</html>
