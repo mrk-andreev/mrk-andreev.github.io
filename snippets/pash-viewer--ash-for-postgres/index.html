@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PASH Viewer (like ASH for PostgreSQL)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>PASH Viewer (like ASH for PostgreSQL)</h1>
+        <h4>PostgreSQL ASH Viewer (PASH Viewer) provides graphical view of active session history data within the
+            PostgreSQL database</h4>
+        <h5><a href="https://github.com/dbacvetkov/PASH-Viewer/releases">Github Releases</a></h5>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="text-center">
+        <img src="screenshot.png" alt="" class="img-fluid"/>
+    </div>
+    <br/>
+    <div>
+        <p>PostgreSQL ASH Viewer (PASH Viewer) provides graphical view of active session history data within the
+            PostgreSQL database.<br/>
+            PASH Viewer provides graphical Top Activity, similar Top Activity analysis of Oracle Enterprise Manager
+            performance page. PASH Viewer store ASH data locally using embedded database Oracle Berkeley DB Java
+            Edition. The default capture rate is one snapshot every 1 seconds. PASH Viewer support PostgreSQL 10+ (and
+            9.4 - 9.6 with limited functions).
+        </p>
+    </div>
+    <pre><code class="sql">CREATE USER pgmonuser WITH password 'pgmonuser';
+GRANT pg_monitor TO pgmonuser;</code></pre>
+    <h2>How it works</h2>
+    <p>Оnce a second PASH-Viewer make a request to the database view pg_stat_activity:</p>
+    <pre><code class="sql">SELECT current_timestamp,
+  datname, pid, usesysid, usename, application_name, backend_type,
+  coalesce(client_hostname, client_addr::text, 'localhost') as client_hostname,
+  wait_event_type, wait_event, query, query_start,
+  1000 * EXTRACT(EPOCH FROM (clock_timestamp()-query_start)) as duration
+from pg_stat_activity
+where state = 'active' and pid != pg_backend_pid();</code></pre>
+    <p>Each 15 second PASH-Viewer averages data and displays it on the graph, grouping by WAIT_EVENT_TYPE (like
+        WAIT_CLASS in Oracle). You can switch to the Details tab and inspect wait events of the specific type.</p>
+    <p>You can select a period on the graph and view the Top SQLs of that period. For this to work, PASH-Viewer parse
+        query text and normalize it - replace literals with $1, $2 etc... It allows to group the same queries with
+        different variables into the single SQL_ID.</p>
+    <h2>pgbench (pg load test util) (<a href="https://www.postgresql.org/docs/13/pgbench.html">docs</a>)</h2>
+    <p>pgbench — run a benchmark test on PostgreSQL. pgbench is a simple program for running benchmark tests on
+        PostgreSQL. It runs the same sequence of SQL commands over and over, possibly in multiple concurrent database
+        sessions, and then calculates the average transaction rate (transactions per second). By default, pgbench tests
+        a scenario that is loosely based on TPC-B, involving five SELECT, UPDATE, and INSERT commands per transaction.
+        However, it is easy to test other cases by writing your own transaction script files.</p>
+    <pre><code class="sql">pgbench -i -h localhost -U postgres</code></pre>
+    <pre><code class="sql">pgbench -h localhost -U postgres -b simple-update -c 30 -T600 -R 3000 postgres</code></pre>
+    <div class="text-center">
+        <img src="pashviewer-pg-bench.png" alt="" class="img-fluid"/>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
