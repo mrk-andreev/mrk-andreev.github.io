@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Postgres WAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Postgres WAL</h1>
+        <h4>Write-Ahead Log (WAL)</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="text-center">
+        <img src="wal.png" alt="" class="img-fluid"/>
+    </div>
+    <div>
+        <p>Write-Ahead Logging (WAL) is a standard method for ensuring data integrity. A detailed description can be
+            found in most (if not all) books about transaction processing. Briefly, WAL's central concept is that
+            changes to data files (where tables and indexes reside) must be written only after those changes have been
+            logged, that is, after log records describing the changes have been flushed to permanent storage. If we
+            follow this procedure, we do not need to flush data pages to disk on every transaction commit, because we
+            know that in the event of a crash we will be able to recover the database using the log: any changes that
+            have not been applied to the data pages can be redone from the log records. (This is roll-forward recovery,
+            also known as REDO.)
+        </p>
+        <p>Using WAL results in a significantly reduced number of disk writes, because only the log file needs to be
+            flushed to disk to guarantee that a transaction is committed, rather than every data file changed by the
+            transaction. The log file is written sequentially, and so the cost of syncing the log is much less than the
+            cost of flushing the data pages. This is especially true for servers handling many small transactions
+            touching different parts of the data store. Furthermore, when the server is processing many small concurrent
+            transactions, one fsync of the log file may suffice to commit many transactions.</p>
+        <p>With most installations and packages, 16 MB is the size of the wal segments. Unless your transaction rate is
+            through the roof, 16 MB size is good enough. You can change this size by adjusting the –with-wal-segsize
+            configure option.</p>
+        <p>So, as long as you keep making changes to the data in your database, WAL files will keep building up in your
+            pg_wal directory. (pg_wal directory is used to store WAL files in PostgreSQL 10. In the previous versions,
+            the directory was called pg_xlog). You can, of course, control the number of these files you want to store
+            by using wal_keep_segments. Or you can control the total size of WAL files by using max_wal_size.</p>
+        <p>As new records are written, they are appended to WAL logs. Its position is defined by a Log Sequence Number.
+            The Log Sequence Number (LSN) is a unique identifier in the transaction log. It represents a position in the
+            WAL stream. That is, as records are added to the Postgres WAL log, their insert positions are described by
+            the Log Sequence Number. pg_lsn is the datatype in which a Log Sequence Number is returned.</p>
+        <h2>WAL Configuration</h2>
+        <ul>
+            <li>
+                <b>Shared Buffers</b>. Inside the postgresql.conf file, there is a parameter called shared_buffers. They
+                are called ‘shared’ buffers because all of the background servers can access them. This parameter
+                determines the amount of memory allocated to PostgreSQL for caching data. Dealing with memory is faster
+                than reading from or writing to the files and hence it improves performance. A back-end process requests
+                the buffer manager for a page and the buffer manager either loads the required page from persistent
+                storage or returns it from the buffer pool if it is available. Now the back-end process can access the
+                page.
+            </li>
+            <li>
+                <b>Dirty Pages</b>. When data is modified in memory, the page in which this data is stored is called a
+                ‘dirty page’, as long as the modifications are not written to disk. So if there is a page that is
+                different in the shared buffer and the disk, it is called a dirty page. The buffer manager flushes the
+                dirty pages to storage with the assistance of two subsystems called – checkpointer and background
+                writer.
+            </li>
+            <li>
+                <b>Checkpointer</b>. As the name suggests, checkpointer creates checkpoints in the Write-Ahead Log.
+                These checkpoints are used for recovery. A checkpoint indicates that all the information prior to the
+                checkpoint has been updated. So at every checkpoint, dirty pages are flushed to disk. How often a
+                checkpoint is begun depends on checkpoint_segments and checkpoint_timeout.<br/>
+                The integer, checkpoint_segments indicates the maximum number of log segments between two checkpoints.
+                The default value is 3 segments, where each segment is usually 16 MB. This value can be adjusted in the
+                postgresql.conf file.<br/>
+                On the other hand, checkpoint_timeout is an integer that indicates the maximum time between two
+                checkpoints. The default time is 5 minutes/ 300 seconds. This value can also be adjusted in the
+                postgresql.conf file.
+            </li>
+            <li>
+                <b>Background Writer</b>. The background writer is a subsystem that assists the checkpointer. What it
+                does is, move some of the modified data to the disk offloading the checkpointer. You should however be
+                careful before tuning it as it increases the I/O load, especially in cases where there is some page that
+                is being dirtied repeatedly. In such a case the background writer would write it repeatedly within a
+                checkpoint interval.
+            </li>
+        </ul>
+        <h2>Performance of Postgres WAL</h2>
+        <p>PostgreSQL WAL files are written one by one during the regular work of server. The functionality of HDD also
+            works conveniently, but this kind of workload is different from the data accessing load. It is always
+            recommended to store Postgres WAL files on a different physical disk mounted to the file system of your
+            server.</p>
+        <ul>
+            <li>Synchronous Commit: With this commit, you will not be able to continue our work until all the WAL files
+                are stored on the disk. With synchronous commit, you can get 900 transactions per second.
+            </li>
+            <li>Asynchronous Commit: It allows faster completion of the transaction at the cost of data loss. With this
+                commit, it returns success as soon as the transaction is completed logically, even before the WAL
+                records it, they make their way to disk. You get 1500 transactions per second with asynchronous commit
+                mode.
+            </li>
+        </ul>
+        <h2>Benefits of Postgre WAL</h2>
+        <ul>
+            <li>As only log files are flushed to disk during transnational commit, it reduces the number of disk
+                writes.
+            </li>
+            <li>The cost of syncing your log file is less as the log files are written sequentially.</li>
+            <li>It adds data page consistency .</li>
+            <li>Postgres WAL offers on-line backup and point-in-time recovery.</li>
+        </ul>
+    </div>
+    <hr/>
+    <b>Related</b>
+    <ul>
+        <li>
+            <a href="https://www.postgresql.org/docs/13/wal-configuration.html">WAL Configuration</a>
+        </li>
+        <li>
+            <a href="https://hevodata.com/learn/working-with-postgres-wal/">Working With Postgres WAL Made Easy</a>
+        </li>
+        <li>
+            <a href="https://habr.com/ru/company/postgrespro/blog/459250/">Postgres WAL (RU)</a>
+        </li>
+    </ul>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
