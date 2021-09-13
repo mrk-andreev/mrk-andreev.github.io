@@ -219,13 +219,27 @@ result.show()
 // |        3750.0|
 // +--------------+
     </code></pre>
-    <h2>File formats</h2>
+    <h2>File formats Tips</h2>
     <ul>
         <li>Compression schemes</li>
-        <li>Columnar (Parquet, ORC)</li>
+        <li>Schema evolution and transformation of column type</li>
+        <li>Splittable vs non-splittable compression schemes (lz4, snappy is splittable, gzip is not splittable)</li>
+        <li>Columnar (Parquet, ORC). Efficient data skipping (column pruning, min/max stats based predicate push-down)</li>
         <li>Semi-structured (JSON, CSV)</li>
         <li>Raw text format</li>
     </ul>
+    <h2>Tungsten</h2>
+    <p>Tungsten is the codename for the umbrella project to make changes to Apache Spark’s execution engine that focuses on substantially improving the efficiency of memory and CPU for Spark applications, to push performance closer to the limits of modern hardware.
+    </p>
+    <ul>
+        <li>Memory Management and Binary Processing: leveraging application semantics to manage memory explicitly and eliminate the overhead of JVM object model and garbage collection</li>
+        <li>Cache-aware computation: algorithms and data structures to exploit memory hierarchy</li>
+        <li>Code generation: using code generation to exploit modern compilers and CPUs</li>
+        <li>No virtual function dispatches: this reduces multiple CPU calls which can have a profound impact on performance when dispatching billions of times.</li>
+        <li>Intermediate data in memory vs CPU registers: Tungsten Phase 2 places intermediate data into CPU registers. This is an order of magnitudes reduction in the number of cycles to obtain data from the CPU registers instead of from memory</li>
+        <li>Loop unrolling and SIMD: Optimize Apache Spark’s execution engine to take advantage of modern compilers and CPUs’ ability to efficiently compile and execute simple for loops (as opposed to complex function call graphs).</li>
+    </ul>
+    <p><a href="https://databricks.com/blog/2015/04/28/project-tungsten-bringing-spark-closer-to-bare-metal.html">Read more</a></p>
     <hr/>
     <div>
         <hr/>
