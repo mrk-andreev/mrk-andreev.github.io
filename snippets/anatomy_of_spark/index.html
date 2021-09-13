@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anatomy of Apache Spark</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Anatomy of Apache Spark</h1>
+        <h4>Deep dive to Apache Spark</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p>You could also describe Spark as a distributed, data processing engine for batch and streaming modes featuring SQL queries, graph processing, and machine learning.</p>
+    <p>In contrast to Hadoop’s two-stage disk-based MapReduce computation engine, Spark's multi-stage (mostly) in-memory computing engine allows for running most computations in memory, and hence most of the time provides better performance for certain applications, e.g. iterative algorithms or interactive data mining</p>
+    <div>
+        <img src="img/cluster-overview.png" alt="" class="img-fluid" />
+    </div>
+    <div>
+        <p>Spark applications run as independent sets of processes on a cluster, coordinated by the SparkContext object in your main program (called the driver program).</p>
+        <p>Specifically, to run on a cluster, the SparkContext can connect to several types of cluster managers (either Spark’s own standalone cluster manager, Mesos or YARN), which allocate resources across applications. Once connected, Spark acquires executors on nodes in the cluster, which are processes that run computations and store data for your application. Next, it sends your application code (defined by JAR or Python files passed to SparkContext) to the executors. Finally, SparkContext sends tasks to the executors to run.</p>
+    </div>
+    <h2>Limitations</h2>
+    <ul>
+        <li>No real time processing support (Lattency vs Throutput)</li>
+        <li>Expensive</li>
+        <li>Small files problems</li>
+        <li>Manual optimization</li>
+        <li>Back pressure handling</li>
+    </ul>
+    <h2>Data containers</h2>
+    <ul>
+        <li>RDD (Resilient Distributed Datasets)</li>
+        <li>Dataframe</li>
+        <li>Datasets (handle semantic error during compilation)</li>
+    </ul>
+    <h2>Transformations</h2>
+    <p>In Spark, the core data structures are immutable meaning they cannot be changed once created. This might seem like a strange concept at first, if you cannot change it, how are you supposed to use it? In order to “change” a DataFrame you will have to instruct Spark how you would like to modify the DataFrame you have into the one that you want. These instructions are called transformations. Transformations are the core of how you will be expressing your business logic using Spark. There are two types of transformations, those that specify narrow dependencies and those that specify wide dependencies.
+    </p>
+    <p>
+        <b>Narrow Dependencies</b>
+        Transformations consisting of narrow dependencies [we’ll call them narrow transformations] are those where each input partition will contribute to only one output partition.        
+    </p>
+    <p>
+        <b>Wide Dependencies</b>
+        A wide dependency [or wide transformation] style transformation will have input partitions contributing to many output partitions. You will often hear this referred to as a shuffle where Spark will exchange partitions across the cluster. With narrow transformations, Spark will automatically perform an operation called pipelining on narrow dependencies, this means that if we specify multiple filters on DataFrames they’ll all be performed in-memory. The same cannot be said for shuffles. When we perform a shuffle, Spark will write the results to disk. You’ll see lots of talks about shuffle optimization across the web because it’s an important topic but for now all you need to understand are that there are two kinds of transformations.
+    </p>
+    <h2>Partitioning</h2>
+    <p>The partition columns should be used frequently in queries for filtering and should have a small range of values with enough corresponding data to distribute the files in the directories. You want to avoid too many small files, which make scans less efficient with excessive parallelism. You also want to avoid having too few large files, which can hurt parallelism.
+    </p>
+    <p>
+        <b>Coalesce and Repartition        </b>
+        Before or when writing a DataFrame, you can use dataframe.coalesce(N) to reduce the number of partitions in a DataFrame, without shuffling, or df.repartition(N) to reorder and either increase or decrease the number of partitions with shuffling data across the network to achieve even load balancing.
+    </p>
+    <pre><code class="scala">df.write.format("parquet")
+        .repartition(13)
+        .partitionBy("src")
+        .option("path", "/user/mapr/data/flights")
+        .saveAsTable("flights")</code></pre>
+    <p><b>Bucketing    </b>
+        Bucketing is another data organization technique that groups data with the same bucket value across a fixed number of “buckets.” This can improve performance in wide transformations and joins by avoiding “shuffles.” With wide transformation shuffles, data is sent across the network to other nodes and written to disk, causing network and disk I/O and making the shuffle a costly operation. Below is a shuffle caused by a df.groupBy("carrier").count; if this dataset were bucketed by “carrier,” then the shuffle could be avoided.
+    </p>
+    <p>Bucketing is similar to partitioning, but partitioning creates a directory for each partition, whereas bucketing distributes data across a fixed number of buckets by a hash on the bucket value. Tables can be bucketed on more than one value and bucketing can be used with or without partitioning.
+    </p>
+    <p>As an example with the flight dataset, here is the code to persist a flights DataFrame as a table, consisting of Parquet files partitioned by the src column and bucketed by the dst and carrier columns (sorting by the id will sort by the src, dst, flightdate, and carrier, since that is what the id is made up of):</p>
+    <pre><code class="scala">df.write.format("parquet")
+        .sortBy("id")
+        .partitionBy("src")
+        .bucketBy(4,"dst","carrier")
+        .option("path", "/user/mapr/data/flightsbkdc")
+        .saveAsTable("flightsbkdc")</code></pre>
+    <p>Partitioning should only be used with columns that have a limited number of values; bucketing works well when the number of unique values is large. Columns which are used often in queries and provide high selectivity are good choices for bucketing. Spark tables that are bucketed store metadata about how they are bucketed and sorted, which optimizes:
+
+    </p>
+    <h2>SQL</h2>
+    <div>
+        <img src="img/SPARK-SQL-Optimization.jpg" alt="" class="img-fluid" />
+    </div>
+    <p>We will learn, how it allows developers to express the complex query in few lines of code, the role of catalyst optimizer in spark. At last, we will also focus on its fundamentals of working and includes phases of Spark execution flow.    </p>
+    <h3>Join types</h3>
+    <ul>
+        <li>BROADCAST.
+
+            Suggests that Spark use broadcast join. The join side with the hint will be broadcast regardless of autoBroadcastJoinThreshold. If both sides of the join have the broadcast hints, the one with the smaller size (based on stats) will be broadcast. The aliases for BROADCAST are BROADCASTJOIN and MAPJOIN.</li>
+        <li>MERGE.
+
+            Suggests that Spark use shuffle sort merge join. The aliases for MERGE are SHUFFLE_MERGE and MERGEJOIN.</li>
+        <li>SHUFFLE_HASH.
+
+            Suggests that Spark use shuffle hash join. If both sides have the shuffle hash hints, Spark chooses the smaller side (based on stats) as the build side.</li>
+
+        <li>SHUFFLE_REPLICATE_NL
+
+            Suggests that Spark use shuffle-and-replicate nested loop join.</li>            
+    </ul>
+    <h3>UDF</h3>
+    <p>Scalar UDF. User-Defined Functions (UDFs) are user-programmable routines that act on one row. This documentation lists the classes that are required for creating and registering UDFs. It also contains examples that demonstrate how to define and register UDFs and invoke them in Spark SQL.    </p>
+    <pre><code class="scala">
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.udf
+
+val spark = SparkSession
+  .builder()
+  .appName("Spark SQL UDF scalar example")
+  .getOrCreate()
+
+// Define and register a zero-argument non-deterministic UDF
+// UDF is deterministic by default, i.e. produces the same result for the same input.
+val random = udf(() =&gt; Math.random())
+spark.udf.register("random", random.asNondeterministic())
+spark.sql("SELECT random()").show()
+// +-------+
+// |UDF()  |
+// +-------+
+// |xxxxxxx|
+// +-------+
+
+// Define and register a one-argument UDF
+val plusOne = udf((x: Int) =&gt; x + 1)
+spark.udf.register("plusOne", plusOne)
+spark.sql("SELECT plusOne(5)").show()
+// +------+
+// |UDF(5)|
+// +------+
+// |     6|
+// +------+
+
+// Define a two-argument UDF and register it with Spark in one step
+spark.udf.register("strLenScala", (_: String).length + (_: Int))
+spark.sql("SELECT strLenScala('test', 1)").show()
+// +--------------------+
+// |strLenScala(test, 1)|
+// +--------------------+
+// |                   5|
+// +--------------------+
+
+// UDF in a WHERE clause
+spark.udf.register("oneArgFilter", (n: Int) =&gt; { n &gt; 5 })
+spark.range(1, 10).createOrReplaceTempView("test")
+spark.sql("SELECT * FROM test WHERE oneArgFilter(id)").show()
+// +---+
+// | id|
+// +---+
+// |  6|
+// |  7|
+// |  8|
+// |  9|
+// +---+
+    </code></pre>
+    <p>Aggregate UDF. User-Defined Aggregate Functions (UDAFs) are user-programmable routines that act on multiple rows at once and return a single aggregated value as a result. This documentation lists the classes that are required for creating and registering UDAFs. It also contains examples that demonstrate how to define and register UDAFs in Scala and invoke them in Spark SQL.    </p>
+    <pre><code class="scala">
+import org.apache.spark.sql.{Encoder, Encoders, SparkSession}
+import org.apache.spark.sql.expressions.Aggregator
+
+case class Employee(name: String, salary: Long)
+case class Average(var sum: Long, var count: Long)
+
+object MyAverage extends Aggregator[Employee, Average, Double] {
+  // A zero value for this aggregation. Should satisfy the property that any b + zero = b
+  def zero: Average = Average(0L, 0L)
+  // Combine two values to produce a new value. For performance, the function may modify `buffer`
+  // and return it instead of constructing a new object
+  def reduce(buffer: Average, employee: Employee): Average = {
+    buffer.sum += employee.salary
+    buffer.count += 1
+    buffer
+  }
+  // Merge two intermediate values
+  def merge(b1: Average, b2: Average): Average = {
+    b1.sum += b2.sum
+    b1.count += b2.count
+    b1
+  }
+  // Transform the output of the reduction
+  def finish(reduction: Average): Double = reduction.sum.toDouble / reduction.count
+  // Specifies the Encoder for the intermediate value type
+  def bufferEncoder: Encoder[Average] = Encoders.product
+  // Specifies the Encoder for the final output value type
+  def outputEncoder: Encoder[Double] = Encoders.scalaDouble
+}
+
+val ds = spark.read.json("examples/src/main/resources/employees.json").as[Employee]
+ds.show()
+// +-------+------+
+// |   name|salary|
+// +-------+------+
+// |Michael|  3000|
+// |   Andy|  4500|
+// | Justin|  3500|
+// |  Berta|  4000|
+// +-------+------+
+
+// Convert the function to a `TypedColumn` and give it a name
+val averageSalary = MyAverage.toColumn.name("average_salary")
+val result = ds.select(averageSalary)
+result.show()
+// +--------------+
+// |average_salary|
+// +--------------+
+// |        3750.0|
+// +--------------+
+    </code></pre>
+    <h2>File formats</h2>
+    <ul>
+        <li>Compression schemes</li>
+        <li>Columnar (Parquet, ORC)</li>
+        <li>Semi-structured (JSON, CSV)</li>
+        <li>Raw text format</li>
+    </ul>
+    <hr/>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://books.japila.pl/apache-spark-internals/overview/">The Internals of Apache Spark</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
