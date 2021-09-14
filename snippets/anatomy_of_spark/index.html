@@ -53,6 +53,9 @@
         <li>Dataframe</li>
         <li>Datasets (handle semantic error during compilation)</li>
     </ul>
+    <div>
+        <img src="img/sql-dataframe-dataset.png" alt="" class="img-fluid" />
+    </div>
     <h2>Transformations</h2>
     <p>In Spark, the core data structures are immutable meaning they cannot be changed once created. This might seem like a strange concept at first, if you cannot change it, how are you supposed to use it? In order to “change” a DataFrame you will have to instruct Spark how you would like to modify the DataFrame you have into the one that you want. These instructions are called transformations. Transformations are the core of how you will be expressing your business logic using Spark. There are two types of transformations, those that specify narrow dependencies and those that specify wide dependencies.
     </p>
@@ -95,6 +98,14 @@
     <div>
         <img src="img/SPARK-SQL-Optimization.jpg" alt="" class="img-fluid" />
     </div>
+    <h3>Stages</h3>
+    <ul>
+        <li>Parser - input is declarative query (SQL, Dataset or DataFrame).</li>
+        <li>Analyzer - use metadata catalog (persistent hive metastorage; session-local temporary view manager; cross-session global temporary view manager; session-local function registry - udf, udaf etc)</li>
+        <li>Optimizer - use cache manager (auto replace by cached data when plan matching; cross-session; dropping/inserting tables/view invalidates all caches that depende on it; lazy evaluation). Optimizer rewrites the query plans using heuristics and cost (column pruning; outer join elimination; predicate push down; constraint propagation; constant folding; join reordering). Can inject own Optimizer and Planner Rules.</li>
+        <li>Planner - turn logical plans to physical plans. Pick the best physical plan according to the cost (like join to broadcast hash join or to sort merge join).</li>
+        <li>Query execution - memory manager; code generation; tungten engine</li>
+    </ul>
     <p>We will learn, how it allows developers to express the complex query in few lines of code, the role of catalyst optimizer in spark. At last, we will also focus on its fundamentals of working and includes phases of Spark execution flow.    </p>
     <h3>Join types</h3>
     <ul>
