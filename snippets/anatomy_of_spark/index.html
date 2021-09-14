@@ -251,6 +251,38 @@ result.show()
         <li>Loop unrolling and SIMD: Optimize Apache Spark’s execution engine to take advantage of modern compilers and CPUs’ ability to efficiently compile and execute simple for loops (as opposed to complex function call graphs).</li>
     </ul>
     <p><a href="https://databricks.com/blog/2015/04/28/project-tungsten-bringing-spark-closer-to-bare-metal.html">Read more</a></p>
+    <h2>Structured streaming</h2>
+    <p>Stream processing on Spark SQL engine. Anatomy of a Streaming word count</p>
+    <ul>
+        <li>Source
+            <pre><code class="scala">
+spark.readStream
+     .format("kafka")
+     .option("subscribe", "input")
+     .load()
+            </code></pre>
+        </li>
+        <li>Transformation
+            <code class="scala">
+.groupBy('values.cast("string") as 'key)
+.agg(count("*") as value)
+            </code></pre>
+        </li>
+        <li>Sink
+            <code class="scala">
+.writeStream
+.format("kafka")
+.option("topic", "output")
+            </code></pre>
+        </li>
+        <li>Trigger
+            <code class="scala">
+.trigger("1 minute")
+.outputMode("update")
+            </code></pre>
+
+        </li>
+    </ul>
     <hr/>
     <div>
         <hr/>
