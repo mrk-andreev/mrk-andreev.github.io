@@ -263,25 +263,81 @@ spark.readStream
             </code></pre>
         </li>
         <li>Transformation
-            <code class="scala">
+            <pre><code class="scala">
 .groupBy('values.cast("string") as 'key)
 .agg(count("*") as value)
             </code></pre>
         </li>
         <li>Sink
-            <code class="scala">
+            <pre><code class="scala">
 .writeStream
 .format("kafka")
 .option("topic", "output")
             </code></pre>
         </li>
-        <li>Trigger
-            <code class="scala">
+        <li>Trigger - when to output. Specified as a time, eventually sports data size. No trigger means as fast as possible. OutputMode - what's output (update - output changed rows, append - output new rows only, complete - output the whole answer every time). 
+            <pre><code class="scala">
 .trigger("1 minute")
 .outputMode("update")
             </code></pre>
-
         </li>
+        <li>Checkpoint - track the process of a query in persistent storage. Can be used to restart after fail.
+            <pre><code class="scala">
+.option("checkpointLocation", "/tmp/cp")
+.start()
+            </code></pre>
+        </li>
+    </ul>
+    <h3>Aggregation</h3>
+    <pre><code class="scala">
+// by key
+events.
+    .groupBy("key")
+    .count()
+
+// by evet time window
+events
+    .groupBy(window("timestamp", "10 mins"))
+    .avg("value")
+
+// both
+events
+    .groupBy("key", window("timestamp", "10 mins"))
+    .agg(avg("value"), corr("value"))
+</code></pre>
+    <h3>Watermarks</h3>
+    <div>
+        <img src="img/watermark.png" alt="" class="img-fluid" />
+    </div>
+    <pre><code class="scala">
+events
+    .withWatermark("timestamp", "10 minutes")
+    .groupBy(window("timestamp", "5 minutes"))
+    .count()
+        </code></pre>
+    <div>
+        <img src="img/watermark-v2.png" alt="" class="img-fluid" />
+    </div>
+    <p>Watermarking - trade off between lateness tolerance and state size.</p>
+    <ul>
+        <li>Less late data processed less memory consumed</li>
+        <li>More late data processed, more memory consumed</li>
+    </ul>
+    <h3>Drop duplicates</h3>
+    <pre><code class="scala">
+events
+    .dropDuplicates("uniqueRecordId")
+
+// can be used with watermark
+events
+    .withWatermark("timestamp")
+    .dropDuplicates("uniqueRecordId", "timestamp")
+        </code></pre>
+    <h3>Arbitrary stateful operations</h3>
+    <p>Many use cases require more complicated logic than SQL ops. Like tracking user activity on your product: user actions as input, latest user status as output.</p>
+    <ul>
+        <li>MapGroupsWithState</li>
+        <li>FlatMapGroupsWithState</li>
     </ul>
     <hr/>
     <div>
