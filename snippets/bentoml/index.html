@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ ENTER SNIPPET TITLE HERE }}</title>
+    <title>BentoML, Model Serving Made Easy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
@@ -24,24 +24,68 @@
 <body>
 <div class="container">
     <div class="py-5 text-center">
-        <h1>{{ ENTER SNIPPET TITLE HERE }}</h1>
-        <h4>{{ ENTER SHORT DESCRIPTION HERE }}</h4>
+        <h1>BentoML</h1>
+        <h4>Model Serving Made Easy</h4>
     </div>
 </div>
 <hr/>
 <div class="container">
     <div>
-        <p>{{ Enter text here }} </p>
+        <p>BentoML is a flexible, high-performance framework for serving, managing, and deploying machine learning
+            models. BentoML bridges the gap between Data Science and DevOps. By providing a standard interface for
+            describing a prediction service, BentoML abstracts away how to run model inference efficiently and how model
+            serving workloads can integrate with cloud infrastructures. See how it works!</p>
     </div>
-    <pre><code class="bash">&gt; Enter your code here</code></pre>
-    <div>
-        <p>{{ Enter text here }} </p>
-    </div>
+    <pre><code class="bash">pandas==1.3.3
+scikit-learn==0.24.2
+BentoML==0.13.1</code></pre>
+    <p>Create <code>app.py</code>:</p>
+    <pre><code class="python">import bentoml
+from bentoml.adapters import DataframeInput
+from bentoml.frameworks.sklearn import SklearnModelArtifact
+from sklearn.datasets import load_boston
+from sklearn.ensemble import RandomForestRegressor
+
+
+@bentoml.env(infer_pip_packages=True)
+@bentoml.artifacts([SklearnModelArtifact('model')])
+class SklearnModelService(bentoml.BentoService):
+    @bentoml.api(input=DataframeInput(), batch=True)
+    def predict(self, df):
+        result = self.artifacts.model.predict(df)
+        return result
+
+
+def main():
+    x, y = load_boston(return_X_y=True)
+    estimator = RandomForestRegressor()
+    estimator.fit(x, y)
+
+    service = SklearnModelService()
+    service.pack('model', estimator)
+    service.save()
+
+
+if __name__ == '__main__':
+    main()</code></pre>
+    <pre><code>[2021-09-23 10:21:38,391] INFO - BentoService bundle 'SklearnModelService:20210923102137_1C3285' saved to: /home/mark/bentoml/repository/SklearnModelService/20210923102137_1C3285</code></pre>
+    <p>Go to <code>/home/mandreev/bentoml/repository/SklearnModelService/20210923102137_1C3285</code> and build docker</p>
+    <pre><code>docker run -p 5000:5000 $(docker build -q /home/mark/bentoml/repository/SklearnModelService/20210923102137_1C3285)</code></pre>
+    <p>Try to fetch predict with REST:</p>
+    <pre><code class="python">import requests
+
+N = 13
+
+if __name__ == '__main__':
+    response = requests.post("http://127.0.0.1:5000/predict", json=[[1] * N])
+    print(response.text)</code></pre>
+    <pre><code>[44.21300000000002]</code></pre>
+    Swagger ui available at <code>http://127.0.0.1:5000/predict</code>
     <div>
         <hr/>
         <b>Related articles</b>:
         <ul>
-            <li><a href="#">{{ Enter link text here }}</a></li>
+            <li><a href="https://docs.bentoml.org/en/latest/index.html">BentoML Docs</a></li>
         </ul>
     </div>
     <div class="text-right">
