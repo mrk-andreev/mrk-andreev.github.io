@@ -5,6 +5,7 @@
   "devDependencies": {
     "glob-parent": "^6.0.0",
     "live-server": "^1.2.1",
+    "set-value": ">=4.0.1",
     "uuid": "^8.3.2"
   },
   "scripts": {
