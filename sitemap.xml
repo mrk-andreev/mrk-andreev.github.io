@@ -1,21 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>https://mrkandreev.name/</loc>
-    </url>
-    <url>
-        <loc>https://mrkandreev.name/blog/tornado-swagger</loc>
-    </url>
-    <url>
-        <loc>https://mrkandreev.name/blog/jvm-performance</loc>
-    </url>
-    <url>
-        <loc>https://mrkandreev.name/blog/postgres-index</loc>
-    </url>
-    <url>
-        <loc>https://mrkandreev.name/blog/postgres-for-analytics</loc>
-    </url>
-    <url>
-        <loc>https://mrkandreev.name/blog/hibernate-array-support</loc>
-    </url>
+<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://mrkandreev.name/blog/jvm-performance</loc></url>
+<url><loc>https://mrkandreev.name/blog/java-two-way-ssl</loc></url>
+<url><loc>https://mrkandreev.name/blog/postgres-index</loc></url>
+<url><loc>https://mrkandreev.name/blog/tornado-swagger</loc></url>
+<url><loc>https://mrkandreev.name/blog/how-test-java-code-structure-in-unit-tests</loc></url>
+<url><loc>https://mrkandreev.name/blog/postgres-for-analytics</loc></url>
+<url><loc>https://mrkandreev.name/snippets/apache_ignite_catboost</loc></url>
+<url><loc>https://mrkandreev.name/snippets/spring_beans</loc></url>
+<url><loc>https://mrkandreev.name/snippets/kubernetes-overview-diagrams</loc></url>
+<url><loc>https://mrkandreev.name/snippets/sharding-partitioning</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how_to_allow_external_connections_to_postgres</loc></url>
+<url><loc>https://mrkandreev.name/snippets/_template</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how-fix-postgres-breaks-connection-after-certain-time</loc></url>
+<url><loc>https://mrkandreev.name/snippets/java_concurrent</loc></url>
+<url><loc>https://mrkandreev.name/snippets/dbms_architecture</loc></url>
+<url><loc>https://mrkandreev.name/snippets/quorum-in-distributed-systems</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how_to_move_k3s_data_to_another_location</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how_test_spring_aspect</loc></url>
+<url><loc>https://mrkandreev.name/snippets/java_io</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how_create_new_db_and_user_in_postgres</loc></url>
+<url><loc>https://mrkandreev.name/snippets/pash-viewer--ash-for-postgres</loc></url>
+<url><loc>https://mrkandreev.name/snippets/confusion_matrix</loc></url>
+<url><loc>https://mrkandreev.name/snippets/postgres_wal</loc></url>
+<url><loc>https://mrkandreev.name/snippets/gitignore-generator</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how-to-migrate-junit4-to-junit5</loc></url>
+<url><loc>https://mrkandreev.name/snippets/bentoml</loc></url>
+<url><loc>https://mrkandreev.name/snippets/azure_data_drive</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how_to_move_docker_data_to_another_location</loc></url>
+<url><loc>https://mrkandreev.name/snippets/hibernate_fetching_strategies</loc></url>
+<url><loc>https://mrkandreev.name/snippets/how-to-deploy-fask-app-on-heroku</loc></url>
+<url><loc>https://mrkandreev.name/snippets/bloom_filter</loc></url>
+<url><loc>https://mrkandreev.name/snippets/clocks</loc></url>
+<url><loc>https://mrkandreev.name/snippets/software_design</loc></url>
+<url><loc>https://mrkandreev.name/snippets/iframe_communication</loc></url>
+<url><loc>https://mrkandreev.name/snippets/java_questions</loc></url>
+<url><loc>https://mrkandreev.name/snippets/index.html</loc></url>
+<url><loc>https://mrkandreev.name/snippets/hibernate_how_log_slow_queries</loc></url>
+<url><loc>https://mrkandreev.name/snippets/python_how_to_execute_terminal_commands</loc></url>
+<url><loc>https://mrkandreev.name/snippets/java_collections</loc></url>
+<url><loc>https://mrkandreev.name/snippets/aws_storage_guide</loc></url>
 </urlset>
