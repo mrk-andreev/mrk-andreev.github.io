@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How to test Spring Aspects</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>How to test Spring Aspects</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h2>Project structure</h2>
+    <ul>
+        <li>Annotation marker <code>AopMarker</code></li>
+        <li>Aspect <code>AopMarkerAspect</code> that handle <code>AopMarker</code></li>
+        <li>Service <code>MyService</code> injected to <code>AopMarkerAspect</code> and triggered every time when aspect
+            handled.
+        </li>
+    </ul>
+    <pre><code class="java">@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface AopMarker {
+}</code></pre>
+    <pre><code class="java">@Aspect
+@Component
+public class AopMarkerAspect {
+  @Autowired
+  MyService myService;
+
+  @Around("@annotation(name.mrkandreev.aspecttest.annotation.AopMarker)")
+  public Object handle(ProceedingJoinPoint joinPoint) throws Throwable {
+    MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+    Method method = signature.getMethod();
+    myService.invoke(method);
+    return joinPoint.proceed();
+  }
+}</code></pre>
+    <pre><code class="java">public interface MyService {
+  void invoke(Method method);
+}</code></pre>
+    <h2>Test structure</h2>
+    <ul>
+        <li>Test <code>AopMarkerAspectTest</code> with <code>@EnableAspectJAutoProxy</code></li>
+        <li><code>AopInjectedService</code> annotated with <code>@AopMarker</code></li>
+        <li><code>@TestConfiguration</code> with mocked <code>MyService</code> service</li>
+        <li>Single <code>test()</code> case in <code>AopMarkerAspectTest</code> that invoke
+            <code>AopInjectedService</code> and expect that <code>myService</code> was invoked.</li>
+    </ul>
+    <pre><code class="java">@ExtendWith(SpringExtension.class)
+@EnableAspectJAutoProxy
+@Import({AopMarkerAspectTestConfiguration.class, AopMarkerAspect.class, AopInjectedService.class})
+class AopMarkerAspectTest {
+  @Autowired
+  MyService myService;
+
+  @Autowired
+  AopInjectedService aopInjectedService;
+
+  @Test
+  void test() {
+    aopInjectedService.invoke();
+    verify(myService, times(1)).invoke(any());
+  }
+}
+
+@Component
+class AopInjectedService {
+  @AopMarker
+  public void invoke() {
+    // empty
+  }
+}
+
+@TestConfiguration
+class AopMarkerAspectTestConfiguration {
+  @Bean
+  public MyService myService() {
+    return Mockito.mock(MyService.class);
+  }
+}</code></pre>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
