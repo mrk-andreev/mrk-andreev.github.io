@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Cache Guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Java Cache Guide</h1>
+        <h4>How we can cache data in Java applications</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <h1>Problems</h1>
+    <ul>
+        <li>Eviction policies (size, lifetime)</li>
+        <li>Max size limit</li>
+        <li>Statistics (evict less usage)</li>
+        <li>Consistency* (thread safe, consistency in case of multiple instances)</li>
+    </ul>
+</div>
+<div class="container">
+    <hr/>
+    <h1>Way to cache your data</h1>
+    <ul>
+        <li>Embedded cache</li>
+        <li>Client server</li>
+        <li>Distributed cache</li>
+        <li>Revers proxy</li>
+    </ul>
+    <h2>Embedded cache</h2>
+    <div><img class="img-fluid" src="images/cache-emb.png" alt=""/></div>
+    <ul>
+        <li>
+            <strong>Java ConcurrentHashMap</strong> is not the best way to cache data. It is not complete main targets.
+            Remember that Spring Cache use this implementation by default.
+        </li>
+        <li>
+            <strong>Guava</strong> / <strong>Caffeine</strong> / <strong>Ehcache</strong> is good choice when your
+            application deployed in single
+            instance mod (no shared
+            state). It is contains main cache features like:
+            <ul>
+                <li>automatic loading of entries into the cache, optionally asynchronously</li>
+                <li>size-based eviction when a maximum is exceeded based on frequency and recency</li>
+                <li>time-based expiration of entries, measured since last access or last write</li>
+                <li>asynchronously refresh when the first stale request for an entry occurs</li>
+                <li>keys automatically wrapped in weak references</li>
+                <li>values automatically wrapped in weak or soft references</li>
+                <li>notification of evicted (or otherwise removed) entries</li>
+                <li>writes propagated to an external resource</li>
+                <li>accumulation of cache access statistics</li>
+            </ul>
+            <pre><code class="java">LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
+    .maximumSize(1000)
+    .expireAfterWrite(10, TimeUnit.MINUTES)
+    .removalListener(MY_LISTENER)
+    .build(new CacheLoader&lt;Key, Graph&gt;() {
+        @Override
+        public Graph load(Key key) throws AnyException {
+            return createExpensiveGraph(key);
+        }
+    });</code></pre>
+            <ul>
+                <li><a href="https://github.com/google/guava/wiki/CachesExplained">Guava Cache</a></li>
+                <li><a href="https://github.com/ben-manes/caffeine">Caffeine</a></li>
+                <li><a href="https://www.ehcache.org/">Ehcache</a></li>
+            </ul>
+        </li>
+    </ul>
+    <h2>Client server cache</h2>
+    <div><img class="img-fluid" src="images/cache-server.png" alt=""/></div>
+    <ul>
+        <li>
+            <strong>Memcached</strong> is simple key/value cache. Memcached's APIs provide a very large hash table
+            distributed across multiple machines. When the table is full, subsequent inserts cause older data to be
+            purged in least recently used (LRU) order.
+            <ul>
+                <li><a href="https://github.com/couchbase/spymemcached">SpyMemcached</a></li>
+            </ul>
+        </li>
+        <li>
+            <strong>Redis</strong> is caching platform with transaction and lua scripting support. Main disadvantage is
+            single worker thread.
+            <ul>
+                <li><a href="https://github.com/redisson/redisson">Redisson</a></li>
+                <li><a href="https://github.com/redis/jedis">Jedis</a></li>
+                <li><a href="https://www.ehcache.org/">Ehcache</a></li>
+            </ul>
+        </li>
+        <li>
+            <strong>Ehcache</strong> can be started in distributed mod.
+            <ul>
+                <li><a href="https://www.ehcache.org/documentation/2.8/get-started/cache-topologies.html">Ehcache</a>
+                </li>
+            </ul>
+        </li>
+        <li>Cloud cache provider (like Amazon ElastiCache)</li>
+    </ul>
+    <h2>Distributed cache</h2>
+    <div><img class="img-fluid" src="images/cache-distr.png" alt=""/></div>
+    <ul>
+        <li>
+            <strong>Hazelcast / Ignite / Tarantool</strong>. A distributed cache is a system that pools together the
+            random-access memory (RAM) of multiple networked computers into a single in-memory data store used as a data
+            cache to provide fast access to data.
+            <ul>
+                <li>
+                    <a href="https://hazelcast.com/clients/java/">Hazelcast</a>
+                </li>
+                <li>
+                    <a href="https://ignite.apache.org/docs/latest/quick-start/java">Ignite</a>
+                </li>
+                <li>
+                    <a href="https://github.com/tarantool/tarantool-java">Tarantool</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h2>Revers proxy cache</h2>
+    <div><img class="img-fluid" src="images/cache-proxy.png" alt=""/></div>
+    <ul>
+        <li>
+            <strong>nginx / HAProxy / envoyproxy / Souin for Traefik</strong> - allows caching http traffic without
+            understanding of incoming data. It can be useful when data is media, or it is a simple high frequency get
+            queries without session.
+            <pre><code># nginx example
+http {
+    # ...
+    proxy_cache_path /data/nginx/cache keys_zone=one:10m;
+    server {
+        proxy_cache mycache;
+        location / {
+            proxy_pass http://localhost:8000;
+        }
+    }
+}</code></pre>
+            <ul>
+                <li>
+                    <a href="https://docs.nginx.com/nginx/admin-guide/content-cache/content-caching/">Nginx cache</a>
+                </li>
+                <li>
+                    <a href="https://www.haproxy.com/blog/accelerate-your-apis-by-using-the-haproxy-cache/">HAProxy
+                        Cache</a>
+                </li>
+                <li>
+                    <a href="https://github.com/darkweak/souin">Souin for Traefik</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h2>Cache as a Sidecar / Ambassador</h2>
+    <p>We can move cache close to application. We can move cache server to closer to
+        application, in terms of Kubernetes we can deploy cache and application in same pod.</p>
+    <pre><code>spec:
+  containers:
+    - name: app
+      image: "app-image:latest"
+    - name: cache
+      image: "cache:latest"
+</code></pre>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">Mark Andreev</a></p>
+            <p>Machine Learning Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VK1VT2Q5G4"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-VK1VT2Q5G4');
+</script>
+</body>
+</html>
