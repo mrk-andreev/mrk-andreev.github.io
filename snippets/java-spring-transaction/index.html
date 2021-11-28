@@ -49,26 +49,52 @@
             <li>Programmatic - JPA</li>
             <li>Declarative - Spring Annotations</li>
         </ul>
-        <b>How new transaction creates in @Transactional:</b>
+    </div>
+    <p><b>Transactional workflow:</b>
+        <img src="assets/tx.png" alt="" class="img-fluid"/></p>
+    <hr/>
+    <h3>@Transactional Settings</h3>
+    <div>
+        The default @Transactional settings are as follows:
+
         <ul>
-            <li>Create new EntityManager</li>
-            <li>Attach EntityManager to current Thread</li>
-            <li>Pool connect from connection pool</li>
-            <li>Attach connection to current Thread using ThreadLocal</li>
+            <li>The propagation setting is PROPAGATION_REQUIRED.</li>
+            <li>The isolation level is ISOLATION_DEFAULT.</li>
+            <li>The transaction is read-write.</li>
+            <li>The transaction timeout defaults to the default timeout of the underlying transaction system, or to none
+                if timeouts are not supported.
+            </li>
+            <li>Any RuntimeException triggers rollback, and any checked Exception does not.</li>
+        </ul>
+    </div>
+    <div>
+        <b>Transaction propagations:</b>
+        <ul>
+            <li>MANDATORY</li>
+            <li>NESTED</li>
+            <li>NEVER</li>
+            <li>NOT_SUPPORTED</li>
+            <li>REQUIRES_NEW</li>
+            <li>SUPPORTS</li>
+        </ul>
+        <b>Isolation levels:</b>
+        <ul>
+            <li>DEFAULT</li>
+            <li>READ_UNCOMMITTED</li>
+            <li>READ_COMMITTED</li>
+            <li>REPEATABLE_READ</li>
+            <li>SERIALIZABLE</li>
         </ul>
     </div>
     <hr/>
-    <b>Transaction propagations:</b>
+    <h3>Programmatic Transaction Management</h3>
+    <p>The Spring Framework provides two means of programmatic transaction management, by using:
+    </p>
     <ul>
-        <li>MANDATORY</li>
-        <li>NESTED</li>
-        <li>NEVER</li>
-        <li>NOT_SUPPORTED</li>
-        <li>REQUIRES_NEW</li>
-        <li>SUPPORTS</li>
+        <li>The TransactionTemplate or TransactionalOperator.</li>
+        <li>A TransactionManager implementation directly.</li>
     </ul>
-    <div>
-    </div>
+    <hr/>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
