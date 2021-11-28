@@ -30,7 +30,10 @@
 <hr/>
 <div class="container">
     <pre><code class="java">&lt;T&gt; void copy(List&lt;? extends T&gt; src, List&lt;? super T&gt; dest) {
-    assert src != null && dest != null && src.size() == dest.size();
+    if (src == null || dest == null || src.size() != dest.size()){
+        throw new IllegalArgumentException();
+    }
+
     for (int i = 0; i &lt; src.size(); i++) {
         dest.set(i, src.get(i));
     }
