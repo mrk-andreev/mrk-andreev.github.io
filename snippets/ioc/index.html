@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inversion of Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Inversion of Control (also known as IOC)</h1>
+        <div>
+            <img src="assets/ioc-diagram.jpg" alt="" class="img-fluid"/>
+        </div>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div>
+        <p>IoC (Inversion of Control) :- It’s a generic term and implemented in several ways (events, delegates
+            etc).</p>
+        <div>DI (Dependency Injection) :- DI is a sub-type of IoC and is implemented by constructor injection, setter
+            injection or Interface injection.<br/>
+            Spring supports:
+            <ul>
+                <li>Constructor Injection. Constructor-based DI is realized by invoking a constructor with a number of
+                    arguments, each representing a collaborator.Using this we can validate that the injected beans are
+                    not null and fail fast(fail on compile time and not on run-time), so while starting application
+                    itself we get NullPointerException: bean does not exist. Constructor injection is Best practice
+                    injecting dependencies.
+                </li>
+                <li>Setter Injection. Setter-based DI is realized by calling setter methods on the user’s beans after
+                    invoking a no-argument constructor or no-argument static factory method to instantiate their bean.
+                </li>
+            </ul>
+        </div>
+        <div><b>Service Locator.</b> The key benefit of a Dependency Injector is that it removes the dependency that the
+            MovieLister class has on the concrete MovieFinder implementation. This allows me to give listers to friends
+            and for them to plug in a suitable implementation for their own environment. Injection isn't the only way to
+            break this dependency, another is to use a service locator.
+            <p>The basic idea behind a service locator is to have an object that knows how to get hold of all of the
+                services that an application might need. So a service locator for this application would have a method
+                that returns a movie finder when one is needed. Of course this just shifts the burden a tad, we still
+                have to get the locator into the lister, resulting in the dependencies of Figure 3</p>
+            <p>In this case I'll use the ServiceLocator as a singleton Registry. The lister can then use that to get the
+                finder when it's instantiated.</p>
+            <pre><code>class MovieLister...
+
+  MovieFinder finder = ServiceLocator.movieFinder();
+class ServiceLocator...
+
+  public static MovieFinder movieFinder() {
+      return soleInstance.movieFinder;
+  }
+  private static ServiceLocator soleInstance;
+  private MovieFinder movieFinder;</code></pre>
+        </div>
+        <div>
+            We also can extend IOC patterns with:
+            <ul>
+                <li>Factory</li>
+                <li>Observer</li>
+                <li>Template method</li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="https://stackoverflow.com/questions/6550700/inversion-of-control-vs-dependency-injection">IOC
+                vs DI</a></li>
+            <li><a href="https://martinfowler.com/articles/injection.html">Injection by Martin Fowler.</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
