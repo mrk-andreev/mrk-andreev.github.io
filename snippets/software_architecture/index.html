@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Software architecture</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Software architecture</h1>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <ul>
+        <li>Layered</li>
+        <li>Event driven</li>
+        <li>Microkernel</li>
+        <li>Microservices</li>
+    </ul>
+    <hr/>
+    <h3>Layered architecture</h3>
+    <div>
+        <img src="assets/layered.png" alt="" class="img-fluid"/>
+    </div>
+    <blockquote>The layered architecture pattern is a solid general-purpose pattern,
+        making it a good starting point for most applications, particularly
+        when you are not sure what architecture pattern is best suited for
+        your application. However, there are a couple of things to consider
+        from an architecture standpoint when choosing this pattern.
+        <br/>
+        <div class="text-right">
+            // Software Architecture Patterns, Mark Richards
+        </div>
+    </blockquote>
+    <div class="row">
+        <div class="col">
+            Pos
+            <ul>
+                <li>Easy to implement (in monolith style)</li>
+                <li>Easy to test</li>
+            </ul>
+        </div>
+        <div class="col">
+            Cons
+            <ul>
+                <li>Low performance (each layer is just abstraction)</li>
+                <li>Hard to scale (in monolith use will replicate large app)</li>
+                <li>Low overall agility (hard to add new requirements, new dependencies)</li>
+            </ul>
+        </div>
+    </div>
+    <h3>Event driven architecture</h3>
+    <div>
+        <img src="assets/events.png" alt="" class="img-fluid"/>
+    </div>
+    <blockquote>The event-driven architecture pattern is a relatively complex pattern
+        to implement, primarily due to its asynchronous distributed nature.
+        When implementing this pattern, you must address various dis‐
+        tributed architecture issues, such as remote process availability, lack
+        of responsiveness, and broker reconnection logic in the event of a
+        broker or mediator failure.
+        <div class="text-right">// Software Architecture Patterns, Mark Richards</div>
+    </blockquote>
+    <div class="row">
+        <div class="col">
+            Pos
+            <ul>
+                <li>High overall agility (easy to apply new requirements)</li>
+                <li>Easy to deploy (minimum dependent code)</li>
+                <li>High performance</li>
+                <li>Easy to scale</li>
+            </ul>
+        </div>
+        <div class="col">
+            Cons
+            <ul>
+                <li>Hard to test (depends on external queue)</li>
+                <li>Hard to develop (async nature)</li>
+            </ul>
+        </div>
+    </div>
+    <h3>Microkernel</h3>
+    <div>
+        <img src="assets/plugins.png" alt="" class="img-fluid"/>
+    </div>
+    <blockquote>One great thing about the microkernel architecture pattern is that it
+        can be embedded or used as part of another architecture pattern.
+        For example, if this pattern solves a particular problem you have
+        with a specific volatile area of the application, you might find that
+        you can’t implement the entire architecture using this pattern.
+        <div class="text-right">// Software Architecture Patterns, Mark Richards</div>
+    </blockquote>
+    <div class="row">
+        <div class="col">
+            Pos
+            <ul>
+                <li>High overall agility</li>
+                <li>Easy to deploy</li>
+                <li>Easy to test</li>
+                <li>Medium permanence (isolated components prevent deep stack trace)</li>
+            </ul>
+        </div>
+        <div>
+            Cons
+            <ul>
+                <li>Hard to scale (look like service monolith)</li>
+                <li>Hard to develop (large code base)</li>
+            </ul>
+        </div>
+    </div>
+    <h3>Microservices</h3>
+    <div class="row">
+        <div class="col">
+            Pos
+            <ul>
+                <li>High overall agility</li>
+                <li>Easy to deploy new service but hard to create infrastructure from scratch. Require extra costs of
+                    infrastructure like Kubernetes.
+                </li>
+                <li>Easy to scale (small unit of work)</li>
+            </ul>
+        </div>
+        <div>
+            Cons
+            <ul>
+                <li>Hard to test</li>
+                <li>Low performance (a lot of remote calls throughout network)</li>
+                <li>Hard to test dependencies (remote calls, async communication)</li>
+            </ul>
+        </div>
+    </div>
+    <hr/>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
