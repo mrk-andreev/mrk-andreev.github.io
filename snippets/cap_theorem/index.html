@@ -30,12 +30,16 @@
 </div>
 <hr/>
 <div class="container">
+    <div>
+        <img src="assets/cap.png" alt="" class="img-fluid"/>
+    </div>
+    <hr/>
     <ul>
         <li><b>CP database:</b> A CP database delivers consistency and partition tolerance at the expense of
             availability. When
             a partition occurs between any two nodes, the system has to shut down the non-consistent node (i.e., make it
             unavailable) until the partition is resolved.<br/>
-            <pre><code class="bash">Example: MongoDB</code></pre>
+            <pre><code class="bash">Example: MongoDB, HBase, Redis</code></pre>
         </li>
         <li><b>AP database:</b> An AP database delivers availability and partition tolerance at the expense of
             consistency. When a partition occurs, all nodes remain available but those at the wrong end of a partition
@@ -51,8 +55,10 @@
                 can’t exist. However, this doesn’t mean you can’t have a CA database for your distributed application if
                 you need one. Many relational databases, such as PostgreSQL, deliver consistency and availability and
                 can be deployed to multiple nodes using replication.</p>
+            <pre><code class="bash">Example: MySQL, SQL Server, PostgreSQL</code></pre>
         </li>
     </ul>
+    <hr/>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
