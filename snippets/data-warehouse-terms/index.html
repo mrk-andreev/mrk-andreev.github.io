@@ -37,10 +37,16 @@
         <li>Data integration technology and processes that are needed to prepare the data for use;</li>
         <li>Different architectures for storing data in an organization's data warehouse or data marts;</li>
         <li>Different tools and applications for a variety of users;</li>
-        <li>Metadata, data quality, and governance processes must be in place to ensure that the warehouse or mart meets its purposes.</li>
+        <li>Metadata, data quality, and governance processes must be in place to ensure that the warehouse or mart meets
+            its purposes.
+        </li>
     </ul>
     <p>Data warehouse is enterprise-wide, Data mart is department-wide.</p>
     <h2>Data lake</h2>
+    <p>A data lake is a centralized repository that allows you to store all your structured and unstructured data at any
+        scale. You can store your data as-is, without having to first structure the data, and run different types of
+        analytics—from dashboards and visualizations to big data processing, real-time analytics, and machine learning
+        to guide better decisions.</p>
     <ul>
         <li>Bronze layer</li>
         <li>Silver layer</li>
@@ -49,6 +55,71 @@
     <div>
         <img src="assets/datalake.png" alt="" class="img-fluid"/>
     </div>
+    <h3>Data Lake vd Data Warehouse</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <td>Characteristics</td>
+            <td>DWH</td>
+            <td>Data Lake</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Data</td>
+            <td>Relational from transactional systems, operational databases, and line of business applications</td>
+            <td>Non-relational and relational from IoT devices, web sites, mobile apps, social media, and corporate
+                applications
+            </td>
+        </tr>
+        <tr>
+            <td>Schema</td>
+            <td>Designed prior to the DW implementation (schema-on-write)</td>
+            <td>Written at the time of analysis (schema-on-read)</td>
+        </tr>
+        <tr>
+            <td>Price/Performance</td>
+            <td>Fastest query results using higher cost storage</td>
+            <td>Query results getting faster using low-cost storage</td>
+        </tr>
+        <tr>
+            <td>Data Quality</td>
+            <td>Highly curated data that serves as the central version of the truth</td>
+            <td>Any data that may or may not be curated (ie. raw data)</td>
+        </tr>
+        <tr>
+            <td>Users</td>
+            <td>Business analysts</td>
+            <td>Data scientists, Data developers, and Business analysts (using curated data)</td>
+        </tr>
+        <tr>
+            <td>Analytics</td>
+            <td>Batch reporting, BI and visualizations</td>
+            <td>Machine Learning, Predictive analytics, data discovery and profiling</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <img src="assets/datalake-aws.png" alt="" class="img-fluid"/>
+    </div>
+    <h4>Layers</h4>
+    <h5>Processing</h5>
+    <ul>
+        <li>Event queue (Apache Kafka, Apache Pulsar, AWS Kinesis)</li>
+        <li>Analytics storage (Vertica, Clickhouse, AWS Redshift)</li>
+        <li>Raw data processing engine (Apache Spark, Apache Flink, Apache Beam, AWS Athena)</li>
+    </ul>
+    <h5>Storage</h5>
+    <ul>
+        <li>Warm (HDFS, Minio, AWS S3)</li>
+        <li>Cold (HDFS, Minio, AWS Glacier)</li>
+    </ul>
+    <h5>Presentation</h5>
+    <ul>
+        <li>Dashboards (Tableau, Power BI, Superset)</li>
+        <li>Interactive notebooks (Jupyter, Apache Zeppelin)</li>
+    </ul>
+    <hr/>
     <div class="text-right">
         <script type="text/javascript"
                 src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
