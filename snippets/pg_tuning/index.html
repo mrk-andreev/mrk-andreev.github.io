@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PostgreSQL tuning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>PostgreSQL tuning</h1>
+        <h4>PostgreSQL ships with a basic configuration tuned for wide compatibility rather than performance. </h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <p><b>When they take effect?</b> PostgreSQL settings have different levels of flexibility for when they can be
+        changed, usually related to internal code restrictions. The complete list of levels is:</p>
+    <ul>
+        <li><b>Postmaster</b>: requires restart of server</li>
+        <li><b>Sighup</b>: requires a HUP of the server, either by kill -HUP (usually -1), pg_ctl reload, or SELECT
+            pg_reload_conf();
+        </li>
+        <li><b>User</b>: can be set within individual sessions, take effect only within that session</li>
+        <li><b>Internal</b>: set at compile time, can't be changed, mainly for reference</li>
+        <li><b>Backend</b>: settings which must be set before session start</li>
+        <li><b>Superuser</b>: can be set at runtime for the server by superusers</li>
+    </ul>
+    <hr/>
+    <ul>
+        <li><a href="https://pgtune.leopard.in.ua/">pgtune</a> - calculate configuration for PostgreSQL based on the
+            maximum performance for a given hardware configuration. It isn't a silver bullet for the optimization
+            settings of PostgreSQL. Many settings depend not only on the hardware configuration, but also on the size of
+            the database, the number of clients and the complexity of queries, so that optimally configure the database
+            can only be given all these parameters.
+        </li>
+        <li><a href="https://www.pgmustard.com/">pgMustard</a> - Reading EXPLAIN ANALYZE output can be tough.</li>
+        <li><a href="https://pgbadger.darold.net/">pgbadger</a> is a PostgreSQL log analyzer built for speed with fully
+            detailed reports and
+            professional rendering. It outperforms any other PostgreSQL log analyzer.
+        </li>
+        <li><a href="https://pgcluu.darold.net/">pgcluu</a> is a PostgreSQL performances monitoring and auditing tool.
+        </li>
+    </ul>
+    <hr/>
+    <ul>
+        <li>
+            <b>max_connections</b> sets exactly that: the maximum number of client connections allowed. This is very
+            important to some of the below parameters (particularly work_mem) because there are some memory resources
+            that are or can be allocated on a per-client basis, so the maximum number of clients suggests the maximum
+            possible memory use. Generally, PostgreSQL on good hardware can support a few hundred connections. If you
+            want to have thousands instead, you should consider using connection pooling software to reduce the
+            connection overhead.
+        </li>
+        <li>
+            The <b>shared_buffers</b> configuration parameter determines how much memory is dedicated to PostgreSQL to
+            use for caching data. One reason the defaults are low is because on some platforms (like older Solaris
+            versions and SGI), having large values requires invasive action like recompiling the kernel. Even on a
+            modern Linux system, the stock kernel will likely not allow setting shared_buffers to over 32MB without
+            adjusting kernel settings first. (PostgreSQL 9.4 and later use a different shared memory mechanism, so
+            kernel settings will usually not have to be adjusted there.)<br/>
+            If you have a system with 1GB or more of RAM, a reasonable starting value for shared_buffers is 1/4 of the
+            memory in your system. If you have less RAM you'll have to account more carefully for how much RAM the OS is
+            taking up; closer to 15% is more typical there. There are some workloads where even larger settings for
+            shared_buffers are effective, but given the way PostgreSQL also relies on the operating system cache, it's
+            unlikely you'll find using more than 40% of RAM to work better than a smaller amount.
+        </li>
+        <li>
+            <b>effective_cache_size</b> should be set to an estimate of how much memory is available for disk caching by
+            the operating system and within the database itself, after taking into account what's used by the OS itself
+            and other applications. This is a guideline for how much memory you expect to be available in the OS and
+            PostgreSQL buffer caches, not an allocation! This value is used only by the PostgreSQL query planner to
+            figure out whether plans it's considering would be expected to fit in RAM or not. If it's set too low,
+            indexes may not be used for executing queries the way you'd expect. The setting for shared_buffers is not
+            taken into account here--only the effective_cache_size value is, so it should include memory dedicated to
+            the database too.<br/>
+            Setting effective_cache_size to 1/2 of total memory would be a normal conservative setting, and 3/4 of
+            memory is a more aggressive but still reasonable amount. You might find a better estimate by looking at your
+            operating system's statistics. On UNIX-like systems, add the free+cached numbers from free or top to get an
+            estimate. On Windows see the "System Cache" size in the Windows Task Manager's Performance tab. Changing
+            this setting does not require restarting the database (HUP is enough).
+        </li>
+        <li>
+            <b>checkpoint_segments checkpoint_completion_target</b>. PostgreSQL writes new transactions to the database
+            in files called WAL segments that are 16MB in size. Every time checkpoint_segments worth of these files have
+            been written, by default 3, a checkpoint occurs. Checkpoints can be resource intensive, and on a modern
+            system doing one every 48MB will be a serious performance bottleneck. Setting checkpoint_segments to a much
+            larger value improves that. Unless you're running on a very small configuration, you'll almost certainly be
+            better setting this to at least 10, which also allows usefully increasing the completion target.<br/>
+            Checkpoint writes are spread out a bit while the system starts working toward the next checkpoint. You can
+            spread those writes out further, lowering the average write overhead, by increasing the
+            checkpoint_completion_target parameter to its useful maximum of 0.9 (aim to finish by the time 90% of the
+            next checkpoint is here) rather than the default of 0.5 (aim to finish when the next one is 50% done). A
+            setting of 0 gives something similar to the behavior of obsolete versions. The main reason the default isn't
+            just 0.9 is that you need a larger checkpoint_segments value than the default for broader spreading to work
+            well. For lots more information on checkpoint tuning, see Checkpoints and the Background Writer (where
+            you'll also learn why tuning the background writer parameters is challenging to do usefully).
+        </li>
+        <li>
+            <b>wal_buffers</b>. After every transaction, PostgreSQL forces a commit to disk out to its write-ahead log.
+            This can be done a couple of ways, and on some platforms other options than the shipped wal_sync_method are
+            considerably faster than the conservative default. open_sync is the most common non-default setting switched
+            to, on platforms that support it but default to one of the fsync methods. See Tuning PostgreSQL WAL
+            Synchronization for a lot of background on this topic. Note that open_sync writing is buggy on some
+            platforms (such as Linux), and you should (as always) do plenty of tests under a heavy write load to make
+            sure that you haven't made your system less stable with this change. Reliable Writes contains more
+            information on this topic.<br/>
+            wal_buffers defaults to 1/32 of the size of shared_buffers, with an upper limit of 16MB (reached when
+            shared_buffers=512MB). Adjustments to the default are required much less often than in earlier PostgreSQL
+            releases.
+        </li>
+        <li>
+            <b>maintenance_work_mem</b>. Specifies the maximum amount of memory to be used by maintenance operations,
+            such as VACUUM, CREATE INDEX, and ALTER TABLE ADD FOREIGN KEY. It defaults to 64 megabytes (64MB) since
+            version 9.4. Since only one of these operations can be executed at a time by a database session, and an
+            installation normally doesn't have many of them running concurrently, it's safe to set this value
+            significantly larger than work_mem. Larger settings might improve performance for vacuuming and for
+            restoring database dumps.
+        </li>
+        <li>
+            <b>random_page_cost</b>. This setting suggests to the optimizer how long it will take your disks to seek to
+            a random disk page, as a multiple of how long a sequential read (with a cost of 1.0) takes. If you have
+            particularly fast disks, as commonly found with RAID arrays of SCSI disks, it may be appropriate to lower
+            random_page_cost, which will encourage the query optimizer to use random access index scans. Some feel that
+            4.0 is always too large on current hardware; it's not unusual for administrators to standardize on always
+            setting this between 2.0 and 3.0 instead. In some cases that behavior is a holdover from earlier PostgreSQL
+            versions where having random_page_cost too high was more likely to screw up plan optimization than it is now
+            (and setting at or below 2.0 was regularly necessary). Since these cost estimates are just
+            that--estimates--it shouldn't hurt to try lower values.
+        </li>
+    </ul>
+    <div>
+        <hr/>
+        <b>Related articles</b>:
+        <ul>
+            <li><a href="#">{{ Enter link text here }}</a></li>
+        </ul>
+    </div>
+    <div class="text-right">
+        <script type="text/javascript"
+                src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ca389f3b6700245"></script>
+        <div class="addthis_inline_share_toolbox"></div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+</body>
+</html>
