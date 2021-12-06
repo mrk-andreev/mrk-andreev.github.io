@@ -33,7 +33,7 @@
 <hr/>
 <div class="container">
     <div>
-        <b>Java Data Type Representation</b>
+        <h2>Java Data Type Representation</h2>
         <ul>
             <li>
                 <b>boolean</b> - 8 bit (can be 1 bit but 8. better performance)
@@ -56,7 +56,7 @@
         </ul>
     </div>
     <div>
-        <b>Object schema</b>
+        <h2>Object schema</h2>
         <div>
             <img src="assets/obj-format.png" alt="" class="img-fluid"/>
         </div>
@@ -64,6 +64,15 @@
             <img src="assets/obj-header.png" alt="" class="img-fluid"/>
         </div>
     </div>
+    <div>
+        <h2>How evaluate object size</h2>
+        <ul>
+            <li>JOL [<a href="https://openjdk.java.net/projects/code-tools/jol/">https://openjdk.java.net/projects/code-tools/jol/</a>]</li>
+            <li>JAMM (used by Apache Cassandra) [<a href="https://github.com/jbellis/jamm">https://github.com/jbellis/jamm</a>]</li>
+            <li>EhCache sizeOf [<a href="https://github.com/ehcache/sizeof">https://github.com/ehcache/sizeof</a>]</li>
+        </ul>
+    </div>
+    <hr/>
     <h2>Linux process memory</h2>
     <ul>
         <li>Virtual - requested to allocate (invoice)</li>
@@ -72,10 +81,6 @@
     </ul>
     <div>
         <img src="assets/linux-mem.png" alt="" class="img-fluid"/>
-    </div>
-    <h2>GC Tradeoff</h2>
-    <div>
-        <img src="assets/gc-tradeoff.png" alt="" class="img-fluid"/>
     </div>
 </div>
 <script>hljs.initHighlightingOnLoad();</script>
