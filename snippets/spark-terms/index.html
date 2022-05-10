@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Spark shuffle</title>
+    <title>Terms Apache Spark [Application / Job / Task]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
@@ -24,74 +24,50 @@
 <body>
 <div class="container">
     <div class="py-5 text-center">
-        <h1>Spark shuffle</h1>
+        <h1>Terms Apache Spark [Application / Job / Task]</h1>
     </div>
 </div>
 <hr/>
 <div class="container">
+    <div><img class="img-fluid" src="img/spark-architecture.png" alt=""/></div>
     <div>
-        <p>In Apache Spark, Spark Shuffle describes the procedure in between reduce task and map task. Shuffling refers
-            to the shuffle of data given. This operation is considered the costliest. Parallelising effectively of the
-            spark shuffle operation gives performance output as good for spark jobs. </p>
+        <p>Spark Cluster operate with <b>drivers</b> and <b>executors</b>. </p>
+        <p>
+            <b>Driver</b> is entry point of the Spark Shell (Scala, Python or R). It is the place where SparkContext is
+            created. Driver translates RDD into execution graph and split graph into stages. This program schedules
+            tasks and
+            controls their execution and stores metadata about all the RDDs and their partitions.
+        </p>
+        <p>
+            <b>Executor</b> stores the data in cache in JVM heap or on HDDs. This program reads data from external
+            sources, performs all the data processing and writes to external sources.
+        </p>
     </div>
-    <div>
-        <img src="assets/in-general.png" alt="" class="img-fluid"/>
-    </div>
-    <h2>Operations that trigger shuffling</h2>
+    <hr/>
+    <p>Lets decompose application.</p>
     <ul>
-        <li>Repartition transformations (repartition, coalesce, partitionBy)</li>
-        <li>Many key-based operations (reduceByKey, foldByKey, combineByKey, groupByKey, cogroup, join, sortByKey,
-            lookup)
+        <li>
+            <b>Application</b> is a single instance of SparkContext that stores some data processing logic and can
+            schedule series of jobs, sequentially or in parallel.
         </li>
-    </ul>
-    <h2>In depth</h2>
-    <div>
-        <img src="assets/in-depth.png" alt="" class="img-fluid"/>
-    </div>
-    <h3>Sort-based shuffling</h3>
-    <ul>
-        <li>Generally more efficient</li>
-        <li>Default in Spark 1.2+</li>
-        <li>Writes 2*M files</li>
-    </ul>
-    <div>
-        <img src="assets/sort-based-shuffle.png" alt="" class="img-fluid"/>
-    </div>
-    <h3>Hash-based shuffling</h3>
-    <ul>
-        <li>Generally less efficient</li>
-        <li>Default in Spark before 1.2</li>
-        <li>Writes M*R files</li>
-    </ul>
-    <div>
-        <img src="assets/hash-based-shuffle.png" alt="" class="img-fluid"/>
-    </div>
-    <h3>Tungsten sort</h3>
-    <div>
-        <img src="assets/tungsten-sort.png" alt="" class="img-fluid"/>
-    </div>
-    <h2>Cost factors</h2>
-    <ul>
-        <li>Disk IO</li>
-        <li>Network traffic</li>
-        <li>Partitioning</li>
-        <li>External sorting</li>
-        <li>Serialization/deserialization</li>
-        <li>Data compression</li>
-    </ul>
-    <h2>Way to optimize</h2>
-    <ul>
-        <li>Control partitioning to avoid re-shuffling</li>
-        <li>Take advantage of aggregation when possible</li>
-        <li>Choose appropriate application properties</li>
+        <li>
+            <b>Job</b> is complete set of transformations on RDD that finishes with action or data saving, triggered by
+            the driver application.
+        </li>
+        <li>
+            <b>Stage</b> is set of transformations that can be pipelined and executed by a single independent worker.
+            Usually it is app the transformations between "read", "shuffle", "action", "save".
+        </li>
+        <li>
+            <b>Task</b> is execution of the stage on a single data partition. Basic unit of scheduling.
+        </li>
     </ul>
     <div>
         <hr/>
         <b>Related articles</b>:
         <ul>
-            <li><a href="https://academy.datastax.com/">Datastax Academy</a></li>
-            <li><a href="https://www.slideshare.net/AGrishchenko/apache-spark-architecture">Spark Architecture</a></li>
-            <li><a href="https://www.slideshare.net/colorant/spark-shuffle-introduction">Spark Shuffle</a></li>
+            <li><a href="https://www.slideshare.net/AGrishchenko/apache-spark-architecture">Apache Spark
+                Architecture</a></li>
         </ul>
     </div>
     <div class="text-right">
