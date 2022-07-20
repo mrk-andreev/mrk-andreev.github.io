@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "devDependencies": {
-    "glob-parent": "^6.0.0",
+    "glob-parent": "^6.0.1",
     "live-server": "^1.2.1",
     "set-value": ">=4.0.1",
     "uuid": "^8.3.2"
