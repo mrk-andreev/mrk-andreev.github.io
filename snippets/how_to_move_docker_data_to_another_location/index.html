@@ -37,8 +37,10 @@
     <h3>2. Add configuration file with location of new data directory</h3>
     <p>Create/Edit <code>/etc/docker/daemon.json</code> file:</p>
     <pre><code class="json">{
-   "graph": "/path/to/new/docker/location"
+   "data-root": "/path/to/new/docker/location"
 }</code></pre>
+    <p>*for old versions use "graph" instead <b>"data-root"</b> (https://docs.docker.com/config/daemon/)</p>
+
     <h3>3. Copy docker files to new location</h3>
     <pre><code class="bash"># rsync -aP /var/lib/docker/ /path/to/new/docker/location</code></pre>
     <h3>4. Remove old directory</h3>
