@@ -97,6 +97,12 @@
             display: block;
             padding-left: 0.5em;
             margin-bottom: 0.5em;
+            text-align: justify;
+        }
+
+        .block-item:after {
+            content: "";
+            display: inline-block;
         }
 
         .block-item-sm {
@@ -118,7 +124,7 @@
                     </picture>
                 </div>
                 <div><h1 class="title"><span class="title__main-word">M</span>ark Andreev</h1>
-                    <h2 class="subtitle">Java, Software Engineer (Machine Learning)</h2></div>
+                    <h2 class="subtitle">Machine Learning Engineer</h2></div>
             </div>
         </div>
     </div>
@@ -129,7 +135,6 @@
                 <span class="block-item"><strong><a
                         href="mailto:mark.andreev@gmail.com">mark.andreev@gmail.com</a></strong></span>
                 <span class="block-item">
-                    <a href="https://www.facebook.com/mark.andreev">Facebook</a>
                     <a href="https://linkedin.com/in/mark-andreev-75a753134">Linkedin</a>
                     <a href="http://github.com/mrk-andreev">Github</a>
                 </span>
@@ -191,6 +196,9 @@
             <div class="block">
                 <span class="block-title">// Certificates</span>
                 <span class="block-item">
+                    <a href="/upload/certs/CockroachDB_Query_Performance_for_Developers.pdf">CockroachDB Query Performance for Developers</a>
+                </span>
+                <span class="block-item">
                     <a href="/upload/certs/Redis_for_Java_Developers_Redis_University.pdf">Redis for Java Developers</a>
                 </span>
                 <span class="block-item">
@@ -212,23 +220,123 @@
                     <a href="https://triplebyte.com/tb/mark-andreev-uaytlih/certificate/track/generalist">Triplebyte Certified Generalist Software Engineer</a>
                 </span>
             </div>
+            <div class="block">
+                <span class="block-title">// Development Stack</span>
+                <span class="block-item">
+                    <strong>Java</strong>. Spring: MVC, Data, AMQP, Kafka, Integration, Batch, Security, State machine, Apache Camel, Vert.x, GraalVM.
+                </span>
+                <span class="block-item">
+                    <strong>Python</strong>. Pandas, Scikit-learn, XGBoost, LightGBM, Catboost, Matplotlib, Tornado, FastAPI, Flask
+                </span>
+                <span class="block-item">
+                    <strong>Data Processing</strong>. Spark, Flink, Cassandra, Hadoop, Kafka, PostgreSQL.
+                </span>
+                <span class="block-item">
+                    <strong>Third party</strong>. PostgreSQL, Clickhouse, Kafka, Keycloak, MongoDB, RabbitMQ, Redis, Prometheus, Docker, Kubernetes, Helm, Linux, Airflow
+                </span>
+                <span class="block-item">
+                    <strong>Cloud</strong>. AWS { EC2, S3, RDS, CloudFront, SQS, SNS, Lambda, Batch, IAM, Registry}; Azure {VM, BLOB, Registry}
+                </span>
+            </div>
         </div>
         <div class="body-col">
             <div class="block">
+                <span class="block-title">// Experience summary</span>
+                <span>
+                    <p>Accomplished Senior Machine Learning Engineer at Conundrum, London, specializing in optimizing ML systems and MLOps with Java, Python, Kubernetes, Spring, and Vert.x for Kafka & Clickhouse feature stores. Also proficient in PostgreSQL and Redis. Recognized for significant achievements, including a 3x improvement in popular queries, a 5x reduction in CPU load for Kafka subscription proxies, and a stellar 15x increase in query speed. I bring a deep understanding of trade-offs, balancing performance enhancements with resource efficiency.</p>
+                    <p>Actively contributing to open-source projects such as Keycloak, Apache Camel, Apache Ignite, Clickhouse, Zipkin, and Tornado Swagger, with diverse contributions from implementing a fix for header override by Azure Storage Blob download consumer to advanced features like target encoding preprocessor and CatBoost inference integration.</p>
+                    <p>Armed with a Master’s Degree in applied mathematics and computer science from Lomonosov Moscow State University, I am passionate about driving innovation in machine learning technologies.</p>
+                </span>
                 <span class="block-title">// Experience</span>
                 <span class="block-item"><strong><a
-                        href="https://conundrum.ai/">Conundrum.ai</a></strong>, 2017-now</span>
-                <span class="block-item">Java, Software Engineer (Machine Learning)</span>
+                        href="https://conundrum.ai/">Conundrum.ai</a></strong>, 2017 - now</span>
+                <span class="block-item">Senior Machine Learning Engineer, Sep 2022 - now</span>
                 <span class="block-item block-item-sm">
                     <ul>
-                        <li>Developed Machine learning lifecycle platform for Industrial Automation (on top of Kubernetes, Dynamic resource allocation. Java for orchestration, Python for serve models)</li>
-                        <li>Developed Incident Management service with custom workflow (on top of Spring State Machine)</li>
-                        <li>Developed Data Storage Service for sensors measurements (based on PostgreSQL, Clickhouse and Kafka)</li>
-                        <li>Developed end to end machine learning application for flight analysis</li>
-                        <li>Created ad hoc analysis for tabular, geo, textual data for customer needs</li>
-                        <li>Microservices based architecture</li>                        
+                        <li>Implement low level optimization for feature store on top of Kafka & Clickhouse (projections, application level query planner) | Increase one of the most popular queries 3x times</li>
+                        <li>Create performance regression tests (Gatling) | Cover 80% of queries that eliminates major performance degradations</li>
+                        <li>Create performance optimizations for kafka subscription proxy (java 21 virtual threads, shared subscription) | Decrease CPU load 5x times</li>
+                        <li>Implement security improvements for Platform (audit, L4 network policies, L7 network filter) | Apply security IS requirements at network level</li>
+                        <li>Cover platform’s services with health performance metrics (Prometheus, Grafana, Alerts) | Decrease issue investigation time 3x times</li>
                     </ul>
+                    <p>
+                        [Java, Python, Query optimizations, Load tests, Kafka, Clickhouse, Kubernetes, Feature store, Spring, Vert.x, GraalVM]
+                    </p>
                 </span>
+                <span class="block-item">Senior Machine Learning Engineer, Sep 2019 - Aug 2022</span>
+                <span class="block-item block-item-sm">
+                    <ul>
+                        <li>Migrate feature store to Kafka & Clickhouse (Column OLAP DB) | Increase query speed 15x times</li>
+                        <li>Create low level connectors for Industrial Data Exchange formats (MQTT, OPC UA, Historian) | Decrease CPU load to exchange server 3x times</li>
+                        <li>Migrate model serving runtime to Kubernetes (KubeAPI, Helm)</li>
+                        <li>Deploy platform to AKS (Azure Cloud) & K3s (on premisses, no internet)</li>
+                    </ul>
+                    <p>
+                        [Java, Python, Kubernetes, Helm, Kafka, Clickhouse, Azure, AKS, OLAP, Feature store, Spring]
+                    </p>
+                </span>
+                <span class="block-item">Middle Machine learning engineer, Nov 2017 - Sep 2019</span>
+                <span class="block-item block-item-sm">
+                    <ul>
+                        <li>Create feature store for sensor’s time series data (Java, Spring, PostgreSQL, TimescaleDB)</li>
+                        <li>Create model serving runtime server (Python, Processes)</li>
+                        <li>Create incident management service (Java, Spring, State machines)</li>
+                        <li>Create ETL based on S3, SQS, S3 SFTP</li>
+                    </ul>
+                    <p>
+                        [Java, Spring, Python, AWS, ETL, Feature store, PostgreSQL, TimescaleDB, State machines, S3, SQS, S3 SFTP]
+                    </p>
+                </span>
+                <span class="block-item">Junior Machine learning engineer, May 2017 - Oct 2017</span>
+                <span class="block-item block-item-sm">
+                    <ul>
+                        <li>Airline data clusterization. Create approach for data splitting for offline AB tests</li>
+                        <li>Telecom data chron. Create solution for offline chron scoring based on telecom data activity</li>
+                        <li>Web data gender detection. Create solution for offline gender detection based on web activity</li>
+                        <li>Mobile data geo analysis. Create reports about geo activity based on mobile location data</li>
+                        <li>Timeseries data for Industrial data. Create data pipeline for failure prediction</li>
+                    </ul>
+                    <p>
+                        [Python, PySpark, Spark, SQL, Scikit learn, Pandas, XGBoost]
+                    </p>
+                </span>
+                <span class="block-item"><strong>Big Data Indicators</strong> Internship, Oct 2016 - May 2017</span>
+                <span class="block-item">Machine Learning Engineer</span>
+                <span class="block-item block-item-sm">
+                    <ul>
+                        <li>Create data collection & processing pipeline</li>
+                        <li>Use topic models for discover trends</li>
+                        <li>Create sentiment analysis models for trend prediction</li>
+                    </ul>
+
+                    <p>
+                        [Data mining, Python, MongoDB, Redis, Machine learning, NLP, Topic models]
+                    </p>
+                </span>
+            </div>
+        </div>
+        <div class="body-col">
+            <div class="block">
+                <span class="block-title">// Education</span>
+                <span class="block-item"><strong>Lomonosov Moscow State University</strong></span>
+                <span class="block-item">Master's degree. Computational Mathematics and Cybernetics</span>
+                <span class="block-item"><strong>Moscow Power Engineering Institute</strong></span>
+                <span class="block-item">Bachelor's degree. Institute of automatics and computer science</span>
+            </div>
+            <div class="block">
+                <span class="block-title">// Publications</span>
+                <span class="block-item">
+                    <strong>A New Approach to Determining the Attitude of Authors of Short Texts to the Topics Discussed in the Texts on the Example of Estimating the Inflations Expectations</strong>,
+                    Oct 2017 DATA ANALYTICS AND MANAGEMENT IN DATA INTENSIVE DOMAINS, DAMDID / RCDL’2017, Andreev M.
+                </span>
+                <span class="block-item">
+                    <strong>Big Data approach to measure inflation expectations</strong>: the case of the Russian economy, Jul 16, 2017 IFABS 2017 Oxford Conference, Goloshchapova I., Andreev M.
+                </span>
+                <span class="block-item">
+                    <strong>Measuring inflation expectations ofthe Russian population with the help of machine learning</strong>. Voprosy Ekonomiki. 2017;(6):71-93. (In Russ.), Goloshchapova I., Andreev M.
+                </span>
+            </div>
+            <div class="block">
                 <span class="block-item">// Contribute to Open Source</span>
                 <span class="block-item block-item-sm">
                     <ul>
@@ -277,46 +385,6 @@
                             </ul>
                         </li>
                     </ul>
-                </span>
-            </div>
-            <div class="block">
-                <span class="block-title">// Development Stack</span>
-                <span class="block-item">
-                    <strong>Java</strong>. Spring: MVC, Data, AMQP, Kafka, Integration, Batch, Security, State machine, Apache Camel, Quarkus.
-                </span>
-                <span class="block-item">
-                    <strong>Data Processing</strong>. Spark, Flink, Cassandra, Hadoop, Kafka, PostgreSQL.
-                </span>
-                <span class="block-item">
-                    <strong>Third party</strong>. PostgreSQL, Clickhouse, Kafka, Keycloak, MongoDB, RabbitMQ, Redis, Prometheus, Docker, Kubernetes, Linux, Airflow
-                </span>
-                <span class="block-item">
-                    <strong>Cloud</strong>. AWS: EC2, S3, RDS, CloudFront, SQS, SNS, Lambda, IAM, Registry; Azure: VM, BLOB, Registry
-                </span>
-                <span class="block-item">
-                    <strong>Python</strong>. Pandas, Scikit-learn, XGBoost, LightGBM, Catboost, Matplotlib, Tornado, FastAPI
-                </span>
-            </div>
-        </div>
-        <div class="body-col">
-            <div class="block">
-                <span class="block-title">// Education</span>
-                <span class="block-item"><strong>Lomonosov Moscow State University</strong></span>
-                <span class="block-item">Master's degree. Computational Mathematics and Cybernetics</span>
-                <span class="block-item"><strong>Moscow Power Engineering Institute</strong></span>
-                <span class="block-item">Bachelor's degree. Institute of automatics and computer science</span>
-            </div>
-            <div class="block">
-                <span class="block-title">// Publications</span>
-                <span class="block-item">
-                    <strong>A New Approach to Determining the Attitude of Authors of Short Texts to the Topics Discussed in the Texts on the Example of Estimating the Inflations Expectations</strong>,
-                    Oct 2017 DATA ANALYTICS AND MANAGEMENT IN DATA INTENSIVE DOMAINS, DAMDID / RCDL’2017, Andreev M.
-                </span>
-                <span class="block-item">
-                    <strong>Big Data approach to measure inflation expectations</strong>: the case of the Russian economy, Jul 16, 2017 IFABS 2017 Oxford Conference, Goloshchapova I., Andreev M.
-                </span>
-                <span class="block-item">
-                    <strong>Measuring inflation expectations ofthe Russian population with the help of machine learning</strong>. Voprosy Ekonomiki. 2017;(6):71-93. (In Russ.), Goloshchapova I., Andreev M.
                 </span>
             </div>
         </div>
