@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deep dive into Apache Parquet Format | Mark Andreev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
+    <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/upload/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h1>Deep dive into Apache Parquet Format</h1>
+        <h4>Jul 4, 2022</h4>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic1.png"
+                alt="flexible to efficient storage"/></div>
+    </div>
+    <div class="container">
+        <b>Introduction</b>. When we want to store we meet the trade-off between flexibility and storage efficiency. Old
+        school
+        formats like csv, json and xml let you have high flexibility with human readable features as a benefit but at
+        the same time it is not so good when you have a lot of data. For big data processing where data is stored in an
+        archive way we can use binary formats with storage tricks like indexes and compression. So we can not ignore
+        file formats like Apache Parquet, Apache Iceberg, Apache Avro, Apache Orc, etc. In this post we will go deeper
+        to Apache Parquet format.
+    </div>
+    <br/>
+    <div class="container">
+        <b>Storage layout</b>. The first trick is the physical storage layout. At the logical level we work with tables:
+        rows
+        with a fixed set of columns. But we can store tables at disk in three ways:
+        <ul>
+            <li>Row wise. Store each row sequentially. We store row 1 with all row’s column values. For example: [(ROW_1
+                COL_1), (ROW_1 COL_2), (ROW_2 COL_1), …]. This method used by CSV, JSON and XML file formats.
+            </li>
+            <li>Columnar. Store each column sequentially: values of each column grouped in sequancies. For example:
+                [(ROW_1 COL_1), (ROW_2 COL_1), …]. This method allows to navigate over wide tables (a lot of column in
+                table).
+            <li>Hybrid. Split table in into chunks horizontally and store by column.</li>
+        </ul>
+    </div>
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic2.png"
+                alt="row wise vs columnar"/></div>
+    </div>
+    <div class="container">
+        For OLTP (a lot of small operations involving whole rows) it is better to use a row wide method but for OLAP
+        (few large operations involving a subset of columns) better to use hybrid format. For this reason relation
+        databases like PostgreSQL / MySQL prefer row wise format and feel bad with wide columns table and analytical
+        databases like Clickhouse / Vertica prefer hybrid format.
+    </div>
+    <div class="container">
+        Parquet like archive storage format use Hybrid physical storage layout.<br/>
+
+        Format in files level. In disk parquet usually splitted into multiple files in one or multiple sub directories.
+        Where each sub directory can be used for partition needs.<br/>
+
+        Format in file level. Data organized in each file with fixed schema. File contains:
+
+        <ul>
+            <li>Row groups (default size is 128MB like Hadoop file chunk).</li>
+            <li>Column chunks</li>
+            <li>Pages (default 1MB)</li>
+        </ul>
+    </div>
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic3.png"
+                alt="format in file level"/></div>
+    </div>
+    <div>
+        Metadata stored in page and file level. Remember that if the file metadata is corrupt, the file is lost. If the
+        column metadata is corrupt, that column chunk is lost (but column chunks for this column in other row groups are
+        okay). If a page header is corrupt, the remaining pages in that chunk are lost. If the data within a page is
+        corrupt, that page is lost. The file will be more resilient to corruption with smaller row groups.
+    </div>
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic4.png"
+                alt="inside parquet file"/></div>
+    </div>
+    <div>
+        There are three types of metadata: file metadata, column (chunk) metadata and page header metadata. All Apache
+        Thrift structures are serialized using the TCompactProtocol
+    </div>
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic5.png"
+                alt="meta data details"/></div>
+    </div>
+    <div>
+        The main advantage of metadata is quick navigation over chunks without lookup into each one. For example we can
+        do predicate push down in case where we want to filter column > X using metadata.
+    </div>
+    <div class="text-center">
+        <div><img
+                class="img-fluid"
+                src="./media/pic6.png"
+                alt="meta data details"/></div>
+    </div>
+    <div>
+        <b>Encoding</b>. Another optimization is dictionary encoding that detects small number of unique values and
+        compress
+        that using dictionary. In extension of that parquet use bit backing technique that allows to store small
+        integers packed into same space. RLE (Run-length encoding) optimize storage of multiple occurrences of the same
+        value, a single value is stored once along with the number of occurrences.<br/><br/>
+    </div>
+    <div>
+        <b>Compression</b>. Apache Parquet allows to choose compression algorithm of entire pages. Configuration
+        spark.sql.parquet.compression.codec can be none, uncompressed, snappy, gzip, lzo, brotli, lz4, zstd. Note that
+        `zstd` requires `ZStandardCodec` to be installed before Hadoop 2.9.0, `brotli` requires `BrotliCodec` to be
+        installed.<br/><br/>
+    </div>
+    <div>
+        <b>Partitioning</b>. In this way we can partition by date (YYYY-MM-DD) and open only target files. Use
+        df.write.partitionBy("col1", "col2", ...).parquet(filename) for partitioning.
+    </div>
+    <div>
+        Parquet for streaming. Parquet is created for archive storage and has metadata overhead that means that parquet
+        is not a good choice for streaming. Prefer Apache Avro that uses row based storage schema without huge metadata
+        overhead.
+    </div>
+    <div>
+        Value Types. Supported value types:
+
+        <ul>
+            <li>BOOLEAN: 1 bit boolean</li>
+            <li>INT32: 32 bit signed ints</li>
+            <li>INT64: 64 bit signed ints</li>
+            <li>INT96: 96 bit signed ints (spark use that format for storing timestamp, use flag
+                spark.sql.parquet.int96AsTimestamp tells Spark SQL to interpret INT96 data as a timestamp to provide
+                compatibility with these systems)
+            </li>
+            <li>FLOAT: IEEE 32-bit floating point values</li>
+            <li>DOUBLE: IEEE 64-bit floating point values</li>
+            <li>BYTE_ARRAY: arbitrarily long byte arrays.</li>
+        </ul>
+    </div>
+
+    <div>
+        View parquet file data. Use parquet-tools with cat for scan file like parquet-tools cat --json
+        &lt;file&gt;. Also parquet-tools meta &lt;part&gt; shows a file metadata.
+    </div>
+
+    <div>
+        General tips or Best practices for Parquet (not only) like a summary.
+
+        <ul>
+            <li>Avoid small files</li>
+            <li>Avoid large files</li>
+            <li>Use right partition key</li>
+            <li>Use denormalization and pre compute : replace evaluation / joins with simple filter in future</li>
+            <li>Use Apache Parquet for archive storage and Apache Avro for streaming</li>
+        </ul>
+    </div>
+
+    <hr/>
+
+    <div>
+        References:
+
+        <ul>
+            <li>https://parquet.apache.org/docs/</li>
+            <li>https://www.youtube.com/watch?v=1j8SdS7s_NY</li>
+            <li>https://www.youtube.com/watch?v=rVC9F1y38oU</li>
+            <li>https://www.youtube.com/watch?v=_0Wpwj_gvzg</li>
+        </ul>
+    </div>
+</div>
+<hr/>
+<div class="container">
+    <div class="row">
+        <div class="col-2"><img class="d-block mx-auto mb-4 rounded img-fluid"
+                                src="https://avatars1.githubusercontent.com/u/669347?s=100" alt=""
+                                width="100"
+                                height="100"></div>
+        <div class="col-8">
+            <p>Author <a href="https://mrkandreev.name/">Mark Andreev</a></p>
+            <p>Senior Software Engineer</p>
+        </div>
+    </div>
+</div>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript"> (function (d, w, c) {
+    (w[c] = w[c] || []).push(function () {
+        try {
+            w.yaCounter41245659 = new Ya.Metrika2({
+                id: 41245659,
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true,
+                webvisor: true,
+                trackHash: true
+            });
+        } catch (e) {
+        }
+    });
+    var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+        n.parentNode.insertBefore(s, n);
+    };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = "https://mc.yandex.ru/metrika/tag.js";
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else {
+        f();
+    }
+})(document, window, "yandex_metrika_callbacks2"); </script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript> <!-- /Yandex.Metrika counter -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VK1VT2Q5G4"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-VK1VT2Q5G4');
+</script>
+</body>
+</html>
