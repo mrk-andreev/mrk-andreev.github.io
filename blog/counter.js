@@ -10,6 +10,7 @@ window.addEventListener("load", function () {
     }).join("/");
 
 
+    // TODO: refactor with promise
     function fetchCounterValue() {
         fetch(ENDPOINT, {
             "method": "POST",
@@ -36,8 +37,8 @@ window.addEventListener("load", function () {
 
     function updateCounterInUi(viewsCount) {
         var containers = document.getElementsByClassName(COUNTER_VALUE_CONTAINER_NAME);
-        for (var container in containers) {
-            container.innerText = viewsCount;
+        for (var i=0; i<containers.length; i++) {
+            containers[i].innerText = viewsCount;
         }
     }
 
