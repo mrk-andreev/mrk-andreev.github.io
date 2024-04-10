@@ -25,7 +25,7 @@ window.addEventListener("load", function () {
             var viewsCount = '?';
             try {
                 viewsCount = data["views_count"];
-                localStorage.setItem(page, viewsCount);
+                sessionStorage.setItem(page, viewsCount);
             } catch (e) {
                 console.error(e);
             }
@@ -42,8 +42,8 @@ window.addEventListener("load", function () {
         }
     }
 
-    if (localStorage.getItem(page)) {
-        updateCounterInUi(localStorage.getItem(page));
+    if (sessionStorage.getItem(page)) {
+        updateCounterInUi(sessionStorage.getItem(page));
     } else {
         fetchCounterValue();
     }
