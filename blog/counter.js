@@ -6,7 +6,7 @@ window.addEventListener("load", function () {
         page = "";
     }
     page = "/" + page.split("/").filter(function (part) {
-        return part && part.length > 0
+        return part && part.length > 0 && part !== 'index.html';
     }).join("/");
 
 
