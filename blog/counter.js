@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
     var COUNTER_VALUE_CONTAINER_NAME = "counter-value";
-    var ENDPOINT = "https://yqfiwpsxz3.execute-api.eu-west-2.amazonaws.com/default/counterFunction";
+    var ENDPOINT = "https://counter.aws.mrkandreev.name/counterFunction";
     var page = location.pathname;
     if (!page) {
         page = "";
