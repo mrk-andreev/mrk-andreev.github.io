@@ -6,7 +6,7 @@ const snippetUrl = (templateName) => `snippets/${templateName}.gitignore`;
 
 const fetchSnippets = (snippets) => {
     return Promise.all(
-        snippets.map(snippet => $.ajax(snippetUrl(snippet)).done((data) => data))
+        snippets.map(snippet => fetch(snippetUrl(snippet)).then(r => r.ok ? r.text() : new Promise(resolve => resolve(''))))
     )
         .then(snippets => snippets.flatMap(snippet => snippet.split('\n')).join('\n'))
         .then(data => data + generateBacklink(snippets));
@@ -61,7 +61,8 @@ $(document).ready(() => {
                 allowClear: true,
                 multiple: true,
                 tags: true,
-                tokenSeparators: [',', ' ']
+                tokenSeparators: [',', ' '],
+                placeholder: '',
             });
             // hotfix for select2 error 'Cannot read property 'id' of undefined'
             setTimeout(() => $('.select2-selection__clear').click(e => {
