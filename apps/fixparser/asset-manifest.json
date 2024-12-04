@@ -5,9 +5,7 @@
     "static/media/fixseparatorfont.ttf": "./static/media/fixseparatorfont.74684795e883ab466b2a.ttf",
     "static/media/fixseparatorfont.eot": "./static/media/fixseparatorfont.484f92f126d98658668e.eot",
     "static/media/fixseparatorfont.woff": "./static/media/fixseparatorfont.eaa36e2214958b1a8037.woff",
-    "index.html": "./index.html",
-    "main.2848e1e0.css.map": "./static/css/main.2848e1e0.css.map",
-    "main.8c19d151.js.map": "./static/js/main.8c19d151.js.map"
+    "index.html": "./index.html"
   },
   "entrypoints": [
     "static/css/main.2848e1e0.css",
