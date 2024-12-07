@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "./static/css/main.2848e1e0.css",
-    "main.js": "./static/js/main.8c19d151.js",
+    "main.js": "./static/js/main.d13b6d09.js",
     "static/media/fixseparatorfont.ttf": "./static/media/fixseparatorfont.74684795e883ab466b2a.ttf",
     "static/media/fixseparatorfont.eot": "./static/media/fixseparatorfont.484f92f126d98658668e.eot",
     "static/media/fixseparatorfont.woff": "./static/media/fixseparatorfont.eaa36e2214958b1a8037.woff",
@@ -9,6 +9,6 @@
   },
   "entrypoints": [
     "static/css/main.2848e1e0.css",
-    "static/js/main.8c19d151.js"
+    "static/js/main.d13b6d09.js"
   ]
 }
