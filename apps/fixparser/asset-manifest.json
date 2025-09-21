@@ -1,17 +1,19 @@
 {
   "files": {
     "main.css": "./static/css/main.9152bf09.css",
-    "main.js": "./static/js/main.f5a0c6e6.js",
+    "main.js": "./static/js/main.059b4019.js",
     "static/media/fixseparatorfont.ttf": "./static/media/fixseparatorfont.74684795e883ab466b2a.ttf",
     "static/media/fixseparatorfont.svg": "./static/media/fixseparatorfont.a77555cb062c8c708eb8.svg",
     "static/media/fixseparatorfont.eot": "./static/media/fixseparatorfont.484f92f126d98658668e.eot",
     "static/media/fixseparatorfont.otf": "./static/media/fixseparatorfont.1d44c471dfe7962eef74.otf",
     "static/media/fixseparatorfont.woff": "./static/media/fixseparatorfont.eaa36e2214958b1a8037.woff",
     "index.html": "./index.html",
-    "static/media/fixseparatorfont.woff2": "./static/media/fixseparatorfont.9ce1d15437781575eb31.woff2"
+    "static/media/fixseparatorfont.woff2": "./static/media/fixseparatorfont.9ce1d15437781575eb31.woff2",
+    "main.9152bf09.css.map": "./static/css/main.9152bf09.css.map",
+    "main.059b4019.js.map": "./static/js/main.059b4019.js.map"
   },
   "entrypoints": [
     "static/css/main.9152bf09.css",
-    "static/js/main.f5a0c6e6.js"
+    "static/js/main.059b4019.js"
   ]
 }
