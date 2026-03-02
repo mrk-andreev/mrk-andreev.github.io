@@ -255,7 +255,7 @@
                         <li>Onboarded new asset classes and flows into trading OMS pipeline</li>
                         <li>Tuned Oracle SQL*Plus queries via Autotrace analysis; slashed critical query latency 60%</li>
                         <li>Profiled execution paths with AsyncProfiler; cut user-facing flow latency 70%</li>
-                        <li>Adopted Vaadin for internal developer-focused UI | Unified teams off local scripts, accelerating cross-team iteration</li>
+                        <li>Adopted Vaadin for internal developer-focused UI | Unified teams off local scripts, accelerating cross-team iteration.</li>
                     </ul>
                     <p>
                         [Java, Oracle Database, Kafka, Python, Linux]
@@ -321,9 +321,9 @@
                 <span class="block-item">Machine Learning Engineer</span>
                 <span class="block-item block-item-sm">
                     <ul>
-                        <li>Created data collection & processing pipeline</li>
-                        <li>Used topic models to discover trends</li>
-                        <li>Created sentiment analysis models for trend prediction</li>
+                        <li>Engineered end-to-end data collection/processing pipeline for macroeconomic indicators from internet sources</li>
+                        <li>Applied topic models to uncover economic trends in unstructured text</li>
+                        <li>Built sentiment analysis models for inflation expectation prediction; co-authored "Measuring inflation expectations with machine learning" (Voprosy Ekonomiki, 2017)</li>
                     </ul>
 
                     <p>
@@ -353,16 +353,14 @@
                             </ul>
                         </li>
                         <li>
-                            <strong>Apache Airflow</strong>
+                            <strong>Clickhouse</strong>
                             <ul>
-                                <li>[<a href="https://github.com/apache/airflow/commit/60eced9bca4c744dfce5e1f723dc2e23940ab64b">AIRFLOW-43853</a>]
-                                    Add logging support for init containers in KubernetesPodOperator (#42498)</li>
-                                <li>[<a href="https://github.com/apache/airflow/commit/63b2bbd167af1105f1fdd340c24fbf0f1bb6ec90">AIRFLOW-43847</a>]
-                                    Add random_name_suffix to SparkKubernetesOperator (#43800) (#43847)</li>
-                                <li>[<a href="https://github.com/apache/airflow/commit/74bc8728fb58f73d65b9283e33577f234e7b8bb3">AIRFLOW-43840</a>]
-                                    Fix logs with leading spaces in the Docker operator (#33692) (#43840)</li>
-                                <li>[<a href="https://github.com/apache/airflow/commit/a504a8267dd5530923bbe2c8ec4d1b409f909d83">AIRFLOW-27553</a>]
-                                    Add ipc_mode for DockerOperator (#27553)</li>
+                                <li>[<a href="https://github.com/ClickHouse/ClickHouse/pull/98143">ClickHouse-98143</a>]
+                                    [FIX] Handle dangling symlinks gracefully in glob file enumeration</li>
+                            </ul>
+                            <ul>
+                                <li>[<a href="https://github.com/ClickHouse/ClickHouse/pull/37228">ClickHouse-37228</a>]
+                                    Remove group.id from StorageKafka::createWriteBuffer.</li>
                             </ul>
                         </li>
                         <li>
@@ -374,6 +372,19 @@
                                     Implemented catboost inference integration.</li>
                                 <li>[<a href="https://github.com/apache/ignite/pull/8197">IGNITE-13386</a>]
                                     Implemented new distances (BrayCurtis, Canberra, JensenShannon and etc).</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Apache Airflow</strong>
+                            <ul>
+                                <li>[<a href="https://github.com/apache/airflow/commit/60eced9bca4c744dfce5e1f723dc2e23940ab64b">AIRFLOW-43853</a>]
+                                    Add logging support for init containers in KubernetesPodOperator (#42498)</li>
+                                <li>[<a href="https://github.com/apache/airflow/commit/63b2bbd167af1105f1fdd340c24fbf0f1bb6ec90">AIRFLOW-43847</a>]
+                                    Add random_name_suffix to SparkKubernetesOperator (#43800) (#43847)</li>
+                                <li>[<a href="https://github.com/apache/airflow/commit/74bc8728fb58f73d65b9283e33577f234e7b8bb3">AIRFLOW-43840</a>]
+                                    Fix logs with leading spaces in the Docker operator (#33692) (#43840)</li>
+                                <li>[<a href="https://github.com/apache/airflow/commit/a504a8267dd5530923bbe2c8ec4d1b409f909d83">AIRFLOW-27553</a>]
+                                    Add ipc_mode for DockerOperator (#27553)</li>
                             </ul>
                         </li>
                         <li>
@@ -390,13 +401,6 @@
                                     Add fix for header override by Azure Storage Blob download consumer.</li>
                             </ul>
                         </li>                        
-                        <li>
-                            <strong>Clickhouse</strong>
-                            <ul>
-                                <li>[<a href="https://github.com/ClickHouse/ClickHouse/pull/37228">ClickHouse-37228</a>]
-                                    Remove group.id from StorageKafka::createWriteBuffer.</li>
-                            </ul>
-                        </li>
                         <li>
                             <strong>Vaadin Flow</strong>
                             <ul>
