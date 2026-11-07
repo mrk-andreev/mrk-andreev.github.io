@@ -2,15 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>.gitignore generator</title>
+    <title>.gitignore generator — build .gitignore files for any stack</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Free .gitignore generator: combine 500+ templates for operating systems, IDEs, languages and frameworks into one .gitignore file. Copy, download or share a link.">
+    <link rel="canonical" href="https://mrkandreev.name/snippets/gitignore-generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content=".gitignore generator">
+    <meta property="og:description"
+          content="Combine 500+ .gitignore templates for operating systems, IDEs and languages into one file.">
+    <meta property="og:url" content="https://mrkandreev.name/snippets/gitignore-generator/">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
           integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <meta name="google-site-verification" content="nKBS68MBglsXyUBNGGsQ7oQZU53wrBmnye0L6Fu4jBU"/>
     <script src="https://browser.sentry-cdn.com/4.6.5/bundle.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">Sentry.init({dsn: 'https://802d42edef034b74860743196de2cac2@sentry.io/1423759'});</script>
-    <link rel="stylesheet"
-          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
     <link rel="apple-touch-icon" sizes="144x144" href="/upload/img/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/upload/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/upload/img/icons/favicon-16x16.png">
@@ -19,6 +25,112 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-TileImage" content="/upload/img/icons/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
+    <style>
+        :root {
+            --gi-accent: #133cff;
+            --gi-accent-soft: #f5f7ff;
+            --gi-accent-border: #d6dbf5;
+            --gi-border: #ced4da;
+            --gi-muted: #6c757d;
+            --gi-code-bg: #f6f8fa;
+            --gi-danger: #c82333;
+            --gi-danger-soft: #fdecee;
+        }
+
+        .gi { max-width: 960px; padding-bottom: 3rem; }
+        .gi-lead { color: #444; margin-bottom: 1.25rem; }
+
+        /* picker */
+        .gi-picker { position: relative; }
+        .gi-label { font-weight: 600; margin-bottom: .35rem; }
+        .gi-field {
+            display: flex; flex-wrap: wrap; align-items: center; gap: .35rem;
+            min-height: calc(2.25rem + 2px); padding: .3rem .4rem;
+            border: 1px solid var(--gi-border); border-radius: .3rem; background: #fff; cursor: text;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .gi-field:focus-within { border-color: #80a0ff; box-shadow: 0 0 0 .2rem rgba(19, 60, 255, .15); }
+        .gi-chips { display: contents; list-style: none; margin: 0; padding: 0; }
+        .gi-chip {
+            display: inline-flex; align-items: center; gap: .15rem;
+            padding: .1rem .2rem .1rem .6rem; border-radius: 999px; font-size: .875rem;
+            color: var(--gi-accent); background: var(--gi-accent-soft); border: 1px solid var(--gi-accent-border);
+        }
+        .gi-chip--bad { color: var(--gi-danger); background: var(--gi-danger-soft); border-color: #f5c2c7; text-decoration: line-through; }
+        .gi-chip__x {
+            border: 0; background: none; color: inherit; line-height: 1; font-size: 1.1rem;
+            width: 1.4rem; height: 1.4rem; border-radius: 50%; padding: 0; cursor: pointer; opacity: .7;
+        }
+        .gi-chip__x:hover, .gi-chip__x:focus { opacity: 1; background: rgba(0, 0, 0, .08); outline: none; }
+        .gi-input { flex: 1 1 12rem; min-width: 8rem; border: 0; outline: 0; padding: .2rem .3rem; background: transparent; }
+        .gi-clear {
+            border: 0; background: none; color: var(--gi-muted); font-size: .8rem; padding: .2rem .4rem;
+            margin-left: auto; cursor: pointer; border-radius: .25rem;
+        }
+        .gi-clear:hover, .gi-clear:focus { color: var(--gi-danger); background: var(--gi-danger-soft); outline: none; }
+        .gi-list {
+            position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 4px);
+            max-height: 320px; overflow-y: auto; margin: 0; padding: .25rem 0; list-style: none;
+            background: #fff; border: 1px solid var(--gi-border); border-radius: .3rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+        }
+        .gi-list [role=option] { padding: .35rem .75rem; cursor: pointer; display: flex; align-items: center; }
+        .gi-list [role=option].is-active { background: var(--gi-accent-soft); }
+        .gi-list [role=option].is-selected { color: var(--gi-accent); font-weight: 600; }
+        .gi-list mark { padding: 0; background: #fff3a3; color: inherit; }
+        .gi-check { display: inline-block; width: 1.25rem; color: var(--gi-accent); }
+        .gi-list__note { padding: .35rem .75rem; color: var(--gi-muted); font-size: .85rem; }
+
+        .gi-popular { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-top: .75rem; }
+        .gi-popular__label { color: var(--gi-muted); font-size: .85rem; margin-right: .15rem; }
+        .gi-pill {
+            font-size: .8rem; padding: .15rem .65rem; border-radius: 999px; cursor: pointer;
+            color: #333; background: #fff; border: 1px solid var(--gi-border);
+        }
+        .gi-pill:hover { border-color: var(--gi-accent); color: var(--gi-accent); }
+        .gi-pill.is-on { color: #fff; background: var(--gi-accent); border-color: var(--gi-accent); }
+        .gi-pill.is-on::before { content: "✓ "; }
+
+        /* output */
+        .gi-output { margin-top: 1.5rem; border: 1px solid #e1e4e8; border-radius: .4rem; overflow: hidden; }
+        .gi-toolbar {
+            display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem;
+            padding: .5rem .75rem; background: #fafbfc; border-bottom: 1px solid #e1e4e8;
+        }
+        .gi-file { font-family: SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; }
+        .gi-stats { color: var(--gi-muted); font-size: .85rem; flex: 1 1 auto; }
+        .gi-toggle { margin: 0; font-size: .85rem; color: #444; display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
+        .gi-actions { display: flex; gap: .35rem; }
+        .gi-code {
+            margin: 0; padding: 1rem; max-height: 65vh; overflow: auto; background: var(--gi-code-bg);
+            font-size: .82rem; line-height: 1.5; transition: opacity .15s;
+        }
+        .gi-code.is-loading { opacity: .5; }
+        .gi-code:focus { outline: 2px solid #80a0ff; outline-offset: -2px; }
+        .tok-section { color: var(--gi-accent); font-weight: 700; }
+        .tok-comment { color: #6a737d; }
+        .tok-negate { color: #22863a; }
+        .gi-empty { padding: 2.5rem 1rem; text-align: center; color: var(--gi-muted); background: var(--gi-code-bg); }
+
+        .gi-status {
+            position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 1rem); z-index: 20;
+            max-width: calc(100% - 2rem); padding: .55rem 1rem; border-radius: .35rem;
+            color: #fff; background: #222; font-size: .9rem; box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+            opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+        }
+        .gi-status--error { background: var(--gi-danger); }
+        .gi-status.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+        .gi-help { margin-top: 2rem; color: #444; font-size: .92rem; }
+        .gi-help h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+        kbd { font-size: .8em; }
+
+        @media (max-width: 576px) {
+            .gi-toolbar { align-items: flex-start; }
+            .gi-actions { width: 100%; }
+            .gi-actions .btn { flex: 1; }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -30,35 +142,64 @@
     </div>
 </div>
 <hr/>
-<div class="container">
-    <div>
-        <div class="search-container">
-            <div class="search-container__search">
-                <select
-                        type="text"
-                        class="form-control"
-                        id="search-box"
-                        placeholder="Search Operating Systems, IDEs, or Programming Languages"
-                ></select>
-            </div>
-            <div>
-                <button
-                        type="submit"
-                        class="btn btn-primary"
-                        id="create"
-                >Create
-                </button>
-            </div>
+<main class="container gi">
+    <p class="gi-lead">
+        Pick your operating systems, editors, languages and tools — the <code>.gitignore</code> below updates as you go.
+        Paste a comma-separated list (e.g. <code>macos, vscode, python</code>) to add several at once.
+    </p>
+
+    <div class="gi-picker">
+        <label class="gi-label" for="gi-input">Templates</label>
+        <div class="gi-field" id="gi-field">
+            <ul class="gi-chips" id="gi-chips" aria-label="Selected templates"></ul>
+            <input class="gi-input" id="gi-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+                   role="combobox" aria-autocomplete="list" aria-controls="gi-list" aria-expanded="false"
+                   placeholder="Search OS, IDEs, languages, tools… (e.g. macos, vscode, python)">
+            <button type="button" class="gi-clear" id="gi-clear" hidden>Clear all</button>
         </div>
-        <div class="output">
-            <div class="actions">
-                <button id="copy" class="btn btn-sm btn-secondary">Copy</button>
-                <button id="download" class="btn btn-sm btn-secondary">Download</button>
-            </div>
-            <pre><code id="output"></code></pre>
-        </div>
+        <ul class="gi-list" id="gi-list" role="listbox" aria-label="Available templates" aria-multiselectable="true" hidden></ul>
     </div>
-</div>
+    <div class="gi-popular" id="gi-popular"></div>
+
+    <section class="gi-output" aria-label="Generated .gitignore">
+        <div class="gi-toolbar">
+            <span class="gi-file">.gitignore</span>
+            <span class="gi-stats" id="gi-stats" aria-live="polite"></span>
+            <label class="gi-toggle" title="Drop rules that already appear in an earlier template">
+                <input type="checkbox" id="gi-dedupe"> Remove duplicate rules
+            </label>
+            <div class="gi-actions">
+                <button type="button" id="gi-copy" class="btn btn-sm btn-primary" disabled>Copy</button>
+                <button type="button" id="gi-download" class="btn btn-sm btn-outline-secondary" disabled
+                        title="Download (Ctrl/⌘ + S)">Download</button>
+                <button type="button" id="gi-link" class="btn btn-sm btn-outline-secondary" disabled
+                        title="Copy a link that reopens this selection">Share link</button>
+            </div>
+        </div>
+        <pre class="gi-code" id="gi-code" tabindex="0" hidden><code id="gi-output"></code></pre>
+        <div class="gi-empty" id="gi-empty">Nothing selected yet. Search above or pick one of the popular templates.</div>
+    </section>
+
+    <div class="gi-status" id="gi-status" role="status" aria-live="polite"></div>
+
+    <div class="gi-help">
+        <h2>Tips</h2>
+        <ul>
+            <li>Use <kbd>↑</kbd> <kbd>↓</kbd> and <kbd>Enter</kbd> to pick from the list, <kbd>Backspace</kbd> in an empty
+                box to remove the last template, and <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>S</kbd> to download.
+            </li>
+            <li>The selection is stored in the URL, so you can bookmark it or share it, e.g.
+                <a href="#macOS,VisualStudioCode,Python"><code>#macOS,VisualStudioCode,Python</code></a>.
+            </li>
+            <li>Templates such as <code>Java</code>, <code>Gradle</code> and <code>AndroidStudio</code> are kept in a fixed
+                order so that later <code>!pattern</code> rules (like <code>!gradle-wrapper.jar</code>) still work.
+            </li>
+            <li><code>+all</code> variants of JetBrains IDEs ignore the whole <code>.idea</code> folder;
+                <code>+iml</code> variants also ignore <code>*.iml</code> module files.
+            </li>
+        </ul>
+    </div>
+</main>
 <!-- Yandex.Metrika counter --> <script type="text/javascript" > (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)}; m[i].l=1*new Date(); for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }} k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(41245659, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, trackHash:true }); </script> <noscript><div><img src="https://mc.yandex.ru/watch/41245659" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VK1VT2Q5G4"></script>
@@ -69,40 +210,6 @@
 
     gtag('config', 'G-VK1VT2Q5G4');
 </script>
-<script
-        src="https://code.jquery.com/jquery-2.2.4.min.js"
-        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-        crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="script.js"></script>
-<style>
-    .search-container {
-        display: flex;
-        justify-content: flex-start;
-        width: 100%;
-    }
-
-    .search-container__search {
-        flex-grow: 2;
-        margin-right: 15px;
-    }
-
-    .output {
-        position: relative;
-        width: 100%;
-        margin-top: 15px;
-        max-height: 600px;
-        overflow: auto;
-        background: #F0F0F0;
-        padding: 15px;
-    }
-
-    .actions {
-        top: 0;
-        right: 0;
-        text-align: right;
-    }
-</style>
 </body>
 </html>
